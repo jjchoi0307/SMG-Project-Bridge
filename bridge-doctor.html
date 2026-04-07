@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge — Clinical</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #F1F5F9;
+    --card: #FFFFFF;
+    --primary: #1E3A5F;
+    --primary-mid: #254A78;
+    --primary-soft: #E8EEF6;
+    --accent: #2563EB;
+    --accent-soft: #EFF6FF;
+    --text: #0F172A;
+    --text-sec: #475569;
+    --text-mute: #94A3B8;
+    --border: #E2E8F0;
+    --border-soft: #F1F5F9;
+    --green: #059669;
+    --green-soft: #ECFDF5;
+    --amber: #D97706;
+    --amber-soft: #FFFBEB;
+    --red: #DC2626;
+    --red-soft: #FEF2F2;
+    --blue: #2563EB;
+    --blue-soft: #EFF6FF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #8C9BAB;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 32px 20px;
+  }
+
+  .phone {
+    width: 393px;
+    height: 852px;
+    background: var(--bg);
+    border-radius: 48px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.12);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Greeting ── */
+  .greeting {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #0D1F35 0%, #1E3A5F 55%, #2A517F 100%);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between;
+    z-index: 500; padding: 52px 32px 52px;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    cursor: pointer;
+  }
+  .greeting.dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+  /* top row: logo + lang toggle */
+  .greeting-top {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .smg-logo-light { height: 62px; filter: brightness(0) invert(1); opacity: 0.92; display: block; }
+  .smg-logo-color { height: 38px; display: block; }
+
+  /* EN/KO toggle on greeting */
+  .greet-lang-toggle {
+    background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px; display: flex; padding: 3px; gap: 2px;
+  }
+  .greet-lang-btn {
+    font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 16px;
+    border: none; background: transparent; color: rgba(255,255,255,0.5);
+    cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.18s;
+  }
+  .greet-lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* middle: ring + name block */
+  .greeting-mid { display: flex; flex-direction: column; align-items: center; }
+  .greeting-ring { margin-bottom: 28px; }
+  .greeting-ring svg { display: block; }
+  .greeting-name { font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -0.6px; margin-bottom: 8px; text-align: center; }
+  .greeting-status { font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 5px; }
+  .greeting-sub { font-size: 13px; color: rgba(255,255,255,0.45); text-align: center; }
+
+  /* bottom: pills + CTA */
+  .greeting-bottom { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+  .greeting-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .greeting-pill {
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 500;
+    padding: 6px 13px; border-radius: 20px;
+  }
+  .greeting-pill.alert { background: rgba(220,38,38,0.25); border-color: rgba(220,38,38,0.4); color: #FCA5A5; }
+  .greeting-pill.dollar { background: rgba(5,150,105,0.25); border-color: rgba(5,150,105,0.4); color: #6EE7B7; }
+  .greeting-cta {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-size: 16px; font-weight: 600; padding: 15px 0;
+    border-radius: 30px; cursor: pointer; transition: background 0.2s;
+    width: 100%;
+  }
+  .greeting-cta:hover { background: rgba(255,255,255,0.22); }
+
+  /* ── Login screen ── */
+  .login-screen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #0D1F35 0%, #1E3A5F 55%, #2A517F 100%);
+    z-index: 600; overflow-y: auto; padding: 48px 28px 40px;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .login-screen::-webkit-scrollbar { display: none; }
+  .login-screen.su-dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  .su-title { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.4px; margin-bottom: 4px; }
+  .su-subtitle { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
+  .su-section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; font-family: 'Inter', -apple-system, sans-serif; }
+  .su-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .su-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .su-input {
+    flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 14px;
+    font-family: 'Inter', sans-serif; outline: none;
+  }
+  .su-input::placeholder { color: rgba(255,255,255,0.35); }
+  .su-input:focus { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.14); }
+  .su-btn {
+    width: 100%; background: rgba(255,255,255,0.9); color: #1E3A5F;
+    border: none; border-radius: 12px; padding: 15px; font-size: 15px;
+    font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .su-btn:hover { background: #fff; }
+
+  /* ── Status bar ── */
+  .status-bar {
+    height: 52px; background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; flex-shrink: 0;
+    padding: 0 20px;
+  }
+  .status-bar-logo {
+    position: absolute; left: 50%; transform: translateX(-50%);
+  }
+  .status-time { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); position: absolute; left: 20px; }
+  .status-badge {
+    position: absolute; right: 20px;
+    background: var(--red); color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 10px;
+  }
+
+  /* ── Screen ── */
+  .screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    height: 62px; background: var(--primary);
+    display: flex; align-items: stretch; flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; cursor: pointer; border: none; background: transparent;
+    color: rgba(255,255,255,0.45); font-family: 'Inter', sans-serif;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab-btn.active { color: #fff; }
+  .tab-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tab-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+
+  /* ── Content area ── */
+  .content { flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .tab-pane { display: none; padding: 14px 16px 20px; }
+  .tab-pane.active { display: block; }
+
+  /* ── Section header ── */
+  .sec-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 16px 0 8px;
+  }
+  .sec-hdr:first-child { margin-top: 0; }
+  .sec-title { font-size: 11px; font-weight: 700; color: var(--text-mute); letter-spacing: 0.8px; text-transform: uppercase; }
+  .sec-link { font-size: 12px; font-weight: 600; color: var(--accent); }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card); border-radius: 12px;
+    box-shadow: var(--shadow-sm); overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  /* ── Patient row ── */
+  .pt-row {
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); gap: 12px;
+    cursor: pointer;
+  }
+  .pt-row:last-child { border-bottom: none; }
+  .pt-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--primary-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--primary); flex-shrink: 0;
+  }
+  .pt-info { flex: 1; min-width: 0; }
+  .pt-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pt-meta { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+  .pt-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .pt-time { font-size: 11px; color: var(--text-mute); }
+  .pt-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
+  .tag-green { background: var(--green-soft); color: var(--green); }
+  .tag-amber { background: var(--amber-soft); color: var(--amber); }
+  .tag-red { background: var(--red-soft); color: var(--red); }
+  .tag-blue { background: var(--blue-soft); color: var(--blue); }
+  .tag-gray { background: #F3F4F6; color: #6B7280; }
+
+  /* ── Alert row ── */
+  .alert-row {
+    display: flex; align-items: flex-start; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); gap: 10px;
+  }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .alert-body { flex: 1; }
+  .alert-text { font-size: 12px; color: var(--text); line-height: 1.4; font-weight: 500; }
+  .alert-sub { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+  .alert-actions { display: flex; gap: 6px; margin-top: 6px; }
+  .btn-sm {
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px;
+    border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  .btn-approve { background: var(--green-soft); color: var(--green); }
+  .btn-decline { background: #F3F4F6; color: #6B7280; }
+  .btn-review { background: var(--blue-soft); color: var(--blue); }
+  .btn-action { background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+  /* ── Stat row ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .stat-card {
+    background: var(--card); border-radius: 12px; padding: 12px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-val { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .stat-val.green { color: var(--green); }
+  .stat-val.amber { color: var(--amber); }
+  .stat-val.red { color: var(--red); }
+  .stat-val.blue { color: var(--accent); }
+  .stat-lbl { font-size: 11px; color: var(--text-mute); margin-top: 2px; font-weight: 500; }
+  .stat-delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .delta-up { color: var(--green); }
+  .delta-dn { color: var(--red); }
+
+  /* ── HCC row ── */
+  .hcc-row {
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); gap: 10px;
+  }
+  .hcc-row:last-child { border-bottom: none; }
+  .hcc-info { flex: 1; }
+  .hcc-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .hcc-code { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+  .hcc-dollar { font-size: 13px; font-weight: 700; color: var(--green); min-width: 64px; text-align: right; }
+
+  /* ── Progress bar ── */
+  .prog-row { margin-bottom: 10px; }
+  .prog-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .prog-lbl { font-size: 12px; font-weight: 500; color: var(--text); }
+  .prog-pct { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .prog-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.6s ease; }
+  .prog-fill.green { background: var(--green); }
+  .prog-fill.amber { background: var(--amber); }
+
+  /* ── Heatmap ── */
+  .heatmap { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; margin-bottom: 10px; }
+  .heat-cell {
+    border-radius: 6px; padding: 8px 6px; text-align: center;
+  }
+  .heat-label { font-size: 9px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .heat-pct { font-size: 16px; font-weight: 800; }
+  .heat-sub { font-size: 9px; margin-top: 2px; }
+  .heat-red { background: #FEE2E2; }
+  .heat-red .heat-pct { color: var(--red); }
+  .heat-red .heat-sub { color: #EF4444; }
+  .heat-amber { background: #FEF3C7; }
+  .heat-amber .heat-pct { color: var(--amber); }
+  .heat-amber .heat-sub { color: #F59E0B; }
+  .heat-green { background: var(--green-soft); }
+  .heat-green .heat-pct { color: var(--green); }
+  .heat-green .heat-sub { color: #10B981; }
+  .heat-blue { background: var(--blue-soft); }
+  .heat-blue .heat-pct { color: var(--blue); }
+  .heat-blue .heat-sub { color: #3B82F6; }
+
+  /* ── Message row ── */
+  .msg-row {
+    display: flex; align-items: flex-start; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); gap: 10px; cursor: pointer;
+  }
+  .msg-row:last-child { border-bottom: none; }
+  .msg-avatar {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .msg-avatar.ai { background: linear-gradient(135deg, #1E3A5F, #2563EB); color: #fff; font-size: 11px; }
+  .msg-avatar.pt { background: var(--primary-soft); color: var(--primary); }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .msg-from { font-size: 12px; font-weight: 600; color: var(--text); }
+  .msg-time { font-size: 11px; color: var(--text-mute); }
+  .msg-preview { font-size: 12px; color: var(--text-sec); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-unread { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+
+  /* ── Patient detail overlay ── */
+  .pt-detail {
+    position: absolute; inset: 0; background: var(--bg);
+    z-index: 400; display: none; flex-direction: column;
+    overflow: hidden;
+  }
+  .pt-detail.open { display: flex; }
+  .detail-header {
+    background: var(--primary); padding: 14px 16px 12px;
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  }
+  .back-btn { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .back-btn svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .detail-patient-name { font-size: 16px; font-weight: 700; color: #fff; }
+  .detail-patient-meta { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .detail-body { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { color: var(--text-sec); font-weight: 500; }
+  .detail-val { color: var(--text); font-weight: 600; text-align: right; }
+  .detail-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .chip { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
+
+  /* ── Search bar ── */
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border-radius: 10px; padding: 9px 12px;
+    margin-bottom: 12px; box-shadow: var(--shadow-sm);
+  }
+  .search-bar svg { width: 16px; height: 16px; fill: none; stroke: var(--text-mute); stroke-width: 2; flex-shrink: 0; }
+  .search-bar input { border: none; outline: none; font-size: 13px; color: var(--text); background: transparent; flex: 1; font-family: 'Inter', sans-serif; }
+  .search-bar input::placeholder { color: var(--text-mute); }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── Nudge approval card ── */
+  .nudge-card {
+    background: var(--card); border-radius: 12px; padding: 12px 14px;
+    box-shadow: var(--shadow-sm); margin-bottom: 8px;
+  }
+  .nudge-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .nudge-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .nudge-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
+  .nudge-body { font-size: 12px; color: var(--text-sec); line-height: 1.5; margin-bottom: 10px; }
+  .nudge-patient { font-size: 11px; color: var(--text-mute); margin-bottom: 8px; }
+  .nudge-actions { display: flex; gap: 8px; }
+  .btn-approve-lg { flex: 1; background: var(--green-soft); color: var(--green); font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-edit-lg { flex: 1; background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-decline-lg { flex: 1; background: #F3F4F6; color: #6B7280; font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+  /* ── Panel ring mini stats ── */
+  .ring-row { display: flex; align-items: center; gap: 16px; padding: 14px; }
+  .ring-stats { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .ring-stat-row { display: flex; justify-content: space-between; align-items: center; }
+  .ring-stat-lbl { font-size: 12px; color: var(--text-sec); }
+  .ring-stat-val { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  /* ── Schedule slot ── */
+  .slot-row {
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft); gap: 10px;
+  }
+  .slot-row:last-child { border-bottom: none; }
+  .slot-time { font-size: 11px; font-weight: 600; color: var(--text-mute); width: 44px; flex-shrink: 0; }
+  .slot-bar { width: 3px; border-radius: 2px; height: 36px; flex-shrink: 0; }
+  .slot-info { flex: 1; }
+  .slot-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .slot-detail { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+  .slot-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+
+  /* ── Revenue total banner ── */
+  .rev-banner {
+    background: linear-gradient(135deg, #1E3A5F, #2563EB);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .rev-banner-lbl { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+  .rev-banner-val { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+  .rev-banner-sub { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .rev-banner-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 6px 12px; text-align: center; }
+  .rev-banner-badge-val { font-size: 18px; font-weight: 800; color: #fff; }
+  .rev-banner-badge-lbl { font-size: 10px; color: rgba(255,255,255,0.6); }
+
+  /* scrollbar hide */
+  .content::-webkit-scrollbar { display: none; }
+  .detail-body::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ═══════════ LOGIN SCREEN ═══════════ -->
+  <div class="login-screen" id="loginScreen">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:52px;">
+      <div style="text-align:right;">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">PHYSICIAN</div>
+        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);">SMG Clinical Portal</div>
+      </div>
+    </div>
+    <div class="su-title" >Welcome, Doctor</div>
+    <div class="su-subtitle">Sign in to access your clinical dashboard</div>
+
+    <form onsubmit="handleDoctorLogin(event)">
+      <div class="su-section-label" style="border-top:none;padding-top:0;margin-top:0;">Your Name</div>
+      <div class="su-row">
+        <div style="flex:1;">
+          <div class="su-label">First Name</div>
+          <input class="su-input" id="drFirst" placeholder="First Name" required style="width:100%;">
+        </div>
+        <div style="flex:1;">
+          <div class="su-label">Last Name</div>
+          <input class="su-input" id="drLast" placeholder="Last Name" required style="width:100%;">
+        </div>
+      </div>
+
+      <div class="su-section-label">Credentials</div>
+      <div class="su-label">NPI Number</div>
+      <div class="su-row">
+        <input class="su-input" id="drNpi" placeholder="NPI Number" required style="width:100%;">
+      </div>
+      <div class="su-label">Specialty</div>
+      <div class="su-row">
+        <input class="su-input" id="drSpecialty" placeholder="Specialty" required style="width:100%;">
+      </div>
+
+      <div class="su-section-label">Location</div>
+      <div class="su-label">Clinic / Practice</div>
+      <div class="su-row">
+        <input class="su-input" id="drClinic" placeholder="Clinic / Practice" style="width:100%;">
+      </div>
+
+      <div class="su-section-label">Membership Tier</div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:11px 14px;cursor:pointer;">
+          <input type="radio" name="drTier" value="standard" style="accent-color:#60A5FA;">
+          <span style="color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;">SMG</span>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.35);border-radius:10px;padding:11px 14px;cursor:pointer;">
+          <input type="radio" name="drTier" value="smgone" checked style="accent-color:#F5D060;">
+          <span style="color:#F5D060;font-size:13px;font-weight:700;">SMG ONE</span>
+        </label>
+      </div>
+
+      <button type="submit" class="su-btn">Access Dashboard</button>
+    </form>
+  </div>
+
+  <!-- ═══════════ GREETING ═══════════ -->
+  <div class="greeting" id="greeting" onclick="dismissGreeting()">
+
+    <!-- Top: logo + lang toggle -->
+    <div class="greeting-top" onclick="event.stopPropagation()">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light">
+      <div class="greet-lang-toggle">
+        <button class="greet-lang-btn active" id="gl-en" onclick="setGreetLang('en')">EN</button>
+        <button class="greet-lang-btn" id="gl-ko" onclick="setGreetLang('ko')">한국어</button>
+      </div>
+    </div>
+
+    <!-- Middle: panel ring + name -->
+    <div class="greeting-mid">
+      <div class="greeting-ring">
+        <!-- r=64 → circumference=402.1 · 70% filled → dashoffset=120.6 -->
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="11"/>
+          <g transform="rotate(-90 80 80)">
+            <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="402.1" stroke-linecap="round"/>
+            <circle id="ring-progress-circle" cx="80" cy="80" r="64" fill="none" stroke="#60A5FA" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="120.6" stroke-linecap="round"/>
+          </g>
+          <text id="ring-pct-text" x="80" y="76" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="32" font-weight="800" fill="white" dominant-baseline="central">70%</text>
+          <text x="80" y="96" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8.5" font-weight="600" fill="rgba(255,255,255,0.55)" dominant-baseline="central" letter-spacing="1" data-en="PANEL UP TO DATE" data-ko="패널 최신 상태">PANEL UP TO DATE</text>
+        </svg>
+      </div>
+
+      <div class="greeting-name" id="greetName" data-en="Good morning, Dr. Park" data-ko="안녕하세요, 박 선생님">Good morning, Dr. Park</div>
+      <div class="greeting-status" id="greetStatus" data-en="18 patients today · SMG Koreatown" data-ko="오늘 환자 18명 · SMG 코리아타운">18 patients today · SMG Koreatown</div>
+      <div class="greeting-sub" data-en="Tuesday, March 17" data-ko="2026년 3월 17일 화요일">Tuesday, March 17</div>
+    </div>
+
+    <!-- Bottom: pills + CTA -->
+    <div class="greeting-bottom">
+      <div class="greeting-pills">
+        <div class="greeting-pill alert" id="greet-alerts-pill" data-en="3 Overnight Alerts" data-ko="야간 알림 3건">3 Overnight Alerts</div>
+        <div class="greeting-pill" id="greet-nudges-pill" data-en="5 Nudges Pending" data-ko="대기 알림 5건">5 Nudges Pending</div>
+        <div class="greeting-pill dollar" data-en="$12,400 HCC Opportunity" data-ko="$12,400 HCC 기회">$12,400 HCC Opportunity</div>
+      </div>
+      <button class="greeting-cta" data-en="Start Day" data-ko="시작하기">Start Day</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════ PATIENT DETAIL OVERLAY ═══════════ -->
+  <div class="pt-detail" id="ptDetail">
+    <div class="detail-header">
+      <button class="back-btn" onclick="closePtDetail()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div>
+        <div class="detail-patient-name" id="detailName">—</div>
+        <div class="detail-patient-meta" id="detailMeta">—</div>
+      </div>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+
+  <!-- ═══════════ STATUS BAR ═══════════ -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-bar-logo">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:34px;">
+    </div>
+    <div class="status-badge" id="alertBadge">3</div>
+  </div>
+
+  <!-- ═══════════ SCREEN ═══════════ -->
+  <div class="screen">
+    <div class="content" id="content">
+
+      <!-- ━━━━━━━━━━━━━━━ TODAY ━━━━━━━━━━━━━━━ -->
+      <div class="tab-pane active" id="pane-today">
+
+        <!-- Overnight Alerts -->
+        <div class="sec-hdr"><span class="sec-title">Overnight Alerts</span><span class="sec-link" id="alerts-dismiss-link">Dismiss all</span></div>
+        <div class="card" id="today-alerts-card">
+          <div class="alert-row">
+            <div class="alert-dot" style="background:#DC2626;"></div>
+            <div class="alert-body">
+              <div class="alert-text">Susan Kim — BP 158/96 reported at 11:42 PM</div>
+              <div class="alert-sub">Jiyeon escalated · MCA-7842-9301</div>
+              <div class="alert-actions">
+                <button class="btn-sm btn-review" onclick="openPtDetail('kim')">Review</button>
+                <button class="btn-sm btn-approve">Acknowledge</button>
+              </div>
+            </div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-dot" style="background:#D97706;"></div>
+            <div class="alert-body">
+              <div class="alert-text">Min-jun Lee — missed evening metformin × 3 days</div>
+              <div class="alert-sub">Caregiver flagged · MCA-3310-4482</div>
+              <div class="alert-actions">
+                <button class="btn-sm btn-review" onclick="openPtDetail('lee')">Review</button>
+                <button class="btn-sm btn-decline">Snooze 48h</button>
+              </div>
+            </div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-dot" style="background:#D97706;"></div>
+            <div class="alert-body">
+              <div class="alert-text">Hana Choi — A1C lab result ready for review</div>
+              <div class="alert-sub">Quest Diagnostics · ordered 3/10</div>
+              <div class="alert-actions">
+                <button class="btn-sm btn-review" onclick="openPtDetail('choi')">View Result</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="sec-hdr"><span class="sec-title">Today's Schedule</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">18 total</span></div>
+        <div class="card">
+          <div class="slot-row">
+            <div class="slot-time">8:00</div>
+            <div class="slot-bar" style="background:#DC2626;"></div>
+            <div class="slot-info">
+              <div class="slot-name">Susan Kim <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 김순자</span></div>
+              <div class="slot-detail">HTN follow-up · BP alert overnight</div>
+            </div>
+            <span class="slot-tag tag-red">ALERT</span>
+          </div>
+          <div class="slot-row">
+            <div class="slot-time">8:30</div>
+            <div class="slot-bar" style="background:#2563EB;"></div>
+            <div class="slot-info">
+              <div class="slot-name">David Park</div>
+              <div class="slot-detail">Annual Wellness Visit · AWV</div>
+            </div>
+            <span class="slot-tag tag-blue">AWV</span>
+          </div>
+          <div class="slot-row">
+            <div class="slot-time">9:00</div>
+            <div class="slot-bar" style="background:#059669;"></div>
+            <div class="slot-info">
+              <div class="slot-name">Ji-young Oh</div>
+              <div class="slot-detail">DM Type 2 management</div>
+            </div>
+            <span class="slot-tag tag-green">STABLE</span>
+          </div>
+          <div class="slot-row">
+            <div class="slot-time">9:30</div>
+            <div class="slot-bar" style="background:#D97706;"></div>
+            <div class="slot-info">
+              <div class="slot-name">Robert Yoon</div>
+              <div class="slot-detail">CKD Stage 3 · labs pending</div>
+            </div>
+            <span class="slot-tag tag-amber">LABS</span>
+          </div>
+          <div class="slot-row">
+            <div class="slot-time">10:00</div>
+            <div class="slot-bar" style="background:#2563EB;"></div>
+            <div class="slot-info">
+              <div class="slot-name">Alice Han</div>
+              <div class="slot-detail">Annual Wellness Visit · AWV</div>
+            </div>
+            <span class="slot-tag tag-blue">AWV</span>
+          </div>
+          <div class="slot-row">
+            <div class="slot-time">10:30</div>
+            <div class="slot-bar" style="background:#059669;"></div>
+            <div class="slot-info">
+              <div class="slot-name">Min-jun Lee</div>
+              <div class="slot-detail">Medication adherence · DM</div>
+            </div>
+            <span class="slot-tag tag-amber">ALERT</span>
+          </div>
+        </div>
+
+        <!-- AWV Due -->
+        <div class="sec-hdr"><span class="sec-title">AWV Due This Week</span><span class="sec-link">View all 9</span></div>
+        <div class="card">
+          <div class="pt-row" onclick="openPtDetail('park')">
+            <div class="pt-avatar">DP</div>
+            <div class="pt-info">
+              <div class="pt-name">David Park</div>
+              <div class="pt-meta">M, 68 · Last AWV: Mar 2025</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-blue">TODAY</span>
+            </div>
+          </div>
+          <div class="pt-row" onclick="openPtDetail('han')">
+            <div class="pt-avatar">AH</div>
+            <div class="pt-info">
+              <div class="pt-name">Alice Han</div>
+              <div class="pt-meta">F, 71 · Last AWV: Feb 2025</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-blue">TODAY</span>
+            </div>
+          </div>
+          <div class="pt-row" onclick="openPtDetail('jung')">
+            <div class="pt-avatar">BJ</div>
+            <div class="pt-info">
+              <div class="pt-name">Byung-ho Jung</div>
+              <div class="pt-meta">M, 74 · Last AWV: Jan 2025</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-amber">THU</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nudge Approvals -->
+        <div class="sec-hdr"><span class="sec-title">Nudge Approvals</span><span class="sec-link" id="nudge-approvals-hdr">5 pending</span></div>
+        <div id="nudge-approvals-container">
+        <div class="nudge-card">
+          <div class="nudge-hdr">
+            <span class="nudge-title">BP Check Reminder</span>
+            <span class="nudge-tag tag-red">URGENT</span>
+          </div>
+          <div class="nudge-patient">Susan Kim · 김순자 · 76F</div>
+          <div class="nudge-body">"Hi Susan, Dr. Park wanted to check in after last night's reading. Can you take your BP now and share it with Jiyeon?"</div>
+          <div class="nudge-actions">
+            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
+            <button class="btn-edit-lg">Edit</button>
+            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
+          </div>
+        </div>
+
+        <div class="nudge-card">
+          <div class="nudge-hdr">
+            <span class="nudge-title">Medication Reminder</span>
+            <span class="nudge-tag tag-amber">ROUTINE</span>
+          </div>
+          <div class="nudge-patient">Min-jun Lee · 이민준 · 63M</div>
+          <div class="nudge-body">"Min-jun, it looks like you may have missed your evening metformin the past few days. Would you like a refill or a callback from the clinic?"</div>
+          <div class="nudge-actions">
+            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
+            <button class="btn-edit-lg">Edit</button>
+            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
+          </div>
+        </div>
+        </div><!-- /nudge-approvals-container -->
+
+      </div><!-- /pane-today -->
+
+      <!-- ━━━━━━━━━━━━━━━ PANEL HEALTH ━━━━━━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-panel">
+
+        <!-- Panel ring -->
+        <div class="card" style="margin-bottom:10px;">
+          <div class="ring-row">
+            <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0;">
+              <circle cx="45" cy="45" r="36" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+              <g transform="rotate(-90 45 45)">
+                <circle id="panel-ring-circle" cx="45" cy="45" r="36" fill="none" stroke="#2563EB" stroke-width="8" stroke-dasharray="226.2" stroke-dashoffset="67.9" stroke-linecap="round"/>
+              </g>
+              <text id="panel-ring-pct" x="45" y="43" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="18" font-weight="800" fill="#0F172A" dominant-baseline="central">70%</text>
+              <text id="panel-ring-of" x="45" y="59" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="600" fill="#94A3B8" dominant-baseline="central">OF 800</text>
+            </svg>
+            <div class="ring-stats">
+              <div class="ring-stat-row">
+                <span class="ring-stat-lbl">Panel size</span>
+                <span class="ring-stat-val" id="ring-stat-size">800</span>
+              </div>
+              <div class="ring-stat-row">
+                <span class="ring-stat-lbl">Active elig.</span>
+                <span class="ring-stat-val" id="ring-stat-active" style="color:var(--green);">560</span>
+              </div>
+              <div class="ring-stat-row">
+                <span class="ring-stat-lbl">Pending claims</span>
+                <span class="ring-stat-val" id="ring-stat-claims" style="color:var(--amber);">—</span>
+              </div>
+              <div class="ring-stat-row">
+                <span class="ring-stat-lbl">Critical labs</span>
+                <span class="ring-stat-val" id="ring-stat-crit" style="color:var(--red);">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Condition heatmap -->
+        <div class="sec-hdr"><span class="sec-title">Condition Control</span></div>
+        <div class="heatmap">
+          <div class="heat-cell heat-amber">
+            <div class="heat-label">HTN</div>
+            <div class="heat-pct">61%</div>
+            <div class="heat-sub">controlled</div>
+          </div>
+          <div class="heat-cell heat-red">
+            <div class="heat-label">DM</div>
+            <div class="heat-pct">54%</div>
+            <div class="heat-sub">A1C &lt;8</div>
+          </div>
+          <div class="heat-cell heat-green">
+            <div class="heat-label">CHOL</div>
+            <div class="heat-pct">78%</div>
+            <div class="heat-sub">on statin</div>
+          </div>
+          <div class="heat-cell heat-blue">
+            <div class="heat-label">CKD</div>
+            <div class="heat-pct">66%</div>
+            <div class="heat-sub">monitored</div>
+          </div>
+          <div class="heat-cell heat-red">
+            <div class="heat-label">DEPR</div>
+            <div class="heat-pct">42%</div>
+            <div class="heat-sub">screened</div>
+          </div>
+        </div>
+
+        <!-- Preventive screenings -->
+        <div class="sec-hdr"><span class="sec-title">Preventive Screenings</span></div>
+        <div class="card" style="padding:14px;">
+          <div class="prog-row">
+            <div class="prog-hdr"><span class="prog-lbl">Annual Wellness Visit</span><span class="prog-pct">58%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:58%;"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-hdr"><span class="prog-lbl">Colorectal Cancer Screening</span><span class="prog-pct amber" style="color:var(--amber);">44%</span></div>
+            <div class="prog-track"><div class="prog-fill amber" style="width:44%;"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-hdr"><span class="prog-lbl">Mammography (F 50–74)</span><span class="prog-pct green" style="color:var(--green);">72%</span></div>
+            <div class="prog-track"><div class="prog-fill green" style="width:72%;"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-hdr"><span class="prog-lbl">Eye Exam (DM patients)</span><span class="prog-pct" style="color:var(--red);">38%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:38%;background:var(--red);"></div></div>
+          </div>
+          <div class="prog-row" style="margin-bottom:0;">
+            <div class="prog-hdr"><span class="prog-lbl">Flu Vaccine (65+)</span><span class="prog-pct green" style="color:var(--green);">81%</span></div>
+            <div class="prog-track"><div class="prog-fill green" style="width:81%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Care gap leaderboard -->
+        <div class="sec-hdr"><span class="sec-title">Longest Overdue</span><span class="sec-link">View all</span></div>
+        <div class="card">
+          <div class="pt-row" onclick="openPtDetail('kim')">
+            <div class="pt-avatar" style="background:#FEF2F2;color:var(--red);">SK</div>
+            <div class="pt-info">
+              <div class="pt-name">Susan Kim · 김순자</div>
+              <div class="pt-meta">AWV overdue 14 months · HTN uncontrolled</div>
+            </div>
+            <span class="pt-tag tag-red">3 gaps</span>
+          </div>
+          <div class="pt-row" onclick="openPtDetail('jung')">
+            <div class="pt-avatar" style="background:#FEF3C7;color:var(--amber);">BJ</div>
+            <div class="pt-info">
+              <div class="pt-name">Byung-ho Jung</div>
+              <div class="pt-meta">Colonoscopy overdue 2 yrs · DM screen needed</div>
+            </div>
+            <span class="pt-tag tag-amber">2 gaps</span>
+          </div>
+          <div class="pt-row" onclick="openPtDetail('shin')">
+            <div class="pt-avatar" style="background:#FEF3C7;color:var(--amber);">YS</div>
+            <div class="pt-info">
+              <div class="pt-name">Young-sook Shin</div>
+              <div class="pt-meta">Mammogram overdue 18 months · depression unscreened</div>
+            </div>
+            <span class="pt-tag tag-amber">2 gaps</span>
+          </div>
+        </div>
+
+        <!-- No-show stats -->
+        <div class="sec-hdr"><span class="sec-title">Utilization</span></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val amber">14%</div>
+            <div class="stat-lbl">No-show rate</div>
+            <div class="stat-delta delta-dn">▲ 2% vs last mo.</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val blue">3.1</div>
+            <div class="stat-lbl">Avg visits/yr</div>
+            <div class="stat-delta delta-up">▼ 0.2 vs target</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val red">22</div>
+            <div class="stat-lbl">ED visits (90d)</div>
+            <div class="stat-delta delta-dn">▲ 4 vs last qtr</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val green">94%</div>
+            <div class="stat-lbl">Retention rate</div>
+            <div class="stat-delta delta-up">— stable</div>
+          </div>
+        </div>
+
+      </div><!-- /pane-panel -->
+
+      <!-- ━━━━━━━━━━━━━━━ REVENUE ━━━━━━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-revenue">
+
+        <!-- Total opportunity banner -->
+        <div class="rev-banner">
+          <div>
+            <div class="rev-banner-lbl">Uncaptured Revenue</div>
+            <div class="rev-banner-val" id="rev-uncaptured">$48,200</div>
+            <div class="rev-banner-sub" id="rev-panel-sub">Estimated this quarter · 800-pt panel</div>
+          </div>
+          <div class="rev-banner-badge">
+            <div class="rev-banner-badge-val" id="rev-hcc-count">23</div>
+            <div class="rev-banner-badge-lbl">pending claims</div>
+          </div>
+        </div>
+
+        <!-- HCC coding opportunities -->
+        <div class="sec-hdr"><span class="sec-title">HCC Coding Opportunities</span><span class="sec-link" id="rev-hcc-lbl">Loading…</span></div>
+        <div class="card" id="rev-hcc-list">
+          <div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">Loading opportunities…</div>
+        </div>
+
+        <!-- AWV completion -->
+        <div class="sec-hdr"><span class="sec-title">AWV Revenue</span></div>
+        <div class="card" style="padding:14px;">
+          <div class="prog-row">
+            <div class="prog-hdr"><span class="prog-lbl">AWV Completion Rate (YTD)</span><span class="prog-pct" id="rev-awv-pct">58%</span></div>
+            <div class="prog-track"><div class="prog-fill" id="rev-awv-bar" style="width:58%;"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft);">
+            <div style="text-align:center;">
+              <div id="rev-awv-completed" style="font-size:20px;font-weight:800;color:var(--text);">463</div>
+              <div style="font-size:11px;color:var(--text-mute);">Completed</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="rev-awv-remaining" style="font-size:20px;font-weight:800;color:var(--amber);">337</div>
+              <div style="font-size:11px;color:var(--text-mute);">Remaining</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="rev-awv-captured" style="font-size:20px;font-weight:800;color:var(--green);">$81K</div>
+              <div style="font-size:11px;color:var(--text-mute);">Captured</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="rev-awv-atrisk" style="font-size:20px;font-weight:800;color:var(--red);">$61K</div>
+              <div style="font-size:11px;color:var(--text-mute);">At risk</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly trend -->
+        <div class="sec-hdr"><span class="sec-title">Monthly Trend</span></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val green" id="rev-billed-month">$28,400</div>
+            <div class="stat-lbl">Billed this month</div>
+            <div class="stat-delta delta-up" id="rev-billed-delta">Live from claims</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val blue" id="rev-total-paid">$12,400</div>
+            <div class="stat-lbl">Total paid (all time)</div>
+            <div class="stat-delta" style="color:var(--text-mute);">From claims data</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="rev-claim-count">—</div>
+            <div class="stat-lbl">Total claims</div>
+            <div class="stat-delta delta-up" id="rev-pending-delta">— pending</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val amber" id="rev-avg-billed">$340</div>
+            <div class="stat-lbl">Avg billed/claim</div>
+            <div class="stat-delta" style="color:var(--text-mute);">All claims</div>
+          </div>
+        </div>
+
+      </div><!-- /pane-revenue -->
+
+      <!-- ━━━━━━━━━━━━━━━ PATIENTS ━━━━━━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-patients">
+
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search patients…" oninput="filterPatients(this.value)">
+        </div>
+
+        <div class="sec-hdr" style="margin-top:0;"><span class="sec-title">All Patients</span><span class="sec-link" id="panel-count-text" style="color:var(--text-mute);font-weight:500;">800 total</span></div>
+        <div class="card" id="patient-list">
+          <div class="pt-row" data-name="susan kim 김순자" onclick="openPtDetail('kim')">
+            <div class="pt-avatar" style="background:#FEF2F2;color:var(--red);">SK</div>
+            <div class="pt-info">
+              <div class="pt-name">Susan Kim <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 김순자</span></div>
+              <div class="pt-meta">F, 76 · HTN · DM · MCA-7842-9301</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-red">HIGH</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="min-jun lee 이민준" onclick="openPtDetail('lee')">
+            <div class="pt-avatar">ML</div>
+            <div class="pt-info">
+              <div class="pt-name">Min-jun Lee <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 이민준</span></div>
+              <div class="pt-meta">M, 63 · DM Type 2 · MCA-3310-4482</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-amber">MED</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="hana choi 최하나" onclick="openPtDetail('choi')">
+            <div class="pt-avatar">HC</div>
+            <div class="pt-info">
+              <div class="pt-name">Hana Choi <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 최하나</span></div>
+              <div class="pt-meta">F, 58 · DM · Neuropathy · MCA-5521-0093</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-amber">MED</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="david park 박대원" onclick="openPtDetail('park')">
+            <div class="pt-avatar">DP</div>
+            <div class="pt-info">
+              <div class="pt-name">David Park <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 박대원</span></div>
+              <div class="pt-meta">M, 68 · HTN · AWV today · MCA-2201-7744</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-blue">AWV</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="alice han 한앨리스" onclick="openPtDetail('han')">
+            <div class="pt-avatar">AH</div>
+            <div class="pt-info">
+              <div class="pt-name">Alice Han</div>
+              <div class="pt-meta">F, 71 · CHF · CKD · MCA-8803-2210</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-red">HIGH</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="robert yoon 윤로버트" onclick="openPtDetail('yoon')">
+            <div class="pt-avatar">RY</div>
+            <div class="pt-info">
+              <div class="pt-name">Robert Yoon</div>
+              <div class="pt-meta">M, 72 · CKD Stage 3 · MCA-6612-8891</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-amber">MED</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="byung-ho jung 정병호" onclick="openPtDetail('jung')">
+            <div class="pt-avatar">BJ</div>
+            <div class="pt-info">
+              <div class="pt-name">Byung-ho Jung <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 정병호</span></div>
+              <div class="pt-meta">M, 74 · COPD · DM · MCA-1190-3344</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-amber">MED</span>
+            </div>
+          </div>
+          <div class="pt-row" data-name="young-sook shin 신영숙" onclick="openPtDetail('shin')">
+            <div class="pt-avatar">YS</div>
+            <div class="pt-info">
+              <div class="pt-name">Young-sook Shin <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 신영숙</span></div>
+              <div class="pt-meta">F, 62 · Depression · HTN · MCA-4430-6677</div>
+            </div>
+            <div class="pt-right">
+              <span class="pt-tag tag-green">LOW</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pane-patients -->
+
+      <!-- ━━━━━━━━━━━━━━━ MESSAGES ━━━━━━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-messages">
+
+        <!-- Jiyeon escalations -->
+        <div class="sec-hdr"><span class="sec-title">Jiyeon Escalations</span><span class="sec-link">2 unread</span></div>
+        <div class="card">
+          <div class="msg-row">
+            <div class="msg-avatar ai">AI</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">Jiyeon (Susan Kim)</span>
+                <span class="msg-time">11:48 PM</span>
+              </div>
+              <div class="msg-preview">BP 158/96 — patient reports headache, escalating to Dr. Park per protocol</div>
+            </div>
+            <div class="msg-unread"></div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-avatar ai">AI</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">Jiyeon (Min-jun Lee)</span>
+                <span class="msg-time">9:30 PM</span>
+              </div>
+              <div class="msg-preview">Caregiver James reports patient skipped metformin 3 days in a row — asking for guidance</div>
+            </div>
+            <div class="msg-unread"></div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-avatar ai">AI</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">Jiyeon (Hana Choi)</span>
+                <span class="msg-time">Yesterday</span>
+              </div>
+              <div class="msg-preview">Patient asking about A1C result — result now available, recommend provider review</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bridge AI digest -->
+        <div class="sec-hdr"><span class="sec-title">Bridge AI Weekly Digest</span></div>
+        <div class="card" style="padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Week of Mar 10–16 · SMG Koreatown</div>
+          <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">
+            • <b>47 nudges sent</b> — 89% patient response rate<br>
+            • <b>3 BP escalations</b> handled by Jiyeon overnight<br>
+            • <b>6 AWVs completed</b> this week (+2 vs last week)<br>
+            • <b>$4,200 HCC</b> coded from Bridge-flagged visits<br>
+            • No-show rate: <span style="color:var(--amber);font-weight:600;">14%</span> (↑ from 12%)
+          </div>
+          <button class="btn-action" style="margin-top:12px;width:100%;">View Full Report</button>
+        </div>
+
+        <!-- Nudge queue -->
+        <div class="sec-hdr"><span class="sec-title">Outgoing Nudge Queue</span><span class="sec-link">5 pending</span></div>
+        <div class="card">
+          <div class="msg-row">
+            <div class="msg-avatar pt">SK</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">→ Susan Kim</span>
+                <span class="msg-time">Pending</span>
+              </div>
+              <div class="msg-preview">BP check follow-up — awaiting Dr. Park approval</div>
+            </div>
+            <span class="pt-tag tag-amber" style="flex-shrink:0;align-self:center;">Pending</span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-avatar pt">ML</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">→ Min-jun Lee</span>
+                <span class="msg-time">Pending</span>
+              </div>
+              <div class="msg-preview">Metformin adherence check — awaiting approval</div>
+            </div>
+            <span class="pt-tag tag-amber" style="flex-shrink:0;align-self:center;">Pending</span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-avatar pt">BJ</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">→ Byung-ho Jung</span>
+                <span class="msg-time">Pending</span>
+              </div>
+              <div class="msg-preview">AWV scheduling reminder — Thu slot available</div>
+            </div>
+            <span class="pt-tag tag-blue" style="flex-shrink:0;align-self:center;">AWV</span>
+          </div>
+        </div>
+
+        <!-- Direct messages -->
+        <div class="sec-hdr"><span class="sec-title">Patient Messages</span></div>
+        <div class="card">
+          <div class="msg-row">
+            <div class="msg-avatar pt">DP</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">David Park</span>
+                <span class="msg-time">8:12 AM</span>
+              </div>
+              <div class="msg-preview">Can I get a parking validation for today's AWV visit?</div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-avatar pt">HC</div>
+            <div class="msg-body">
+              <div class="msg-hdr">
+                <span class="msg-from">Hana Choi</span>
+                <span class="msg-time">Mar 15</span>
+              </div>
+              <div class="msg-preview">When will my A1C results come back from Quest?</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pane-messages -->
+
+    </div><!-- /content -->
+
+    <!-- Tab bar -->
+    <div class="tab-bar" style="position:relative;">
+      <button class="tab-btn active" id="tab-today" onclick="switchTab('today')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="tab-label">TODAY</span>
+      </button>
+      <button class="tab-btn" id="tab-panel" onclick="switchTab('panel')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span class="tab-label">PANEL</span>
+      </button>
+      <button class="tab-btn" id="tab-revenue" onclick="switchTab('revenue')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="tab-label">REVENUE</span>
+      </button>
+      <button class="tab-btn" id="tab-patients" onclick="switchTab('patients')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="tab-label">PATIENTS</span>
+      </button>
+      <button class="tab-btn" id="tab-messages" onclick="switchTab('messages')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="tab-label">MESSAGES</span>
+      </button>
+      <div style="position:absolute;top:6px;right:8px;display:flex;gap:3px;" id="main-lang-toggle">
+        <button id="ml-en" onclick="setGreetLang('en')" style="font-size:9px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-family:inherit;">EN</button>
+        <button id="ml-ko" onclick="setGreetLang('ko')" style="font-size:9px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;font-family:inherit;">한국어</button>
+      </div>
+    </div>
+  </div><!-- /screen -->
+</div><!-- /phone -->
+
+<script>
+// ── API ──
+const API = (window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
+async function api(path, opts = {}) {
+  try {
+    const r = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch(e) { console.error('API:', path, e); return null; }
+}
+
+// ── State ──
+let doctorNPI = null;
+let panelStats = {};
+
+// ── Doctor login ──
+async function handleDoctorLogin(e) {
+  e.preventDefault();
+  const first  = document.getElementById('drFirst').value.trim()  || 'James';
+  const last   = document.getElementById('drLast').value.trim()   || 'Park';
+  const npi    = document.getElementById('drNpi').value.trim();
+  const clinic = document.getElementById('drClinic').value.trim() || 'SMG Koreatown';
+
+  doctorNPI = npi;
+
+  // Update greeting name
+  document.getElementById('greetName').textContent = `Good morning, Dr. ${last}`;
+  document.getElementById('greetName').dataset.en  = `Good morning, Dr. ${last}`;
+  document.getElementById('greetName').dataset.ko  = `안녕하세요, ${last} 선생님`;
+
+  if (npi) {
+    const stats = await api(`/pcp/panel/stats?npi=${encodeURIComponent(npi)}`);
+    if (stats && !stats.error) {
+      panelStats = stats;
+      const practiceName = stats.practiceName || clinic;
+      document.getElementById('greetStatus').textContent = `${stats.panelCount.toLocaleString()} patients · ${practiceName}`;
+      document.getElementById('greetStatus').dataset.en  = `${stats.panelCount.toLocaleString()} patients · ${practiceName}`;
+      document.getElementById('greetStatus').dataset.ko  = `환자 ${stats.panelCount.toLocaleString()}명 · ${practiceName}`;
+
+      const alertCount = stats.criticalLabs.length;
+      const authCount  = stats.pendingAuths.length;
+
+      const alertPill = document.getElementById('greet-alerts-pill');
+      if (alertPill) {
+        alertPill.textContent = `${alertCount} Critical Lab${alertCount !== 1 ? 's' : ''}`;
+        alertPill.dataset.en  = alertPill.textContent;
+        alertPill.dataset.ko  = `위험 검사 ${alertCount}건`;
+      }
+      const nudgePill = document.getElementById('greet-nudges-pill');
+      if (nudgePill) {
+        nudgePill.textContent = `${authCount} Auth${authCount !== 1 ? 's' : ''} Pending`;
+        nudgePill.dataset.en  = nudgePill.textContent;
+        nudgePill.dataset.ko  = `승인 대기 ${authCount}건`;
+      }
+      const badge = document.getElementById('alertBadge');
+      if (badge) { badge.textContent = alertCount; badge.style.display = alertCount > 0 ? '' : 'none'; }
+
+      // Update PANEL ring
+      document.getElementById('ring-stat-size').textContent    = stats.panelCount.toLocaleString();
+      document.getElementById('ring-stat-crit').textContent    = alertCount;
+      document.getElementById('ring-stat-claims').textContent  = stats.pendingClaimsCount.toLocaleString();
+      document.getElementById('panel-ring-of').textContent     = `OF ${stats.panelCount.toLocaleString()}`;
+
+      // Load revenue tab data
+      loadRevenueTab(stats.panelCount, stats.pendingClaimsCount);
+    }
+  } else {
+    document.getElementById('greetStatus').textContent = `Your panel · ${clinic}`;
+    // Load revenue tab with no panel context
+    loadRevenueTab(0, 0);
+  }
+
+  document.getElementById('loginScreen').classList.add('su-dismiss');
+  setTimeout(() => { document.getElementById('loginScreen').style.display = 'none'; }, 500);
+}
+
+// ── Greeting lang toggle ──
+let greetLang = 'en';
+function setGreetLang(lang) {
+  greetLang = lang;
+  // Update greeting overlay toggle
+  const glEn = document.getElementById('gl-en');
+  const glKo = document.getElementById('gl-ko');
+  if (glEn) glEn.classList.toggle('active', lang === 'en');
+  if (glKo) glKo.classList.toggle('active', lang === 'ko');
+  // Update persistent main tab bar toggle
+  const mlEn = document.getElementById('ml-en');
+  const mlKo = document.getElementById('ml-ko');
+  if (mlEn) { mlEn.style.background = lang === 'en' ? 'rgba(255,255,255,0.2)' : 'transparent'; mlEn.style.color = lang === 'en' ? '#fff' : 'rgba(255,255,255,0.4)'; }
+  if (mlKo) { mlKo.style.background = lang === 'ko' ? 'rgba(255,255,255,0.2)' : 'transparent'; mlKo.style.color = lang === 'ko' ? '#fff' : 'rgba(255,255,255,0.4)'; }
+  // Apply to all data-en elements in the DOM (greeting + any static content)
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = lang === 'ko' ? (el.dataset.ko || el.dataset.en) : el.dataset.en;
+  });
+}
+
+// ── Greeting ──
+function dismissGreeting() {
+  document.getElementById('greeting').classList.add('dismiss');
+  loadTodayData();
+  loadPatientList();
+}
+
+// ── Tab switching ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+  if (name === 'patients') loadPatientList(currentSearch);
+  // Re-apply language to any static data-en/data-ko elements after tab switch
+  if (greetLang === 'ko') setGreetLang('ko');
+}
+
+// ── TODAY: live alerts + nudge cards ──
+function loadTodayData() {
+  const labs  = panelStats.criticalLabs || [];
+  const auths = panelStats.pendingAuths || [];
+
+  // Overnight alerts card
+  const alertCard = document.getElementById('today-alerts-card');
+  if (alertCard) {
+    if (labs.length === 0) {
+      alertCard.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">No critical alerts — panel looks clear ✓</div>`;
+    } else {
+      alertCard.innerHTML = labs.slice(0, 5).map(lab => {
+        const name = `${lab.first_name} ${lab.last_name}${lab.korean_name ? ' · ' + lab.korean_name : ''}`;
+        return `<div class="alert-row">
+          <div class="alert-dot" style="background:#DC2626;"></div>
+          <div class="alert-body">
+            <div class="alert-text">${name} — ${lab.test_name}: ${lab.result_value}${lab.unit ? ' ' + lab.unit : ''}</div>
+            <div class="alert-sub">Critical · ${lab.result_date || '—'} · ${lab.patient_id}</div>
+            <div class="alert-actions">
+              <button class="btn-sm btn-review" onclick="openPtDetail('${lab.patient_id}')">Review</button>
+              <button class="btn-sm btn-approve" onclick="this.closest('.alert-row').style.opacity='0.4';this.disabled=true;">Acknowledge</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Nudge cards (pending auths)
+  const container = document.getElementById('nudge-approvals-container');
+  const hdr = document.getElementById('nudge-approvals-hdr');
+  if (hdr) hdr.textContent = `${auths.length} pending`;
+  if (container) {
+    if (auths.length === 0) {
+      container.innerHTML = `<div style="padding:14px;text-align:center;font-size:13px;color:var(--text-mute);">No pending authorizations</div>`;
+    } else {
+      container.innerHTML = auths.slice(0, 3).map(auth => {
+        const name = `${auth.first_name} ${auth.last_name}`;
+        const age  = auth.dob ? Math.floor((Date.now() - new Date(auth.dob)) / (365.25 * 86400000)) : '—';
+        return `<div class="nudge-card" data-auth-id="${auth.id}">
+          <div class="nudge-hdr">
+            <span class="nudge-title">${auth.auth_type || 'Authorization Request'}</span>
+            <span class="nudge-tag tag-amber">PENDING</span>
+          </div>
+          <div class="nudge-patient">${name} · ${age}${auth.gender || ''}</div>
+          <div class="nudge-body">${auth.service_type || auth.notes || 'Prior authorization awaiting physician review'}</div>
+          <div class="nudge-actions">
+            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
+            <button class="btn-edit-lg" onclick="openPtDetail('${auth.patient_id}')">View Chart</button>
+            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+// ── PATIENTS tab: live list ──
+let currentSearch = '';
+const PANEL_LIMIT = 25;
+
+async function loadPatientList(q = '') {
+  const list = document.getElementById('patient-list');
+  if (!list) return;
+  currentSearch = q;
+
+  if (!doctorNPI) {
+    // No NPI: keep existing hardcoded list, just filter locally
+    const ql = q.toLowerCase();
+    list.querySelectorAll('.pt-row').forEach(row => {
+      const name = (row.dataset.name || row.querySelector('.pt-name')?.textContent || '').toLowerCase();
+      row.style.display = (!ql || name.includes(ql)) ? '' : 'none';
+    });
+    return;
+  }
+
+  list.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">Loading panel...</div>`;
+  const data = await api(`/pcp/panel?npi=${encodeURIComponent(doctorNPI)}&q=${encodeURIComponent(q)}&limit=${PANEL_LIMIT}`);
+  if (!data) { list.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-mute);font-size:13px;">Unable to load panel</div>`; return; }
+
+  const countEl = document.getElementById('panel-count-text');
+  if (countEl) countEl.textContent = `${data.total.toLocaleString()} total`;
+
+  if (data.patients.length === 0) {
+    list.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">No patients found</div>`;
+    return;
+  }
+
+  list.innerHTML = data.patients.map(p => {
+    const age      = p.dob ? Math.floor((Date.now() - new Date(p.dob)) / (365.25 * 86400000)) : '—';
+    const initials = ((p.first_name||'').charAt(0) + (p.last_name||'').charAt(0)).toUpperCase();
+    const koSpan   = p.korean_name ? ` <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· ${p.korean_name}</span>` : '';
+    const [tag, tagCls] = p.critical_lab_count > 0 ? ['CRIT','tag-red']
+                        : p.pending_auths > 0      ? ['AUTH','tag-amber']
+                        : p.elig_status === 'Active' ? ['OK','tag-green']
+                        : [p.elig_status || '—','tag-gray'];
+    const meta = [`${p.gender || ''}${age ? ', ' + age : ''}`];
+    if (p.member_id) meta.push(p.member_id);
+    return `<div class="pt-row" onclick="openPtDetail('${p.patient_id}')">
+      <div class="pt-avatar">${initials}</div>
+      <div class="pt-info">
+        <div class="pt-name">${p.first_name} ${p.last_name}${koSpan}</div>
+        <div class="pt-meta">${meta.join(' · ')}</div>
+      </div>
+      <div class="pt-right"><span class="pt-tag ${tagCls}">${tag}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Patient search ──
+let searchTimer;
+function filterPatients(query) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadPatientList(query), 300);
+}
+
+// ── Patient detail overlay (live from API) ──
+async function openPtDetail(pid) {
+  document.getElementById('detailName').textContent = 'Loading...';
+  document.getElementById('detailMeta').textContent = '';
+  document.getElementById('detailBody').innerHTML = '';
+  document.getElementById('ptDetail').classList.add('open');
+
+  const data = await api(`/patients/${pid}`);
+  if (!data || !data.patient) { document.getElementById('detailName').textContent = 'Patient not found'; return; }
+
+  const p    = data.patient;
+  const age  = p.dob ? Math.floor((Date.now() - new Date(p.dob)) / (365.25 * 86400000)) : '—';
+  const elig = data.eligibility?.[0];
+
+  document.getElementById('detailName').innerHTML = p.korean_name
+    ? `${p.first_name} ${p.last_name} <span style="font-size:13px;font-weight:500;opacity:0.7;">${p.korean_name}</span>`
+    : `${p.first_name} ${p.last_name}`;
+
+  const metaParts = [`${p.gender || ''}, ${age}`];
+  if (elig?.member_id) metaParts.push(elig.member_id);
+  if (data.pcp?.provider_name) {
+    const pn = data.pcp.provider_name.split(', ');
+    metaParts.push(`PCP: ${pn.length > 1 ? 'Dr. ' + pn[0].replace('Dr. ','') : pn[0]}`);
+  }
+  document.getElementById('detailMeta').textContent = metaParts.join(' · ');
+
+  const rows = [];
+  rows.push({ k: 'Patient ID', v: p.patient_id });
+  rows.push({ k: 'Date of Birth', v: p.dob || '—' });
+  if (p.phone) rows.push({ k: 'Phone', v: p.phone });
+  rows.push({ k: 'Language', v: p.language || '—' });
+  if (p.korean_name) rows.push({ k: 'Korean Name', v: p.korean_name });
+  if (elig) {
+    rows.push({ k: 'Payer', v: elig.payer_name || '—' });
+    rows.push({ k: 'Member ID', v: elig.member_id || '—' });
+    const eligCls = elig.status === 'Active' ? 'tag-green' : 'tag-amber';
+    rows.push({ k: 'Elig Status', v: `<span class="chip ${eligCls}">${elig.status}</span>` });
+    if (elig.plan_name) rows.push({ k: 'Plan', v: elig.plan_name });
+  }
+  const critLabs = (data.labs || []).filter(l => l.flag === 'Critical');
+  if (critLabs.length > 0) {
+    rows.push({ k: 'Critical Labs', v: `<span class="chip tag-red">${critLabs.slice(0,2).map(l => `${l.test_name}: ${l.result_value}${l.unit ? ' ' + l.unit : ''}`).join(', ')}</span>` });
+  }
+  const recentLabs = (data.labs || []).slice(0, 4);
+  recentLabs.forEach(l => {
+    const cls = l.flag === 'Critical' ? 'tag-red' : (l.flag === 'High' || l.flag === 'Low') ? 'tag-amber' : 'tag-green';
+    rows.push({ k: l.test_name, v: `${l.result_value}${l.unit ? ' ' + l.unit : ''} · ${l.result_date || '—'} <span class="chip ${cls}">${l.flag}</span>` });
+  });
+  const rx = (data.pharmacy || []).slice(0, 3);
+  if (rx.length > 0) rows.push({ k: 'Pharmacy', v: rx.map(m => `${m.medication_name}${m.dosage ? ' ' + m.dosage : ''}`).join(', ') });
+  const pendAuths = (data.authorizations || []).filter(a => a.status === 'Pending');
+  if (pendAuths.length > 0) rows.push({ k: 'Pending Auths', v: `<span class="chip tag-amber">${pendAuths.length} pending auth${pendAuths.length > 1 ? 's' : ''}</span>` });
+  if (data.claims?.length) rows.push({ k: 'Latest Claim', v: `${data.claims[0].dos || '—'} · $${data.claims[0].billed_amount || 0} · ${data.claims[0].status}` });
+  if (data.pcp) {
+    if (data.pcp.practice_name)  rows.push({ k: 'Practice', v: data.pcp.practice_name });
+    if (data.pcp.practice_phone) rows.push({ k: 'Practice Ph.', v: data.pcp.practice_phone });
+  }
+
+  document.getElementById('detailBody').innerHTML = rows.map(r =>
+    `<div class="detail-row"><span class="detail-key">${r.k}</span><span class="detail-val">${r.v}</span></div>`
+  ).join('');
+}
+
+function closePtDetail() {
+  document.getElementById('ptDetail').classList.remove('open');
+}
+
+// ── Nudge actions ──
+async function approveNudge(btn) {
+  const card   = btn.closest('.nudge-card');
+  const authId = card.dataset.authId;
+  card.style.opacity = '0.5';
+  card.style.pointerEvents = 'none';
+  card.querySelector('.nudge-actions').innerHTML = '<span style="font-size:12px;color:var(--text-mute);">Saving…</span>';
+
+  if (authId) {
+    try {
+      await fetch(`${API}/mso/auths/${authId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Approved', approved_date: new Date().toISOString().split('T')[0] }),
+      });
+    } catch(_) {}
+  }
+
+  card.querySelector('.nudge-actions').innerHTML = '<span style="font-size:12px;color:var(--green);font-weight:600;">✓ Approved</span>';
+  setTimeout(() => card.remove(), 1600);
+}
+function declineNudge(btn) {
+  const card = btn.closest('.nudge-card');
+  card.style.opacity = '0.4';
+  card.style.pointerEvents = 'none';
+  setTimeout(() => card.remove(), 600);
+}
+
+// ── Revenue tab — load real claims data ──
+function fmtMoney(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + Math.round(n / 1000) + 'K';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+async function loadRevenueTab(panelCount, pendingClaims) {
+  const el = id => document.getElementById(id);
+
+  // Update panel sub-label
+  if (panelCount && el('rev-panel-sub'))
+    el('rev-panel-sub').textContent = `Estimated this quarter · ${panelCount.toLocaleString()}-pt panel`;
+  if (el('rev-hcc-count')) el('rev-hcc-count').textContent = pendingClaims || '—';
+
+  // AWV estimates derived from panel count (no AWV-specific endpoint)
+  if (panelCount) {
+    const awvPct       = 58; // conservative estimate until AWV-specific data available
+    const awvCompleted = Math.round(panelCount * awvPct / 100);
+    const awvRemaining = panelCount - awvCompleted;
+    if (el('rev-awv-pct'))       el('rev-awv-pct').textContent       = awvPct + '%';
+    if (el('rev-awv-bar'))       el('rev-awv-bar').style.width        = awvPct + '%';
+    if (el('rev-awv-completed')) el('rev-awv-completed').textContent  = awvCompleted.toLocaleString();
+    if (el('rev-awv-remaining')) el('rev-awv-remaining').textContent  = awvRemaining.toLocaleString();
+  }
+
+  // Fetch claims for real billing stats
+  const claimsData = await api('/mso/claims/summary?limit=500');
+  if (!claimsData) return;
+  const claims = claimsData.claims || [];
+
+  const totalBilled  = claims.reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
+  const totalPaid    = claims.reduce((s, c) => s + (parseFloat(c.paid_amount)   || 0), 0);
+  const totalPending = claims.filter(c => c.status === 'Pending')
+                             .reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
+  const avgBilled    = claims.length > 0 ? totalBilled / claims.length : 0;
+
+  // Uncaptured = pending billed amounts
+  const uncaptured = totalPending || (pendingClaims || 0) * 600;
+  if (el('rev-uncaptured')) el('rev-uncaptured').textContent = fmtMoney(uncaptured);
+
+  // AWV captured/at-risk from paid vs pending
+  if (el('rev-awv-captured')) el('rev-awv-captured').textContent = fmtMoney(totalPaid);
+  if (el('rev-awv-atrisk'))   el('rev-awv-atrisk').textContent   = fmtMoney(Math.max(totalBilled - totalPaid, 0));
+
+  // Monthly trend
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const monthClaims  = claims.filter(c => c.dos && c.dos.startsWith(currentMonth));
+  const monthBilled  = monthClaims.reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
+  const pendingCount = claims.filter(c => c.status === 'Pending').length;
+
+  if (el('rev-billed-month'))  el('rev-billed-month').textContent  = monthClaims.length ? fmtMoney(monthBilled) : fmtMoney(totalBilled);
+  if (el('rev-billed-delta'))  el('rev-billed-delta').textContent  = monthClaims.length ? monthClaims.length + ' claims this month' : claimsData.total + ' total claims';
+  if (el('rev-total-paid'))    el('rev-total-paid').textContent    = fmtMoney(totalPaid);
+  if (el('rev-claim-count'))   el('rev-claim-count').textContent   = (claimsData.total || claims.length).toLocaleString();
+  if (el('rev-pending-delta')) el('rev-pending-delta').textContent = pendingCount + ' pending';
+  if (el('rev-avg-billed'))    el('rev-avg-billed').textContent    = avgBilled >= 1 ? '$' + Math.round(avgBilled).toLocaleString() : '—';
+
+  // HCC list — show top pending claims by billed amount
+  const hccContainer = el('rev-hcc-list');
+  const hccLbl = el('rev-hcc-lbl');
+  if (hccContainer) {
+    const pendingList = claims
+      .filter(c => c.status === 'Pending' && c.billed_amount)
+      .sort((a, b) => (parseFloat(b.billed_amount) || 0) - (parseFloat(a.billed_amount) || 0))
+      .slice(0, 8);
+    if (hccLbl) hccLbl.textContent = pendingList.length + ' open';
+    if (!pendingList.length) {
+      hccContainer.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:var(--text-mute);">No pending claims found</div>';
+    } else {
+      hccContainer.innerHTML = pendingList.map(c => `
+        <div class="hcc-row">
+          <div class="hcc-info">
+            <div class="hcc-name">${c.last_name || ''}, ${c.first_name || ''} ${c.cpt_code ? '— CPT ' + c.cpt_code : ''}</div>
+            <div class="hcc-code">${c.icd_codes || '—'} · DOS: ${c.dos || '—'}</div>
+          </div>
+          <div class="hcc-dollar">+${fmtMoney(parseFloat(c.billed_amount) || 0)}</div>
+        </div>`).join('');
+    }
+  }
+}
+</script>
+</body>
+</html>
