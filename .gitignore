@@ -8,9 +8,10 @@ build/
 .DS_Store
 __pycache__/
 *.pyc
-node_modules/
 uploads/
 data/
+testing/rlm_results/
 *.xlsx
 *.pdf
 *.png
+!dummy-data/*.xlsx
