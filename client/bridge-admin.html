@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMG Bridge — Admin Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #0D1421;
+  --card: #162032;
+  --card2: #1C2B3F;
+  --border: #1C2F47;
+  --border2: #243A52;
+  --accent: #3B82F6;
+  --accent-soft: rgba(59,130,246,0.12);
+  --green: #10B981;
+  --green-soft: rgba(16,185,129,0.12);
+  --amber: #F59E0B;
+  --amber-soft: rgba(245,158,11,0.12);
+  --red: #EF4444;
+  --red-soft: rgba(239,68,68,0.12);
+  --purple: #8B5CF6;
+  --purple-soft: rgba(139,92,246,0.12);
+  --teal: #14B8A6;
+  --teal-soft: rgba(20,184,166,0.12);
+  --text: #E2E8F0;
+  --text-sec: #7A9AB8;
+  --text-mute: #3D5A75;
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --radius: 12px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 240px;
+  background: #0A1020;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-logo img { height: 36px; filter: brightness(0) invert(1); opacity: 0.85; }
+.sidebar-logo-text { font-size: 13px; font-weight: 700; color: var(--text-sec); letter-spacing: 0.5px; }
+.sidebar-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 4px; padding: 2px 6px; margin-top: 3px; display: inline-block;
+}
+
+.nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+.nav-section { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: 0.8px;
+  text-transform: uppercase; padding: 0 8px; margin: 16px 0 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--text-sec);
+  transition: all 0.15s; text-decoration: none; margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--accent-soft); color: var(--accent); }
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  background: var(--red); color: #fff;
+  border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center;
+}
+.nav-badge.amber { background: var(--amber); color: #000; }
+.nav-badge.green { background: var(--green); color: #000; }
+
+.sidebar-footer {
+  padding: 16px; border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-mute);
+}
+.sync-indicator {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.sync-dot.offline { background: var(--red); }
+.sync-dot.syncing { background: var(--amber); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ── Main ── */
+.main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  height: 56px; padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #0A1020; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px; min-width: 220px;
+}
+.topbar-search input {
+  background: none; border: none; color: var(--text); font-size: 13px;
+  font-family: inherit; outline: none; width: 100%;
+}
+.topbar-search input::placeholder { color: var(--text-mute); }
+.topbar-btn {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text-sec); border-radius: 8px; padding: 7px 14px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+.topbar-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.topbar-btn.primary:hover { background: #2563EB; }
+
+/* ── Pages ── */
+.page { display: none; padding: 28px; flex-direction: column; gap: 24px; }
+.page.active { display: flex; }
+
+/* ── Stat cards ── */
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.stat-icon { font-size: 22px; margin-bottom: 12px; }
+.stat-val { font-size: 30px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 6px; }
+.stat-lbl { font-size: 12px; color: var(--text-sec); font-weight: 500; margin-bottom: 4px; }
+.stat-delta { font-size: 11px; color: var(--text-mute); }
+.stat-delta.up { color: var(--green); }
+.stat-delta.warn { color: var(--amber); }
+.stat-delta.down { color: var(--red); }
+.c-blue { color: var(--accent); }
+.c-green { color: var(--green); }
+.c-amber { color: var(--amber); }
+.c-red { color: var(--red); }
+.c-purple { color: var(--purple); }
+.c-teal { color: var(--teal); }
+
+/* ── Section header ── */
+.sec-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sec-title { font-size: 14px; font-weight: 700; }
+.sec-sub { font-size: 12px; color: var(--text-sec); }
+.sec-action {
+  font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;
+  background: none; border: none; font-family: inherit; padding: 0;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.card-padded { padding: 20px; }
+
+/* ── Upload zone ── */
+.upload-zone {
+  border: 2px dashed var(--border2); border-radius: var(--radius);
+  padding: 48px 32px; text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--card);
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent); background: var(--accent-soft);
+}
+.upload-icon { font-size: 44px; margin-bottom: 12px; }
+.upload-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.upload-sub { font-size: 13px; color: var(--text-sec); margin-bottom: 20px; line-height: 1.5; }
+.upload-formats {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;
+}
+.format-badge {
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px;
+  background: var(--card2); border: 1px solid var(--border2); color: var(--text-sec);
+}
+.upload-btn-label {
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.upload-btn-label:hover { background: #2563EB; }
+#fileInput { display: none; }
+
+/* ── Progress bars ── */
+.upload-progress { margin-top: 20px; display: none; }
+.prog-item { margin-bottom: 12px; }
+.prog-name { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: flex; justify-content: space-between; }
+.prog-track { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+.prog-fill.done { background: var(--green); }
+.prog-fill.error { background: var(--red); }
+
+/* ── File list table ── */
+.file-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.file-table th {
+  text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700;
+  color: var(--text-mute); letter-spacing: 0.5px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); background: var(--card2);
+}
+.file-table td {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.file-table tr:last-child td { border-bottom: none; }
+.file-table tr:hover td { background: var(--card2); }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+}
+.status-pill.done { background: var(--green-soft); color: var(--green); }
+.status-pill.processing { background: var(--amber-soft); color: var(--amber); }
+.status-pill.error { background: var(--red-soft); color: var(--red); }
+.status-pill.pending { background: var(--accent-soft); color: var(--accent); }
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* ── Patient table ── */
+.patient-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.patient-table th {
+  text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700;
+  color: var(--text-mute); letter-spacing: 0.5px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); background: var(--card2);
+  cursor: pointer; white-space: nowrap; user-select: none;
+}
+.patient-table th:hover { color: var(--text-sec); }
+.patient-table td {
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.patient-table tr:last-child td { border-bottom: none; }
+.patient-table tr:hover td { background: rgba(59,130,246,0.04); cursor: pointer; }
+.patient-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.patient-name { font-weight: 600; color: var(--text); }
+.patient-sub { font-size: 11px; color: var(--text-sec); margin-top: 1px; }
+
+/* ── Pagination ── */
+.pagination {
+  display: flex; align-items: center; justify-content: between;
+  padding: 14px 16px; border-top: 1px solid var(--border);
+  gap: 8px;
+}
+.pagination .pag-info { font-size: 12px; color: var(--text-sec); flex: 1; }
+.pag-btn {
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--text-sec); border-radius: 6px; padding: 5px 12px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.pag-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pag-num {
+  display: flex; gap: 4px;
+}
+.pag-page {
+  background: none; border: 1px solid transparent;
+  color: var(--text-sec); border-radius: 6px; padding: 5px 10px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.pag-page.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.pag-page:hover:not(.active) { border-color: var(--border2); color: var(--text); }
+
+/* ── Patient detail drawer ── */
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; display: none; backdrop-filter: blur(4px);
+}
+.drawer-overlay.open { display: block; }
+.drawer {
+  position: fixed; top: 0; right: -700px; bottom: 0; width: 700px;
+  background: var(--bg); border-left: 1px solid var(--border);
+  z-index: 201; overflow-y: auto;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column;
+}
+.drawer.open { right: 0; }
+.drawer-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-shrink: 0; position: sticky; top: 0; background: var(--bg); z-index: 10;
+}
+.drawer-close {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text-sec); border-radius: 8px; padding: 6px 12px;
+  font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.drawer-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+/* ── Drawer tabs ── */
+.drawer-tabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); padding-bottom: 0; margin-bottom: 0;
+}
+.d-tab {
+  padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+  color: var(--text-sec); border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap;
+}
+.d-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.d-tab:hover:not(.active) { color: var(--text); }
+.d-pane { display: none; }
+.d-pane.active { display: block; }
+
+/* ── Info rows ── */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.info-item { }
+.info-label { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+.info-value { font-size: 14px; font-weight: 500; color: var(--text); }
+.info-value.empty { color: var(--text-mute); font-style: italic; font-weight: 400; }
+
+/* ── Data rows ── */
+.data-row {
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.data-row:last-child { border-bottom: none; }
+.data-row-header { display: flex; justify-content: space-between; align-items: center; }
+.data-row-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.data-row-sub { font-size: 12px; color: var(--text-sec); }
+.data-row-meta { font-size: 11px; color: var(--text-mute); }
+
+/* ── Pharmacy action button ── */
+.ph-action-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal-soft); border: 1px solid rgba(20,184,166,0.25);
+  color: var(--teal); border-radius: 6px; padding: 5px 12px;
+  font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap;
+}
+.ph-action-btn:hover { background: rgba(20,184,166,0.2); }
+
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 16px; font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); max-width: 320px;
+  display: flex; align-items: center; gap: 10px;
+  animation: slideIn 0.25s ease;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--accent); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border2); color: var(--text-sec);
+  cursor: pointer; transition: all 0.15s; background: var(--card2);
+}
+.chip:hover, .chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.chip.green:hover, .chip.green.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.chip.amber:hover, .chip.amber.active { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+.chip.red:hover, .chip.red.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+
+/* ── MSO / Pharmacy dashboard cards ── */
+.mso-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.mso-stat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.mso-stat-val { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.mso-stat-lbl { font-size: 11px; color: var(--text-sec); }
+
+/* ── Alert badge ── */
+.alert-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+}
+.alert-badge.critical { background: var(--red-soft); color: var(--red); }
+.alert-badge.high { background: var(--amber-soft); color: var(--amber); }
+.alert-badge.normal { background: var(--green-soft); color: var(--green); }
+.alert-badge.pending { background: var(--accent-soft); color: var(--accent); }
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 24px; color: var(--text-mute); text-align: center;
+}
+.empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+.empty-text { font-size: 14px; margin-bottom: 4px; color: var(--text-sec); }
+.empty-sub { font-size: 12px; }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+}
+
+/* ── Login overlay ── */
+#login-overlay {
+  display: none; position: fixed; inset: 0;
+  background: var(--bg); z-index: 9999;
+  align-items: center; justify-content: center;
+}
+#login-overlay.active { display: flex; }
+#login-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 36px 32px; width: 360px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+#login-box .lb-logo {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+}
+#login-box .lb-logo-text { font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: 0.5px; }
+#login-box .lb-logo-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 4px; padding: 2px 6px; margin-top: 2px; display: inline-block;
+}
+#login-box h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+#login-box p  { font-size: 13px; color: var(--text-sec); margin-bottom: 24px; }
+#login-box label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 0.5px; margin-bottom: 6px; }
+#login-box input[type="text"],
+#login-box input[type="password"] {
+  width: 100%; background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 14px; color: var(--text);
+  font-family: inherit; font-size: 14px; margin-bottom: 16px; outline: none;
+}
+#login-box input:focus { border-color: var(--accent); }
+#login-box .lb-btn {
+  width: 100%; background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 700;
+  font-family: inherit; cursor: pointer; margin-top: 4px;
+}
+#login-box .lb-btn:hover { background: #2563EB; }
+#login-box .lb-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+#login-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ LOGIN OVERLAY ══════════════════════ -->
+<div id="login-overlay" class="active">
+  <div id="login-box">
+    <div class="lb-logo">
+      <div>
+        <div class="lb-logo-text">SMG BRIDGE</div>
+        <div class="lb-logo-badge">ADMIN PORTAL</div>
+      </div>
+    </div>
+    <h2>Sign in</h2>
+    <p>Enter your credentials to access the portal.</p>
+    <label>USERNAME</label>
+    <input type="text" id="login-username" placeholder="admin" autocomplete="username">
+    <label>PASSWORD</label>
+    <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lb-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div id="login-error">Invalid username or password.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SIDEBAR ══════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <img src="smg.logo.transparent.v1.png" alt="SMG">
+    <div>
+      <div class="sidebar-logo-text">BRIDGE</div>
+      <div class="sidebar-badge">ADMIN PORTAL</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+
+    <div class="nav-section">Data Management</div>
+    <div class="nav-item" onclick="showPage('upload')">
+      <span class="nav-icon">📂</span> Upload Excel Files
+    </div>
+    <div class="nav-item" onclick="showPage('patients')">
+      <span class="nav-icon">👥</span> Patient Registry
+      <span class="nav-badge green" id="nav-patient-count">0</span>
+    </div>
+
+    <div class="nav-section">MSO Operations</div>
+    <div class="nav-item" onclick="showPage('eligibility')">
+      <span class="nav-icon">✅</span> Eligibility
+    </div>
+    <div class="nav-item" onclick="showPage('claims')">
+      <span class="nav-icon">📋</span> Claims
+      <span class="nav-badge" id="nav-claims-badge">0</span>
+    </div>
+    <div class="nav-item" onclick="showPage('auths')">
+      <span class="nav-icon">🔐</span> Authorizations
+      <span class="nav-badge amber" id="nav-auths-badge">0</span>
+    </div>
+
+    <div class="nav-section">Clinical</div>
+    <div class="nav-item" onclick="showPage('labs')">
+      <span class="nav-icon">🧪</span> Lab Results
+    </div>
+    <div class="nav-item" onclick="showPage('pharmacy')">
+      <span class="nav-icon">💊</span> Pharmacy
+    </div>
+
+    <div class="nav-section">Member Portals</div>
+    <div class="nav-item" onclick="window.open('bridge-members-v2.html','_blank')">
+      <span class="nav-icon">📱</span> Bridge v2
+    </div>
+    <div class="nav-item" onclick="showPage('portals')">
+      <span class="nav-icon">🔗</span> Portal Links
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sync-indicator">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncStatus">Connecting...</span>
+    </div>
+    <div id="lastSync" style="font-size:10px;">Last sync: —</div>
+  </div>
+</nav>
+
+<!-- ══════════════════════ MAIN ══════════════════════ -->
+<div class="main">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span style="color:var(--text-mute);">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search patients, IDs..." oninput="onGlobalSearch(this.value)">
+      </div>
+      <button class="topbar-btn primary" onclick="showPage('upload')">+ Upload Files</button>
+      <button class="topbar-btn" onclick="doLogout()" title="Sign out" style="color:var(--text-sec);">⎋ Sign Out</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="stat-row" id="dashStats">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-val c-blue" id="ds-patients">—</div>
+        <div class="stat-lbl">Total Patients</div>
+        <div class="stat-delta" id="ds-patients-d">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-val c-green" id="ds-elig">—</div>
+        <div class="stat-lbl">Active Eligibility</div>
+        <div class="stat-delta up" id="ds-elig-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-val c-amber" id="ds-claims">—</div>
+        <div class="stat-lbl">Pending Claims</div>
+        <div class="stat-delta warn" id="ds-claims-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔐</div>
+        <div class="stat-val c-red" id="ds-auths">—</div>
+        <div class="stat-lbl">Pending Auths</div>
+        <div class="stat-delta down" id="ds-auths-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🧪</div>
+        <div class="stat-val c-red" id="ds-labs">—</div>
+        <div class="stat-lbl">Critical Labs</div>
+        <div class="stat-delta" id="ds-labs-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💊</div>
+        <div class="stat-val c-purple" id="ds-refills">—</div>
+        <div class="stat-lbl">Refills Due (7d)</div>
+        <div class="stat-delta warn" id="ds-refills-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📂</div>
+        <div class="stat-val c-teal" id="ds-files">—</div>
+        <div class="stat-lbl">Files Uploaded</div>
+        <div class="stat-delta" id="ds-files-d">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-val" style="font-size:16px;font-weight:700;" id="ds-lastsync">—</div>
+        <div class="stat-lbl">Last Data Sync</div>
+        <div class="stat-delta up" id="ds-lastsync-d">Auto-sync on</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="sec-hdr">
+          <div class="sec-title">Recent File Uploads</div>
+          <button class="sec-action" onclick="showPage('upload')">View all →</button>
+        </div>
+        <div class="card">
+          <div id="dash-files-list">
+            <div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">No files uploaded yet</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-hdr">
+          <div class="sec-title">Refills Due Soon</div>
+          <button class="sec-action" onclick="showPage('pharmacy')">View all →</button>
+        </div>
+        <div class="card">
+          <div id="dash-refills-list">
+            <div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No refills due</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: UPLOAD ══ -->
+  <div class="page" id="page-upload">
+    <div>
+      <div class="upload-zone" id="uploadZone"
+           ondragover="e.preventDefault();this.classList.add('dragover')"
+           ondragleave="this.classList.remove('dragover')"
+           ondrop="handleDrop(event)">
+        <div class="upload-icon">📊</div>
+        <div class="upload-title">Upload Patient Excel Files</div>
+        <div class="upload-sub">
+          Drag &amp; drop one or multiple Excel files here, or click to browse.<br>
+          Supports patient lists, eligibility, claims, authorizations, labs, pharmacy &amp; more.
+        </div>
+        <div class="upload-formats">
+          <span class="format-badge">.xlsx</span>
+          <span class="format-badge">.xls</span>
+          <span class="format-badge">.csv</span>
+          <span class="format-badge">Up to 200 files</span>
+          <span class="format-badge">50 MB each</span>
+        </div>
+        <label class="upload-btn-label" for="fileInput">Browse Files</label>
+        <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+      </div>
+
+      <div class="upload-progress card-padded card" id="uploadProgress">
+        <div class="sec-hdr" style="margin-bottom:16px;">
+          <div class="sec-title">Upload Progress</div>
+          <span id="uploadSummary" style="font-size:12px;color:var(--text-sec);"></span>
+        </div>
+        <div id="progressList"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-hdr">
+        <div class="sec-title">Uploaded Files</div>
+        <div class="sec-sub" id="fileCount">0 files</div>
+      </div>
+      <div class="card">
+        <table class="file-table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Rows Imported</th>
+              <th>Status</th>
+              <th>Uploaded</th>
+              <th>Last Synced</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="fileTableBody">
+            <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">No files yet</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-padded" style="background:var(--card2);">
+      <div class="sec-title" style="margin-bottom:12px;">📌 Excel Column Guide</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.6;margin-bottom:12px;">
+        SMG Bridge auto-detects sheet types and maps common column names. No template required.
+        The system recognizes hundreds of column name variations.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
+        <div>
+          <div style="font-weight:700;color:var(--accent);margin-bottom:6px;">👥 Patient Columns</div>
+          <div style="color:var(--text-sec);line-height:1.8;">Patient ID / Member ID<br>Last Name, First Name<br>DOB / Date of Birth<br>Gender / Sex<br>Phone / Cell<br>Email, Address, City, State, ZIP</div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--green);margin-bottom:6px;">✅ Eligibility Columns</div>
+          <div style="color:var(--text-sec);line-height:1.8;">Payer / Insurance Company<br>Plan Name / Benefit Plan<br>Member ID / Subscriber ID<br>Effective Date / Start Date<br>Term Date / End Date<br>Status / Coverage Status</div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--amber);margin-bottom:6px;">📋 Claims Columns</div>
+          <div style="color:var(--text-sec);line-height:1.8;">Claim Number / Claim ID<br>DOS / Date of Service<br>CPT Code / Procedure Code<br>ICD Code / Diagnosis Code<br>Billed / Paid Amount<br>Status / Claim Status</div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--purple);margin-bottom:6px;">💊 Pharmacy Columns</div>
+          <div style="color:var(--text-sec);line-height:1.8;">Medication / Drug Name<br>NDC Code<br>Dosage / Strength<br>Pharmacy Name<br>Fill Date / Last Fill<br>Refill Due / Next Fill</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: PATIENTS ══ -->
+  <div class="page" id="page-patients">
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <input type="text" id="patientSearch" placeholder="🔍  Search by name, ID, phone..."
+        style="flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;"
+        oninput="debounceSearch(this.value)">
+      <button onclick="window.open(API+'/export/patients','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">↓ Export CSV</button>
+      <div class="filter-bar">
+        <div class="chip active" onclick="setPatientFilter(this,'')">All</div>
+        <div class="chip green" onclick="setPatientFilter(this,'active')">Active Elig.</div>
+        <div class="chip amber" onclick="setPatientFilter(this,'pending')">Pending Claims</div>
+      </div>
+    </div>
+    <div class="card">
+      <table class="patient-table">
+        <thead>
+          <tr>
+            <th onclick="sortPatients('last_name')">Patient ↕</th>
+            <th onclick="sortPatients('dob')">DOB ↕</th>
+            <th>PCP</th>
+            <th>Eligibility</th>
+            <th>Claims</th>
+            <th>Pending Auths</th>
+            <th>Rx</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientTableBody">
+          <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No patients loaded</div><div class="empty-sub">Upload an Excel file to get started</div></div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pag-info" id="patPagInfo">—</div>
+        <div class="pag-num" id="patPagNum"></div>
+        <button class="pag-btn" id="patPrevBtn" onclick="changePage(-1)">← Prev</button>
+        <button class="pag-btn" id="patNextBtn" onclick="changePage(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ELIGIBILITY ══ -->
+  <div class="page" id="page-eligibility">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <button onclick="window.open(API+'/export/eligibility','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;">↓ Export CSV</button>
+    </div>
+    <div class="mso-grid" id="eligStats">
+      <div class="mso-stat"><div class="mso-stat-val c-green" id="e-active">—</div><div class="mso-stat-lbl">Active</div></div>
+      <div class="mso-stat"><div class="mso-stat-val c-red" id="e-termed">—</div><div class="mso-stat-lbl">Termed / Inactive</div></div>
+      <div class="mso-stat"><div class="mso-stat-val c-amber" id="e-pending">—</div><div class="mso-stat-lbl">Pending Verification</div></div>
+    </div>
+    <div class="card">
+      <div id="eligTable"><div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No eligibility data</div><div class="empty-sub">Upload an eligibility Excel to populate this view</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: CLAIMS ══ -->
+  <div class="page" id="page-claims">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="filter-bar" style="margin-bottom:0;">
+        <div class="chip active" onclick="filterClaims(this,'')">All</div>
+        <div class="chip amber" onclick="filterClaims(this,'Pending')">Pending</div>
+        <div class="chip green" onclick="filterClaims(this,'Paid')">Paid</div>
+        <div class="chip" onclick="filterClaims(this,'Approved')">Approved</div>
+        <div class="chip red" onclick="filterClaims(this,'Denied')">Denied</div>
+      </div>
+      <button onclick="window.open(API+'/export/claims','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">↓ Export CSV</button>
+    </div>
+    <div class="card">
+      <div id="claimsTable"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No claims data</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: AUTHORIZATIONS ══ -->
+  <div class="page" id="page-auths">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="filter-bar" style="margin-bottom:0;">
+        <div class="chip active" onclick="filterAuths(this,'')">All</div>
+        <div class="chip amber" onclick="filterAuths(this,'Pending')">Pending</div>
+        <div class="chip green" onclick="filterAuths(this,'Approved')">Approved</div>
+        <div class="chip red" onclick="filterAuths(this,'Denied')">Denied</div>
+        <div class="chip" onclick="filterAuths(this,'Expired')">Expired</div>
+      </div>
+      <button onclick="window.open(API+'/export/authorizations','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">↓ Export CSV</button>
+    </div>
+    <div class="card">
+      <div id="authsTable"><div class="empty-state"><div class="empty-icon">🔐</div><div class="empty-text">No authorization data</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: LABS ══ -->
+  <div class="page" id="page-labs">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="filter-bar" style="margin-bottom:0;">
+        <div class="chip active" onclick="filterLabs(this,'')">All</div>
+        <div class="chip red" onclick="filterLabs(this,'Critical')">Critical</div>
+        <div class="chip amber" onclick="filterLabs(this,'High')">High</div>
+        <div class="chip" onclick="filterLabs(this,'Low')">Low</div>
+        <div class="chip green" onclick="filterLabs(this,'Normal')">Normal</div>
+      </div>
+      <button onclick="window.open(API+'/export/labs','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">↓ Export CSV</button>
+    </div>
+    <div class="card">
+      <div id="labsTable"><div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-text">No lab data</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: PHARMACY ══ -->
+  <div class="page" id="page-pharmacy">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <button onclick="window.open(API+'/export/pharmacy','_blank')" style="padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text-sec);font-size:12px;font-family:inherit;cursor:pointer;">↓ Export CSV</button>
+    </div>
+    <div class="mso-grid" id="pharmStats">
+      <div class="mso-stat"><div class="mso-stat-val c-amber" id="p-duesoon">—</div><div class="mso-stat-lbl">Refills Due (7 days)</div></div>
+      <div class="mso-stat"><div class="mso-stat-val c-red" id="p-overdue">—</div><div class="mso-stat-lbl">Overdue Refills</div></div>
+      <div class="mso-stat"><div class="mso-stat-val c-teal" id="p-requests">—</div><div class="mso-stat-lbl">Pending Requests</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="sec-hdr"><div class="sec-title">Refills Due Soon</div></div>
+        <div class="card"><div id="pharmRefills"><div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No refills due</div></div></div></div>
+      </div>
+      <div>
+        <div class="sec-hdr"><div class="sec-title">Top Medications</div></div>
+        <div class="card"><div id="pharmTopMeds"><div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No data</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- Pharmacy Requests Queue -->
+    <div style="margin-top:20px;">
+      <div class="sec-hdr">
+        <div class="sec-title">Pharmacy Request Queue</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="loadPharmacyRequests('')"          id="prq-btn-all"        class="filter-btn active" style="font-size:11px;padding:5px 12px;">All</button>
+          <button onclick="loadPharmacyRequests('Processing')" id="prq-btn-processing" class="filter-btn"        style="font-size:11px;padding:5px 12px;">Processing</button>
+          <button onclick="loadPharmacyRequests('Completed')"  id="prq-btn-completed"  class="filter-btn"        style="font-size:11px;padding:5px 12px;">Completed</button>
+          <button onclick="loadPharmacyRequests('Failed')"     id="prq-btn-failed"     class="filter-btn"        style="font-size:11px;padding:5px 12px;">Failed</button>
+          <button onclick="loadPharmacy()" style="font-size:11px;padding:5px 12px;background:var(--card2);border:1px solid var(--border);color:var(--text-sec);border-radius:6px;cursor:pointer;">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;">
+        <div id="pharmRequests"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No pharmacy requests</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Portal Links Page ══ -->
+  <div class="page" id="page-portals">
+    <div style="max-width:900px;">
+      <div class="sec-hdr"><div class="sec-title" style="font-size:18px;">Member Portal Launch Pad</div><div class="sec-sub">Open Bridge portals — or open a patient's view directly from their profile</div></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <!-- Bridge v2 Combined -->
+        <div class="card card-padded" style="border:1px solid var(--teal);cursor:pointer;" onclick="window.open('bridge-members-v2.html','_blank')">
+          <div style="font-size:28px;margin-bottom:12px;">📱</div>
+          <div style="font-size:16px;font-weight:700;color:var(--teal);margin-bottom:4px;">Bridge v2 — Combined</div>
+          <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">Patient + Caregiver portal in one app. Members select their role on signup. Bilingual EN/한국어.</div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <button onclick="event.stopPropagation();window.open('bridge-members-v2.html?role=patient','_blank')" style="flex:1;padding:8px;background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Patient View →</button>
+            <button onclick="event.stopPropagation();window.open('bridge-members-v2.html?role=caregiver','_blank')" style="flex:1;padding:8px;background:var(--purple-soft);color:var(--purple);border:1px solid var(--purple);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Caregiver View →</button>
+          </div>
+        </div>
+        <!-- Doctor Portal -->
+        <div class="card card-padded" style="cursor:pointer;" onclick="window.open('bridge-doctor.html','_blank')">
+          <div style="font-size:28px;margin-bottom:12px;">👨‍⚕️</div>
+          <div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">Doctor Portal</div>
+          <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">PCP-facing panel view. Doctors log in with their NPI and see only their assigned patients.</div>
+          <div style="margin-top:14px;">
+            <button onclick="event.stopPropagation();window.open('bridge-doctor.html','_blank')" style="width:100%;padding:8px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Open Doctor Portal →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-hdr" style="margin-top:8px;"><div class="sec-title">Open Bridge for a Specific Patient</div><div class="sec-sub">Search and launch their Bridge experience directly</div></div>
+      <div class="card card-padded">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <input type="text" id="portal-search" placeholder="Search by name, patient ID, or member ID..." oninput="searchForPortalLaunch(this.value)"
+            style="flex:1;padding:10px 14px;background:var(--card2);border:1px solid var(--border2);color:var(--text);border-radius:8px;font-size:13px;font-family:inherit;outline:none;">
+        </div>
+        <div id="portal-search-results" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══════════════════════ PATIENT DRAWER ══════════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="patientDrawer">
+  <div class="drawer-header">
+    <div>
+      <div style="font-size:18px;font-weight:800;letter-spacing:-0.4px;" id="drawerName">Patient Name</div>
+      <div style="font-size:12px;color:var(--text-sec);margin-top:2px;" id="drawerSub">ID · DOB · Gender</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="ph-action-btn" onclick="sendRefillRequest()">💊 Request Refill</button>
+      <button class="ph-action-btn" onclick="openInBridge('patient')" style="background:var(--teal-soft);color:var(--teal);border-color:var(--teal);" title="Open patient view in Bridge v2">📱 Patient View</button>
+      <button class="ph-action-btn" onclick="openInBridge('caregiver')" style="background:var(--purple-soft);color:var(--purple);border-color:var(--purple);" title="Open caregiver view in Bridge v2">👨‍👩‍👧 Caregiver View</button>
+      <button class="drawer-close" onclick="closeDrawer()">✕ Close</button>
+    </div>
+  </div>
+
+  <div style="padding:0 24px;border-bottom:1px solid var(--border);">
+    <div class="drawer-tabs">
+      <div class="d-tab active" onclick="switchDTab(this,'overview')">Overview</div>
+      <div class="d-tab" onclick="switchDTab(this,'eligibility')">Eligibility</div>
+      <div class="d-tab" onclick="switchDTab(this,'claims')">Claims</div>
+      <div class="d-tab" onclick="switchDTab(this,'auths')">Authorizations</div>
+      <div class="d-tab" onclick="switchDTab(this,'labs')">Lab Results</div>
+      <div class="d-tab" onclick="switchDTab(this,'pharmacy')">Pharmacy</div>
+    </div>
+  </div>
+
+  <div class="drawer-body">
+    <!-- Overview -->
+    <div class="d-pane active" id="dp-overview">
+      <div class="info-grid" id="drawerInfo"></div>
+    </div>
+    <!-- Eligibility -->
+    <div class="d-pane" id="dp-eligibility">
+      <div id="drawerElig"></div>
+    </div>
+    <!-- Claims -->
+    <div class="d-pane" id="dp-claims">
+      <div id="drawerClaims"></div>
+    </div>
+    <!-- Auths -->
+    <div class="d-pane" id="dp-auths">
+      <div id="drawerAuths"></div>
+    </div>
+    <!-- Labs -->
+    <div class="d-pane" id="dp-labs">
+      <div id="drawerLabs"></div>
+    </div>
+    <!-- Pharmacy -->
+    <div class="d-pane" id="dp-pharmacy">
+      <div id="drawerPharmacy"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  State
+// ══════════════════════════════════════════════════════════════
+const API = (window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
+let currentPage = 'dashboard';
+let patientPage = 1;
+let patientSort = 'last_name';
+let patientDir = 'asc';
+let patientQuery = '';
+let currentPatient = null;
+let searchDebounce = null;
+let claimFilter = '';
+let authFilter = '';
+let labFilter = '';
+let claimPage = 1;
+let eligPage  = 1;
+let authPage  = 1;
+let labPage   = 1;
+const PAGE_SIZE = 100;
+
+// ══════════════════════════════════════════════════════════════
+//  Navigation
+// ══════════════════════════════════════════════════════════════
+const PAGE_TITLES = {
+  dashboard: 'Dashboard',
+  upload: 'Upload Excel Files',
+  patients: 'Patient Registry',
+  eligibility: 'Eligibility Status',
+  claims: 'Claims Management',
+  auths: 'Authorizations',
+  labs: 'Lab Results',
+  pharmacy: 'Pharmacy',
+  portals: 'Member Portal Launch Pad',
+};
+
+function updateLastSyncDisplay(iso) {
+  try {
+    const d = new Date(iso);
+    const fmt = d.toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    document.getElementById('lastSync').textContent = 'Last sync: ' + fmt;
+  } catch(_) {
+    document.getElementById('lastSync').textContent = 'Last sync: ' + iso.replace('T',' ').replace('Z','');
+  }
+}
+
+async function updateLastSync() {
+  const stats = await api('/patients/stats');
+  if (stats?.lastSync) {
+    updateLastSyncDisplay(stats.lastSync);
+    return;
+  }
+  // Fallback: try to get time from the files list
+  const files = await api('/upload/files');
+  if (Array.isArray(files) && files.length) {
+    const ts = files[0].last_synced || files[0].uploaded_at;
+    if (ts) updateLastSyncDisplay(ts);
+  }
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().startsWith(PAGE_TITLES[name]?.split(' ')[0]?.toLowerCase() || '')) {
+      n.classList.add('active');
+    }
+  });
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[name] || name;
+  currentPage = name;
+
+  // Load page data
+  if (name === 'dashboard')   loadDashboard();
+  if (name === 'upload')      loadFiles();
+  if (name === 'patients')    loadPatients();
+  if (name === 'eligibility') loadEligibility();
+  if (name === 'claims')      loadClaims();
+  if (name === 'auths')       loadAuths();
+  if (name === 'labs')        loadLabs();
+  if (name === 'pharmacy')    loadPharmacy();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Auth helpers
+// ══════════════════════════════════════════════════════════════
+function getToken() { return localStorage.getItem('smgbridge_token'); }
+function setToken(t) { localStorage.setItem('smgbridge_token', t); }
+function clearToken() { localStorage.removeItem('smgbridge_token'); }
+
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-error');
+  err.style.display = 'none';
+  if (!username || !password) { err.textContent = 'Username and password required.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const r = await fetch(API + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.token) throw new Error(data.error || 'Login failed');
+    setToken(data.token);
+    document.getElementById('login-overlay').classList.remove('active');
+    loadDashboard();
+    connectSSE();
+  } catch (e) {
+    err.textContent = e.message || 'Invalid username or password.';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function doLogout() {
+  const token = getToken();
+  if (token) {
+    try { await fetch(API + '/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }); } catch(_) {}
+  }
+  clearToken();
+  document.getElementById('login-overlay').classList.add('active');
+  document.getElementById('login-password').value = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  API helpers
+// ══════════════════════════════════════════════════════════════
+async function api(path, opts = {}) {
+  try {
+    const token = getToken();
+    const headers = { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) };
+    const r = await fetch(API + path, { headers, ...opts });
+    if (r.status === 401) { doLogout(); return null; }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    console.error('API error:', path, e);
+    return null;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Dashboard
+// ══════════════════════════════════════════════════════════════
+async function loadDashboard() {
+  const stats = await api('/patients/stats');
+  if (!stats) return;
+
+  document.getElementById('ds-patients').textContent   = stats.totalPatients.toLocaleString();
+  document.getElementById('ds-patients-d').textContent = stats.totalFiles + ' source files loaded';
+  document.getElementById('ds-elig').textContent       = stats.activeEligibility.toLocaleString();
+  document.getElementById('ds-elig-d').textContent     = Math.round(stats.activeEligibility / stats.totalPatients * 100) + '% of patients covered';
+  document.getElementById('ds-claims').textContent     = stats.pendingClaims.toLocaleString();
+  document.getElementById('ds-auths').textContent      = stats.pendingAuths.toLocaleString();
+  document.getElementById('ds-labs').textContent       = stats.criticalLabs.toLocaleString();
+  document.getElementById('ds-refills').textContent    = stats.refillsDue.toLocaleString();
+  document.getElementById('ds-files').textContent      = stats.totalFiles.toLocaleString();
+
+  if (stats.lastSync) {
+    updateLastSyncDisplay(stats.lastSync);
+    try {
+      const d = new Date(stats.lastSync);
+      document.getElementById('ds-lastsync').textContent = d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    } catch(_) {
+      document.getElementById('ds-lastsync').textContent = stats.lastSync.replace('T',' ').slice(0,16);
+    }
+  }
+
+  // Update nav badges
+  document.getElementById('nav-patient-count').textContent = stats.totalPatients > 999
+    ? Math.round(stats.totalPatients/1000) + 'k' : stats.totalPatients;
+  document.getElementById('nav-claims-badge').textContent = stats.pendingClaims;
+  document.getElementById('nav-auths-badge').textContent = stats.pendingAuths;
+
+  // Recent files
+  const files = await api('/upload/files');
+  if (!stats.lastSync && Array.isArray(files) && files.length) {
+    const ts = files[0].last_synced || files[0].uploaded_at;
+    if (ts) {
+      updateLastSyncDisplay(ts);
+      try {
+        const d = new Date(ts.includes('T') ? ts : ts.replace(' ', 'T') + 'Z');
+        document.getElementById('ds-lastsync').textContent = d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+      } catch(_) {
+        document.getElementById('ds-lastsync').textContent = ts.slice(0,16);
+      }
+    }
+  }
+  if (files) {
+    const el = document.getElementById('dash-files-list');
+    if (files.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">No files uploaded yet</div></div>`;
+    } else {
+      el.innerHTML = files.slice(0, 5).map(f => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:20px;">📊</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.filename}</div>
+            <div style="font-size:11px;color:var(--text-sec);">${f.row_count || 0} rows · ${formatDate(f.uploaded_at)}</div>
+          </div>
+          ${statusPill(f.status)}
+        </div>
+      `).join('');
+    }
+  }
+
+  // Refills due
+  const refills = await api('/pharmacy/refills/due?days=7');
+  if (refills) {
+    const el = document.getElementById('dash-refills-list');
+    if (refills.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No refills due in 7 days</div></div>`;
+    } else {
+      el.innerHTML = refills.slice(0, 5).map(r => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:20px;">💊</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">${r.first_name} ${r.last_name}</div>
+            <div style="font-size:11px;color:var(--text-sec);">${r.medication_name} · Due ${formatDate(r.refill_due_date)}</div>
+          </div>
+          <button class="ph-action-btn" onclick="quickRefill('${r.patient_id}','${r.medication_name}','${r.pharmacy_name||''}',${r.id})">Refill</button>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  File Upload
+// ══════════════════════════════════════════════════════════════
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragover');
+  uploadFiles(Array.from(e.dataTransfer.files));
+}
+
+function handleFileSelect(e) {
+  uploadFiles(Array.from(e.target.files));
+  e.target.value = '';
+}
+
+async function uploadFiles(files) {
+  if (!files.length) return;
+
+  const validFiles = files.filter(f => /\.(xlsx|xls|csv)$/i.test(f.name));
+  if (!validFiles.length) { toast('Only .xlsx, .xls, and .csv files accepted', 'error'); return; }
+
+  const prog = document.getElementById('uploadProgress');
+  const list = document.getElementById('progressList');
+  prog.style.display = 'block';
+  document.getElementById('uploadSummary').textContent = `Uploading ${validFiles.length} file(s)...`;
+
+  // Show progress items
+  list.innerHTML = validFiles.map((f, i) => `
+    <div class="prog-item">
+      <div class="prog-name">
+        <span>${f.name}</span>
+        <span id="prog-status-${i}" style="color:var(--amber);">Uploading...</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="prog-bar-${i}" style="width:30%"></div></div>
+    </div>
+  `).join('');
+
+  const fd = new FormData();
+  validFiles.forEach(f => fd.append('files', f));
+
+  // Animate bars
+  validFiles.forEach((_, i) => {
+    let w = 30;
+    const iv = setInterval(() => {
+      w = Math.min(w + Math.random() * 15, 85);
+      const bar = document.getElementById(`prog-bar-${i}`);
+      if (bar) bar.style.width = w + '%';
+      else clearInterval(iv);
+    }, 200);
+  });
+
+  try {
+    const r = await fetch(API + '/upload', { method: 'POST', body: fd });
+    const data = await r.json();
+
+    if (data.results) {
+      data.results.forEach((res, i) => {
+        const bar = document.getElementById(`prog-bar-${i}`);
+        const stat = document.getElementById(`prog-status-${i}`);
+        if (bar) { bar.style.width = '100%'; bar.className = res.success ? 'prog-fill done' : 'prog-fill error'; }
+        if (stat) {
+          stat.textContent = res.success ? `✓ ${res.rows || 0} rows` : `✗ Error`;
+          stat.style.color = res.success ? 'var(--green)' : 'var(--red)';
+        }
+      });
+    }
+
+    document.getElementById('uploadSummary').textContent =
+      `✓ ${data.uploaded} file(s) processed · ${data.patientCount?.toLocaleString() || 0} total patients`;
+
+    toast(`${data.uploaded} file(s) uploaded · ${data.patientCount?.toLocaleString()} patients total`, 'success');
+    loadFiles();
+    loadDashboard();
+
+  } catch (err) {
+    validFiles.forEach((_, i) => {
+      const bar = document.getElementById(`prog-bar-${i}`);
+      const stat = document.getElementById(`prog-status-${i}`);
+      if (bar) { bar.style.width = '100%'; bar.className = 'prog-fill error'; }
+      if (stat) { stat.textContent = '✗ Failed'; stat.style.color = 'var(--red)'; }
+    });
+    toast('Upload failed: ' + err.message, 'error');
+  }
+}
+
+async function loadFiles() {
+  const files = await api('/upload/files');
+  if (!files) return;
+
+  document.getElementById('fileCount').textContent = files.length + ' file' + (files.length !== 1 ? 's' : '');
+
+  const tbody = document.getElementById('fileTableBody');
+  if (!files.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">No files uploaded yet</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = files.map(f => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>📊</span>
+          <div>
+            <div style="font-weight:600;font-size:13px;">${f.filename}</div>
+            <div style="font-size:11px;color:var(--text-mute);">ID: ${f.id}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-weight:600;">${(f.row_count || 0).toLocaleString()}</td>
+      <td>${statusPill(f.status)}</td>
+      <td style="color:var(--text-sec);font-size:12px;">${formatDate(f.uploaded_at)}</td>
+      <td style="color:var(--text-sec);font-size:12px;">${f.last_synced ? formatDate(f.last_synced) : '—'}</td>
+      <td>
+        <button onclick="deleteFile(${f.id})" style="background:var(--red-soft);border:1px solid rgba(239,68,68,0.2);color:var(--red);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function deleteFile(id) {
+  if (!confirm('Remove this file record? (Imported patient data will remain)')) return;
+  await api(`/upload/${id}`, { method: 'DELETE' });
+  loadFiles();
+  toast('File record removed', 'info');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Patients
+// ══════════════════════════════════════════════════════════════
+function debounceSearch(val) {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => { patientQuery = val; patientPage = 1; loadPatients(); }, 300);
+}
+
+function onGlobalSearch(val) {
+  if (val.length > 1) { showPage('patients'); debounceSearch(val); }
+}
+
+function setPatientFilter(el, val) {
+  document.querySelectorAll('#page-patients .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadPatients();
+}
+
+function sortPatients(col) {
+  if (patientSort === col) patientDir = patientDir === 'asc' ? 'desc' : 'asc';
+  else { patientSort = col; patientDir = 'asc'; }
+  loadPatients();
+}
+
+function changePage(delta) {
+  patientPage = Math.max(1, patientPage + delta);
+  loadPatients();
+}
+
+async function loadPatients() {
+  const q = patientQuery || document.getElementById('patientSearch').value;
+  const data = await api(`/patients?q=${encodeURIComponent(q)}&page=${patientPage}&sort=${patientSort}&dir=${patientDir}&limit=30`);
+  if (!data) return;
+
+  const tbody = document.getElementById('patientTableBody');
+  const { patients, total, page, limit } = data;
+
+  if (!patients.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No patients found</div></div></td></tr>`;
+    document.getElementById('patPagInfo').textContent = '0 patients';
+    return;
+  }
+
+  const colors = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#14B8A6'];
+  tbody.innerHTML = patients.map(p => {
+    const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
+    const color = colors[p.patient_id?.charCodeAt(0) % colors.length || 0];
+    const eligBadge = p.elig_status
+      ? `<span class="alert-badge ${p.elig_status === 'Active' ? 'normal' : p.elig_status === 'Pending' ? 'pending' : 'critical'}">${p.elig_status}</span>`
+      : '<span style="color:var(--text-mute);font-size:12px;">—</span>';
+    return `
+      <tr onclick="openPatient('${p.patient_id}')">
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="patient-avatar" style="background:${color}22;color:${color};">${initials}</div>
+            <div>
+              <div class="patient-name">${p.last_name || ''}, ${p.first_name || ''}${p.korean_name ? ` <span style="font-size:11px;color:var(--text-mute);font-weight:400;">${p.korean_name}</span>` : ''}</div>
+              <div class="patient-sub">${p.patient_id}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--text-sec);font-size:12px;">${p.dob || '—'}</td>
+        <td style="font-size:12px;color:var(--text-sec);">${p.pcp_name || '—'}</td>
+        <td>${eligBadge}</td>
+        <td style="font-size:12px;font-weight:600;color:${p.claim_count>0?'var(--accent)':'var(--text-mute)'};">${p.claim_count || 0}</td>
+        <td style="font-size:12px;font-weight:600;color:${p.pending_auths>0?'var(--amber)':'var(--text-mute)'};">${p.pending_auths || 0}</td>
+        <td style="font-size:12px;font-weight:600;color:${p.rx_count>0?'var(--purple)':'var(--text-mute)'};">${p.rx_count || 0}</td>
+        <td>
+          <button onclick="event.stopPropagation();openPatient('${p.patient_id}')"
+            style="background:var(--accent-soft);border:1px solid rgba(59,130,246,0.2);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">
+            View
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const totalPages = Math.ceil(total / limit);
+  document.getElementById('patPagInfo').textContent = `${(page-1)*limit+1}–${Math.min(page*limit,total)} of ${total.toLocaleString()} patients`;
+  document.getElementById('patPrevBtn').disabled = page <= 1;
+  document.getElementById('patNextBtn').disabled = page >= totalPages;
+
+  // Page numbers
+  const nums = document.getElementById('patPagNum');
+  let html = '';
+  for (let i = Math.max(1, page-2); i <= Math.min(totalPages, page+2); i++) {
+    html += `<button class="pag-page${i===page?' active':''}" onclick="patientPage=${i};loadPatients()">${i}</button>`;
+  }
+  nums.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Patient Drawer
+// ══════════════════════════════════════════════════════════════
+async function openPatient(pid) {
+  const data = await api('/patients/' + pid);
+  if (!data) { toast('Could not load patient', 'error'); return; }
+  currentPatient = data;
+
+  const p = data.patient;
+  const engName = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Unknown Patient';
+  document.getElementById('drawerName').innerHTML = p.korean_name
+    ? `${engName} <span style="font-size:14px;font-weight:500;color:var(--text-sec);margin-left:6px;">${p.korean_name}</span>`
+    : engName;
+  document.getElementById('drawerSub').textContent = `${p.patient_id} · DOB: ${p.dob || '—'} · ${p.gender || '—'}`;
+
+  // Overview
+  const elig0 = data.eligibility?.[0];
+  const eligStatus = elig0?.status || '—';
+  const eligColor  = eligStatus === 'Active' ? 'var(--green)' : eligStatus === 'Pending' ? 'var(--amber)' : eligStatus === 'Termed' || eligStatus === 'Inactive' ? 'var(--red)' : 'var(--text-mute)';
+  document.getElementById('drawerInfo').innerHTML = `
+    <div class="info-item"><div class="info-label">Patient ID</div><div class="info-value">${p.patient_id}</div></div>
+    <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">${p.first_name||''} ${p.middle_name||''} ${p.last_name||''}</div></div>
+    ${p.korean_name ? `<div class="info-item"><div class="info-label">Korean Name</div><div class="info-value" style="font-size:15px;font-weight:700;letter-spacing:0.5px;">${p.korean_name}</div></div>` : ''}
+    <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">${p.dob || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Gender</div><div class="info-value">${p.gender || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Phone</div><div class="info-value">${p.phone || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Email</div><div class="info-value ${!p.email?'empty':''}">${p.email || 'Not provided'}</div></div>
+    <div class="info-item"><div class="info-label">Address</div><div class="info-value">${[p.address,p.city,p.state,p.zip].filter(Boolean).join(', ') || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Language</div><div class="info-value">${p.language || 'English'}</div></div>
+    <div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:12px;margin-top:4px;"><div class="info-label" style="color:var(--accent);letter-spacing:0.8px;">INSURANCE</div></div>
+    <div class="info-item"><div class="info-label">Member ID</div><div class="info-value" style="font-weight:700;">${elig0?.member_id || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Elig. Status</div><div class="info-value" style="color:${eligColor};font-weight:700;">${eligStatus}</div></div>
+    <div class="info-item"><div class="info-label">Payer</div><div class="info-value">${elig0?.payer_name || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Plan</div><div class="info-value">${elig0?.plan_name || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Plan Type</div><div class="info-value">${elig0?.plan_type || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Group #</div><div class="info-value">${elig0?.group_number || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Effective</div><div class="info-value">${elig0?.effective_date || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Term Date</div><div class="info-value">${elig0?.term_date || '—'}</div></div>
+    <div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:12px;margin-top:4px;"><div class="info-label" style="color:var(--accent);letter-spacing:0.8px;">PRIMARY CARE</div></div>
+    <div class="info-item"><div class="info-label">PCP</div><div class="info-value">${data.pcp?.provider_name || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Practice</div><div class="info-value ${!data.pcp?'empty':''}">${data.pcp?.practice_name || 'Not assigned'}</div></div>
+    <div class="info-item"><div class="info-label">Source File</div><div class="info-value" style="font-size:11px;color:var(--text-sec);">${p.source_file || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Last Updated</div><div class="info-value" style="font-size:11px;color:var(--text-sec);">${formatDate(p.updated_at)}</div></div>
+  `;
+
+  // Eligibility
+  document.getElementById('drawerElig').innerHTML = data.eligibility.length ? data.eligibility.map(e => `
+    <div class="data-row">
+      <div class="data-row-header">
+        <div class="data-row-title">${e.payer_name || 'Unknown Payer'}</div>
+        <span class="alert-badge ${e.status==='Active'?'normal':e.status==='Pending'?'pending':'critical'}">${e.status}</span>
+      </div>
+      <div class="data-row-sub">${e.plan_name || '—'} · ${e.plan_type || '—'} · Member: ${e.member_id || '—'}</div>
+      <div class="data-row-meta">Effective: ${e.effective_date || '—'} · Term: ${e.term_date || '—'} · Verified: ${e.verified_date || '—'}</div>
+    </div>
+  `).join('') : `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No eligibility data</div></div>`;
+
+  // Claims
+  document.getElementById('drawerClaims').innerHTML = data.claims.length ? data.claims.map(c => `
+    <div class="data-row">
+      <div class="data-row-header">
+        <div class="data-row-title">${c.cpt_code || c.icd_codes || 'Claim'} — ${c.claim_number || 'No #'}</div>
+        <span class="alert-badge ${c.status==='Paid'||c.status==='Approved'?'normal':c.status==='Denied'?'critical':c.status==='Pending'?'pending':'high'}">${c.status}</span>
+      </div>
+      <div class="data-row-sub">${c.provider_name || '—'} · DOS: ${c.dos || '—'}</div>
+      <div class="data-row-meta">Billed: $${(c.billed_amount||0).toFixed(2)} · Paid: $${(c.paid_amount||0).toFixed(2)} · Pt Resp: $${(c.patient_resp||0).toFixed(2)}</div>
+    </div>
+  `).join('') : `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No claims</div></div>`;
+
+  // Auths
+  document.getElementById('drawerAuths').innerHTML = data.authorizations.length ? data.authorizations.map(a => `
+    <div class="data-row">
+      <div class="data-row-header">
+        <div class="data-row-title">${a.auth_type || 'Auth'} — ${a.service_type || '—'}</div>
+        <span class="alert-badge ${a.status==='Approved'?'normal':a.status==='Denied'?'critical':a.status==='Pending'?'pending':'high'}">${a.status}</span>
+      </div>
+      <div class="data-row-sub">Auth #${a.auth_number || '—'} · Rendering: ${a.rendering_provider || '—'}</div>
+      <div class="data-row-meta">Requested: ${a.requested_date||'—'} · Valid: ${a.start_date||'—'} to ${a.end_date||'—'} · Units: ${a.used_units||0}/${a.approved_units||'—'}</div>
+    </div>
+  `).join('') : `<div class="empty-state"><div class="empty-icon">🔐</div><div class="empty-text">No authorizations</div></div>`;
+
+  // Labs
+  document.getElementById('drawerLabs').innerHTML = data.labs.length ? data.labs.map(l => `
+    <div class="data-row">
+      <div class="data-row-header">
+        <div class="data-row-title">${l.test_name}</div>
+        <span class="alert-badge ${l.flag==='Critical'?'critical':l.flag==='Normal'?'normal':l.flag==='High'||l.flag==='Low'?'high':'pending'}">${l.flag||'—'}</span>
+      </div>
+      <div class="data-row-sub">Result: <strong>${l.result_value||'—'} ${l.unit||''}</strong> · Ref: ${l.reference_range||'—'}</div>
+      <div class="data-row-meta">Ordered by: ${l.ordered_by||'—'} · Collected: ${l.collection_date||'—'} · ${l.lab_name||'—'}</div>
+    </div>
+  `).join('') : `<div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-text">No lab results</div></div>`;
+
+  // Pharmacy — medications
+  const rxHtml = data.pharmacy.length ? data.pharmacy.map(rx => `
+    <div class="data-row">
+      <div class="data-row-header">
+        <div class="data-row-title">${rx.medication_name}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="alert-badge ${rx.status==='Active'?'normal':'critical'}">${rx.status}</span>
+          <button class="ph-action-btn" onclick="sendRefillForMed(${rx.id},'${rx.medication_name}','${rx.pharmacy_name||''}')">💊 Refill</button>
+        </div>
+      </div>
+      <div class="data-row-sub">${rx.dosage||'—'} · ${rx.pharmacy_name||'—'}</div>
+      <div class="data-row-meta">Last fill: ${rx.fill_date||'—'} · Refill due: <strong style="color:${isOverdue(rx.refill_due_date)?'var(--red)':'inherit'}">${rx.refill_due_date||'—'}</strong> · ${rx.refills_remaining||0} refills left</div>
+    </div>
+  `).join('') : `<div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No pharmacy records</div></div>`;
+
+  // Pharmacy — request history for this patient
+  const rxReqs = data.pharmacyRequests || [];
+  const reqHistHtml = rxReqs.length ? `
+    <div style="padding:12px 16px 6px;font-size:11px;font-weight:700;color:var(--text-mute);letter-spacing:0.6px;border-top:1px solid var(--border);margin-top:8px;">REQUEST HISTORY</div>
+    ${rxReqs.map(r => {
+      const stColor = r.status === 'Completed' ? 'var(--green)' : r.status === 'Failed' ? 'var(--red)' : 'var(--amber)';
+      return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--border);font-size:12px;">
+          <div>
+            <span style="font-weight:600;">${r.medication_name||'—'}</span>
+            <span style="color:var(--text-sec);margin-left:6px;">${r.request_type}</span>
+            <div style="color:var(--text-mute);font-size:11px;margin-top:2px;">${r.pharmacy_name||'—'} · ${r.requested_by||'—'} · ${formatDate(r.requested_at)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="color:${stColor};font-weight:700;font-size:11px;">${r.status}</span>
+            ${r.status === 'Processing' ? `
+              <button onclick="updatePharmacyRequest(${r.id},'Completed')" style="font-size:10px;padding:3px 8px;background:var(--green-soft);color:var(--green);border:1px solid var(--green);border-radius:4px;cursor:pointer;">✓ Complete</button>
+              <button onclick="updatePharmacyRequest(${r.id},'Failed')" style="font-size:10px;padding:3px 8px;background:var(--red-soft);color:var(--red);border:1px solid var(--red);border-radius:4px;cursor:pointer;">✗ Fail</button>
+            ` : ''}
+          </div>
+        </div>`;
+    }).join('')}
+  ` : '';
+
+  document.getElementById('drawerPharmacy').innerHTML = rxHtml + reqHistHtml;
+
+  // Open drawer
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('patientDrawer').classList.add('open');
+
+  // Reset to overview tab
+  switchDTab(document.querySelector('.d-tab'), 'overview');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('patientDrawer').classList.remove('open');
+  currentPatient = null;
+}
+
+function openInBridge(role) {
+  if (!currentPatient) return;
+  const pid = currentPatient.patient.patient_id;
+  window.open(`bridge-members-v2.html?pid=${encodeURIComponent(pid)}&role=${role}`, '_blank');
+}
+
+let portalSearchTimer = null;
+async function searchForPortalLaunch(q) {
+  clearTimeout(portalSearchTimer);
+  const el = document.getElementById('portal-search-results');
+  if (!q || q.length < 2) { el.innerHTML = ''; return; }
+  portalSearchTimer = setTimeout(async () => {
+    const data = await api(`/patients?q=${encodeURIComponent(q)}&limit=6`);
+    if (!data || !data.patients.length) {
+      el.innerHTML = `<div style="font-size:13px;color:var(--text-mute);padding:8px 0;">No patients found.</div>`;
+      return;
+    }
+    el.innerHTML = data.patients.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);border:1px solid var(--border);border-radius:10px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;">${p.first_name} ${p.last_name}${p.korean_name ? ' <span style="font-weight:500;color:var(--text-sec);">'+p.korean_name+'</span>' : ''}</div>
+          <div style="font-size:11px;color:var(--text-sec);margin-top:2px;">${p.patient_id} · ${p.elig_status || '—'} · ${p.pcp_name || 'No PCP'}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=patient','_blank')" style="padding:6px 12px;background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">📱 Patient</button>
+          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=caregiver','_blank')" style="padding:6px 12px;background:var(--purple-soft);color:var(--purple);border:1px solid var(--purple);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">👨‍👩‍👧 Caregiver</button>
+        </div>
+      </div>`).join('');
+  }, 300);
+}
+
+function switchDTab(el, pane) {
+  document.querySelectorAll('.d-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.d-pane').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const paneEl = document.getElementById('dp-' + pane);
+  if (paneEl) paneEl.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MSO Pages
+// ══════════════════════════════════════════════════════════════
+function renderPagination(page, total, limit, onPageFn) {
+  const totalPages = Math.ceil(total / limit);
+  if (totalPages <= 1) return '';
+  const start = (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
+  const pages = [];
+  for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) pages.push(i);
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--text-sec);">
+      <span>Showing ${start.toLocaleString()}–${end.toLocaleString()} of ${total.toLocaleString()}</span>
+      <div style="display:flex;gap:4px;">
+        <button onclick="${onPageFn}(${page - 1})" ${page <= 1 ? 'disabled' : ''} class="pag-page">‹</button>
+        ${pages.map(p => `<button onclick="${onPageFn}(${p})" class="pag-page${p === page ? ' active' : ''}">${p}</button>`).join('')}
+        <button onclick="${onPageFn}(${page + 1})" ${page >= totalPages ? 'disabled' : ''} class="pag-page">›</button>
+      </div>
+    </div>`;
+}
+
+async function loadEligibility(page) {
+  if (page !== undefined) eligPage = page;
+  const statusParam = authFilter ? `&status=${encodeURIComponent(authFilter)}` : '';
+  const data = await api(`/mso/eligibility?page=${eligPage}&limit=${PAGE_SIZE}${statusParam}`);
+  if (!data) return;
+
+  // Stats from aggregate
+  const dash = await api('/mso/dashboard');
+  if (dash) {
+    const elig = dash.eligibility;
+    document.getElementById('e-active').textContent = (elig.find(e => e.status === 'Active')?.count || 0).toLocaleString();
+    document.getElementById('e-termed').textContent = ((elig.find(e => e.status === 'Termed')?.count || 0) + (elig.find(e => e.status === 'Inactive')?.count || 0)).toLocaleString();
+    document.getElementById('e-pending').textContent = (elig.find(e => e.status === 'Pending')?.count || 0).toLocaleString();
+  }
+
+  const el = document.getElementById('eligTable');
+  if (!data.eligibility.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No eligibility data uploaded</div></div>`;
+    return;
+  }
+
+  const patName = r => r.korean_name && r.language === 'Korean'
+    ? `${r.first_name} ${r.last_name} <span style="color:var(--text-mute);font-size:11px;">${r.korean_name}</span>`
+    : `${r.first_name||''} ${r.last_name||''}`;
+
+  el.innerHTML = `
+    <table class="patient-table">
+      <thead><tr><th>Patient</th><th>Payer</th><th>Plan</th><th>Member ID</th><th>Effective</th><th>Term</th><th>Status</th></tr></thead>
+      <tbody>${data.eligibility.map(e => `
+        <tr onclick="openPatient('${e.patient_id}')">
+          <td><div class="patient-name">${patName(e)}</div><div class="patient-sub">${e.patient_id}</div></td>
+          <td style="font-size:12px;">${e.payer_name||'—'}</td>
+          <td style="font-size:12px;color:var(--text-sec);">${e.plan_name||'—'}</td>
+          <td style="font-size:12px;font-weight:600;">${e.member_id||'—'}</td>
+          <td style="font-size:12px;">${e.effective_date||'—'}</td>
+          <td style="font-size:12px;">${e.term_date||'—'}</td>
+          <td><span class="alert-badge ${e.status==='Active'?'normal':e.status==='Pending'?'pending':'critical'}">${e.status||'—'}</span></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+    ${renderPagination(eligPage, data.total, PAGE_SIZE, 'loadEligibility')}
+  `;
+}
+
+async function loadClaims(filter, page) {
+  if (filter !== undefined) { claimFilter = filter; claimPage = 1; }
+  if (page !== undefined) claimPage = page;
+  const statusParam = claimFilter ? `&status=${encodeURIComponent(claimFilter)}` : '';
+  const data = await api(`/mso/claims/summary?page=${claimPage}&limit=${PAGE_SIZE}${statusParam}`);
+  if (!data) return;
+
+  const el = document.getElementById('claimsTable');
+  if (!data.claims.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No claims data</div><div class="empty-sub">Upload a claims Excel file</div></div>`;
+    return;
+  }
+
+  const patName = c => c.korean_name && c.language === 'Korean'
+    ? `${c.first_name||''} ${c.last_name||''} <span style="color:var(--text-mute);font-size:11px;">${c.korean_name}</span>`
+    : `${c.first_name||''} ${c.last_name||''}`;
+
+  el.innerHTML = `
+    <table class="patient-table">
+      <thead><tr><th>Patient</th><th>Claim #</th><th>DOS</th><th>CPT</th><th>Provider</th><th>Billed</th><th>Paid</th><th>Status</th></tr></thead>
+      <tbody>${data.claims.map(c => `
+        <tr onclick="openPatient('${c.patient_id}')">
+          <td><div class="patient-name">${patName(c)}</div><div class="patient-sub">${c.patient_id}</div></td>
+          <td style="font-size:12px;color:var(--text-sec);">${c.claim_number||'—'}</td>
+          <td style="font-size:12px;">${c.dos||'—'}</td>
+          <td style="font-size:12px;font-weight:600;">${c.cpt_code||'—'}</td>
+          <td style="font-size:12px;color:var(--text-sec);">${c.provider_name||'—'}</td>
+          <td style="font-size:12px;">$${(c.billed_amount||0).toFixed(2)}</td>
+          <td style="font-size:12px;color:var(--green);">$${(c.paid_amount||0).toFixed(2)}</td>
+          <td><span class="alert-badge ${c.status==='Paid'||c.status==='Approved'?'normal':c.status==='Denied'?'critical':c.status==='Pending'?'pending':'high'}">${c.status}</span></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+    ${renderPagination(claimPage, data.total, PAGE_SIZE, 'loadClaimsPage')}
+  `;
+}
+function loadClaimsPage(p) { loadClaims(undefined, p); }
+
+async function loadAuths(filter, page) {
+  if (filter !== undefined) { authFilter = filter; authPage = 1; }
+  if (page !== undefined) authPage = page;
+  const statusParam = authFilter ? `&status=${encodeURIComponent(authFilter)}` : '';
+  const data = await api(`/mso/auths?page=${authPage}&limit=${PAGE_SIZE}${statusParam}`);
+  if (!data) return;
+
+  const el = document.getElementById('authsTable');
+  if (!data.authorizations.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔐</div><div class="empty-text">No authorization data</div></div>`;
+    return;
+  }
+
+  const patName = a => a.korean_name && a.language === 'Korean'
+    ? `${a.first_name||''} ${a.last_name||''} <span style="color:var(--text-mute);font-size:11px;">${a.korean_name}</span>`
+    : `${a.first_name||''} ${a.last_name||''}`;
+
+  el.innerHTML = `
+    <table class="patient-table">
+      <thead><tr><th>Patient</th><th>Auth #</th><th>Type</th><th>Service</th><th>Provider</th><th>Requested</th><th>Units</th><th>Status</th></tr></thead>
+      <tbody>${data.authorizations.map(a => `
+        <tr onclick="openPatient('${a.patient_id}')">
+          <td><div class="patient-name">${patName(a)}</div><div class="patient-sub">${a.patient_id}</div></td>
+          <td style="font-size:12px;">${a.auth_number||'—'}</td>
+          <td style="font-size:12px;">${a.auth_type||'—'}</td>
+          <td style="font-size:12px;">${a.service_type||'—'}</td>
+          <td style="font-size:12px;color:var(--text-sec);">${a.rendering_provider||'—'}</td>
+          <td style="font-size:12px;">${a.requested_date||'—'}</td>
+          <td style="font-size:12px;">${a.used_units||0}/${a.approved_units||'—'}</td>
+          <td><span class="alert-badge ${a.status==='Approved'?'normal':a.status==='Denied'?'critical':a.status==='Pending'?'pending':'high'}">${a.status}</span></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+    ${renderPagination(authPage, data.total, PAGE_SIZE, 'loadAuthsPage')}
+  `;
+}
+function loadAuthsPage(p) { loadAuths(undefined, p); }
+
+async function loadLabs(filter, page) {
+  if (filter !== undefined) { labFilter = filter; labPage = 1; }
+  if (page !== undefined) labPage = page;
+  const flagParam = labFilter ? `&flag=${encodeURIComponent(labFilter)}` : '';
+  const data = await api(`/pcp/labs?page=${labPage}&limit=${PAGE_SIZE}${flagParam}`);
+  if (!data) return;
+
+  const el = document.getElementById('labsTable');
+  if (!data.labs.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-text">No lab data${labFilter ? ' with flag "' + labFilter + '"' : ''}</div></div>`;
+    return;
+  }
+
+  const patName = l => l.korean_name && l.language === 'Korean'
+    ? `${l.first_name||''} ${l.last_name||''} <span style="color:var(--text-mute);font-size:11px;">${l.korean_name}</span>`
+    : `${l.first_name||''} ${l.last_name||''}`;
+
+  const flagClass = f => f === 'Critical' ? 'critical' : f === 'High' || f === 'Low' ? 'high' : f === 'Normal' ? 'normal' : 'pending';
+  const valColor = f => f === 'Critical' ? 'var(--red)' : f === 'High' ? 'var(--amber)' : f === 'Low' ? 'var(--accent)' : 'var(--text)';
+
+  el.innerHTML = `
+    <table class="patient-table">
+      <thead><tr><th>Patient</th><th>Test</th><th>Result</th><th>Ref Range</th><th>Flag</th><th>Ordered By</th><th>Lab</th><th>Date</th></tr></thead>
+      <tbody>${data.labs.map(l => `
+        <tr onclick="openPatient('${l.patient_id}')">
+          <td><div class="patient-name">${patName(l)}</div><div class="patient-sub">${l.patient_id}</div></td>
+          <td style="font-weight:600;font-size:13px;">${l.test_name||'—'}</td>
+          <td style="font-weight:700;color:${valColor(l.flag)};">${l.result_value||'—'} ${l.unit||''}</td>
+          <td style="font-size:12px;color:var(--text-sec);">${l.reference_range||'—'}</td>
+          <td><span class="alert-badge ${flagClass(l.flag)}">${l.flag||'—'}</span></td>
+          <td style="font-size:12px;color:var(--text-sec);">${l.ordered_by||'—'}</td>
+          <td style="font-size:12px;color:var(--text-sec);">${l.lab_name||'—'}</td>
+          <td style="font-size:12px;">${l.result_date||'—'}</td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+    ${renderPagination(labPage, data.total, PAGE_SIZE, 'loadLabsPage')}
+  `;
+}
+function loadLabsPage(p) { loadLabs(undefined, p); }
+
+let pharmReqFilter = '';
+
+async function loadPharmacy() {
+  const [dash, refills] = await Promise.all([
+    api('/pharmacy/dashboard'),
+    api('/pharmacy/refills/due?days=14'),
+  ]);
+
+  if (dash) {
+    document.getElementById('p-duesoon').textContent = dash.dueSoon;
+    document.getElementById('p-overdue').textContent = dash.overdue;
+    document.getElementById('p-requests').textContent = dash.pendingRequests;
+
+    const topEl = document.getElementById('pharmTopMeds');
+    if (dash.topMeds.length) {
+      const max = dash.topMeds[0].count;
+      topEl.innerHTML = dash.topMeds.map(m => `
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <div style="font-size:13px;font-weight:600;">${m.medication_name}</div>
+            <div style="font-size:12px;color:var(--text-sec);">${m.count} patients</div>
+          </div>
+          <div style="height:3px;background:var(--border);border-radius:2px;">
+            <div style="height:100%;width:${(m.count/max*100).toFixed(0)}%;background:var(--purple);border-radius:2px;"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  if (refills) {
+    const el = document.getElementById('pharmRefills');
+    if (!refills.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No refills due</div></div>`;
+    } else {
+      el.innerHTML = refills.map(r => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="font-size:13px;font-weight:600;">${r.first_name} ${r.last_name}</div>
+              ${isOverdue(r.refill_due_date) ? '<span class="alert-badge critical" style="font-size:9px;">OVERDUE</span>' : ''}
+            </div>
+            <div style="font-size:11px;color:var(--text-sec);">${r.medication_name} · Due: ${r.refill_due_date}</div>
+            <div style="font-size:11px;color:var(--text-mute);">${r.pharmacy_name||'—'} · ${r.phone||'—'}</div>
+          </div>
+          <button class="ph-action-btn" onclick="quickRefill('${r.patient_id}','${r.medication_name}','${r.pharmacy_name||''}',${r.id})">💊 Refill</button>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Also load the requests queue
+  loadPharmacyRequests();
+}
+
+// Chip filter helpers
+function filterClaims(el, val) {
+  document.querySelectorAll('#page-claims .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadClaims(val, 1);
+}
+function filterAuths(el, val) {
+  document.querySelectorAll('#page-auths .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadAuths(val, 1);
+}
+function filterLabs(el, val) {
+  document.querySelectorAll('#page-labs .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadLabs(val, 1);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Pharmacy Request Queue (admin page)
+// ══════════════════════════════════════════════════════════════
+async function loadPharmacyRequests(filter) {
+  if (filter !== undefined) pharmReqFilter = filter;
+
+  // Update filter button styles
+  ['all','processing','completed','failed'].forEach(k => {
+    const btn = document.getElementById('prq-btn-' + k);
+    if (btn) btn.classList.toggle('active', pharmReqFilter === (k === 'all' ? '' : k.charAt(0).toUpperCase() + k.slice(1)));
+  });
+
+  const statusParam = pharmReqFilter ? `&status=${encodeURIComponent(pharmReqFilter)}` : '';
+  const data = await api('/pharmacy/requests?limit=100' + statusParam);
+  const el = document.getElementById('pharmRequests');
+  if (!el) return;
+
+  if (!data || !data.requests.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No pharmacy requests${pharmReqFilter ? ' with status "' + pharmReqFilter + '"' : ''}</div></div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <table class="patient-table">
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Medication</th>
+          <th>Pharmacy</th>
+          <th>Type</th>
+          <th>Requested By</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.requests.map(r => {
+          const stColor = r.status === 'Completed' ? 'normal' : r.status === 'Failed' ? 'critical' : 'pending';
+          return `
+            <tr>
+              <td>
+                <div class="patient-name" onclick="openPatient('${r.patient_id}')" style="cursor:pointer;">${r.first_name||''} ${r.last_name||''}</div>
+                <div class="patient-sub">${r.patient_id}</div>
+              </td>
+              <td style="font-size:12px;font-weight:600;">${r.medication_name||'—'}</td>
+              <td style="font-size:12px;color:var(--text-sec);">${r.pharmacy_name||'—'}</td>
+              <td><span class="alert-badge pending" style="font-size:10px;">${r.request_type}</span></td>
+              <td style="font-size:12px;color:var(--text-sec);">${r.requested_by||'—'}</td>
+              <td style="font-size:11px;color:var(--text-mute);">${formatDate(r.requested_at)}</td>
+              <td><span class="alert-badge ${stColor}">${r.status}</span></td>
+              <td>
+                ${r.status === 'Processing' ? `
+                  <div style="display:flex;gap:4px;">
+                    <button onclick="updatePharmacyRequest(${r.id},'Completed')" style="font-size:10px;padding:4px 8px;background:var(--green-soft);color:var(--green);border:1px solid var(--green);border-radius:4px;cursor:pointer;white-space:nowrap;">✓ Complete</button>
+                    <button onclick="updatePharmacyRequest(${r.id},'Failed')" style="font-size:10px;padding:4px 8px;background:var(--red-soft);color:var(--red);border:1px solid var(--red);border-radius:4px;cursor:pointer;">✗ Fail</button>
+                  </div>
+                ` : `<span style="font-size:11px;color:var(--text-mute);">${r.completed_at ? formatDate(r.completed_at) : '—'}</span>`}
+              </td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="padding:10px 16px;font-size:12px;color:var(--text-mute);">Showing ${data.requests.length} of ${data.total} requests</div>
+  `;
+}
+
+async function updatePharmacyRequest(id, status) {
+  const result = await api('/pharmacy/request/' + id, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  });
+  if (result?.success) {
+    toast(`Request marked as ${status}`, status === 'Completed' ? 'success' : 'error');
+    loadPharmacyRequests();
+    loadPharmacy();
+    // Refresh drawer if open
+    if (currentPatient) openPatient(currentPatient.patient.patient_id);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Pharmacy Request
+// ══════════════════════════════════════════════════════════════
+async function sendRefillRequest() {
+  if (!currentPatient) return;
+  const p = currentPatient.patient;
+  const meds = currentPatient.pharmacy;
+  if (!meds.length) { toast('No pharmacy records for this patient', 'error'); return; }
+
+  // Use first active med or let user choose (for now, use first)
+  const med = meds.find(m => m.status === 'Active') || meds[0];
+  await doRefillRequest(p.patient_id, med.id, med.medication_name, med.pharmacy_name);
+}
+
+async function sendRefillForMed(rxId, medName, pharmacy) {
+  if (!currentPatient) return;
+  await doRefillRequest(currentPatient.patient.patient_id, rxId, medName, pharmacy);
+}
+
+async function quickRefill(pid, medName, pharmacy, rxId) {
+  await doRefillRequest(pid, rxId, medName, pharmacy);
+}
+
+async function doRefillRequest(pid, rxId, medName, pharmacy) {
+  const result = await api('/pharmacy/request', {
+    method: 'POST',
+    body: JSON.stringify({
+      patient_id: pid,
+      pharmacy_record_id: rxId,
+      request_type: 'Refill',
+      medication_name: medName,
+      pharmacy_name: pharmacy,
+      requested_by: 'SMG Admin',
+    }),
+  });
+
+  if (result?.success) {
+    toast(`✓ Refill request sent for ${medName} to ${pharmacy || 'pharmacy'}`, 'success');
+  } else {
+    toast('Failed to send refill request', 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SSE — Real-time sync
+// ══════════════════════════════════════════════════════════════
+function connectSSE() {
+  try {
+    const es = new EventSource(API + '/upload/events');
+
+    es.addEventListener('connected', () => {
+      setSync('connected');
+    });
+
+    es.addEventListener('file-updated', (e) => {
+      const data = JSON.parse(e.data);
+      toast(`🔄 File updated: ${data.filename}`, 'info');
+      setSync('syncing');
+      setTimeout(() => {
+        loadDashboard();
+        if (currentPage === 'upload') loadFiles();
+        if (currentPage === 'patients') loadPatients();
+        setSync('connected');
+      }, 1500);
+    });
+
+    es.addEventListener('upload-complete', () => {
+      loadDashboard();
+      updateLastSync();
+      // Refresh the active data page so counts are consistent with new badges
+      if (currentPage === 'patients')    loadPatients();
+      if (currentPage === 'eligibility') loadEligibility();
+      if (currentPage === 'claims')      loadClaims();
+      if (currentPage === 'auths')       loadAuths();
+      if (currentPage === 'labs')        loadLabs();
+      if (currentPage === 'pharmacy')    { loadPharmacy(); loadPharmacyRequests(); }
+    });
+
+    es.addEventListener('pharmacy-request', (e) => {
+      const data = JSON.parse(e.data);
+      toast(`💊 New refill request: ${data.medication_name} for ${data.patient_id}`, 'info');
+      if (currentPage === 'pharmacy') { loadPharmacyRequests(); loadPharmacy(); }
+      // Update pending count badge in stat card
+      const el = document.getElementById('p-requests');
+      if (el) el.textContent = parseInt(el.textContent || '0') + 1;
+    });
+
+    es.addEventListener('pharmacy-request-updated', (e) => {
+      const data = JSON.parse(e.data);
+      if (currentPage === 'pharmacy') { loadPharmacyRequests(); loadPharmacy(); }
+    });
+
+    es.onerror = () => {
+      setSync('offline');
+      // Retry in 5s
+      setTimeout(connectSSE, 5000);
+      es.close();
+    };
+  } catch (e) {
+    setSync('offline');
+  }
+}
+
+function setSync(state) {
+  const dot = document.getElementById('syncDot');
+  const status = document.getElementById('syncStatus');
+  dot.className = 'sync-dot' + (state === 'offline' ? ' offline' : state === 'syncing' ? ' syncing' : '');
+  status.textContent = state === 'connected' ? 'Live sync active' : state === 'syncing' ? 'Syncing...' : 'Offline';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Utilities
+// ══════════════════════════════════════════════════════════════
+function formatDate(str) {
+  if (!str) return '—';
+  try {
+    const d = new Date(str);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return str; }
+}
+
+function isOverdue(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr) < new Date();
+}
+
+function statusPill(status) {
+  const map = { done: 'done', processing: 'processing', error: 'error', pending: 'pending' };
+  const cls = map[status] || 'pending';
+  return `<span class="status-pill ${cls}"><span class="status-dot"></span>${status}</span>`;
+}
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Init
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  updateLastSync();
+
+  // Check if we already have a valid session token
+  const token = getToken();
+  if (token) {
+    try {
+      const r = await fetch(API + '/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (r.ok) {
+        document.getElementById('login-overlay').classList.remove('active');
+        loadDashboard();
+        connectSSE();
+      } else {
+        clearToken();
+      }
+    } catch(_) {}
+  }
+
+  // Keyboard shortcut: Esc closes drawer
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+});
+</script>
+
+<!-- ══ DEMO GUIDE ══ -->
+<style>
+#demo-fab { position:fixed; bottom:24px; right:24px; z-index:9000; background:#6366F1; color:#fff; border:none; border-radius:50px; padding:10px 18px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 4px 20px rgba(99,102,241,0.5); letter-spacing:.3px; }
+#demo-fab:hover { background:#4F46E5; }
+#demo-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9001; align-items:center; justify-content:center; }
+#demo-overlay.open { display:flex; }
+#demo-modal { background:#1A1A2E; border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:28px; max-width:480px; width:calc(100% - 40px); max-height:80vh; overflow-y:auto; color:#E2E8F0; font-family:inherit; }
+.demo-h { font-size:16px; font-weight:800; color:#fff; margin:0 0 4px; }
+.demo-sub { font-size:12px; color:#64748B; margin:0 0 20px; }
+.demo-section { margin-bottom:18px; }
+.demo-section-title { font-size:10px; font-weight:700; letter-spacing:.8px; color:#6366F1; text-transform:uppercase; margin-bottom:8px; }
+.demo-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.demo-row:last-child { border-bottom:none; }
+.demo-label { font-size:12px; color:#94A3B8; }
+.demo-val { font-size:12px; font-weight:600; color:#fff; font-family:'Courier New',monospace; background:rgba(99,102,241,0.12); padding:3px 8px; border-radius:5px; cursor:pointer; }
+.demo-val:hover { background:rgba(99,102,241,0.25); }
+.demo-close { width:100%; margin-top:16px; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94A3B8; font-family:inherit; font-size:13px; cursor:pointer; }
+.demo-close:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.demo-note { font-size:11px; color:#475569; line-height:1.5; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.06); }
+</style>
+
+<button id="demo-fab" onclick="document.getElementById('demo-overlay').classList.add('open')">Demo Guide</button>
+
+<div id="demo-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div id="demo-modal">
+    <p class="demo-h">SMG Bridge · Demo Guide</p>
+    <p class="demo-sub">Click any value to copy it to clipboard</p>
+
+    <div class="demo-section">
+      <div class="demo-section-title">Admin Portal</div>
+      <div class="demo-row"><span class="demo-label">Username</span><span class="demo-val" onclick="copyDemo(this)">admin</span></div>
+      <div class="demo-row"><span class="demo-label">Password</span><span class="demo-val" onclick="copyDemo(this)">smgadmin</span></div>
+      <div class="demo-row"><span class="demo-label">Export CSV</span><span class="demo-val" onclick="copyDemo(this)">Available on each data page (top-right button)</span></div>
+    </div>
+
+    <div class="demo-section">
+      <div class="demo-section-title">Doctor Portal (bridge-doctor.html)</div>
+      <div class="demo-row"><span class="demo-label">NPI — Dr. Oh, Michael</span><span class="demo-val" onclick="copyDemo(this)">4455667788</span></div>
+      <div class="demo-row"><span class="demo-label">NPI — Dr. Choi, Brian</span><span class="demo-val" onclick="copyDemo(this)">5544332211</span></div>
+      <div class="demo-row"><span class="demo-label">NPI — Dr. Park, Steven</span><span class="demo-val" onclick="copyDemo(this)">0987654321</span></div>
+      <div class="demo-row"><span class="demo-label">Tip</span><span class="demo-label" style="color:#64748B;">Enter any name + NPI → Start Day</span></div>
+    </div>
+
+    <div class="demo-section">
+      <div class="demo-section-title">Broker Portal (bridge-broker.html)</div>
+      <div class="demo-row"><span class="demo-label">License (pre-assigned members)</span><span class="demo-val" onclick="copyDemo(this)">CA-0123456</span></div>
+      <div class="demo-row"><span class="demo-label">Members assigned</span><span class="demo-label" style="color:#64748B;">150 patients pre-linked to this license</span></div>
+    </div>
+
+    <div class="demo-section">
+      <div class="demo-section-title">Member App (bridge-members-v2.html)</div>
+      <div class="demo-row"><span class="demo-label">Member ID (Korean · Jiyeon Nam)</span><span class="demo-val" onclick="copyDemo(this)">MOL695501</span></div>
+      <div class="demo-row"><span class="demo-label">Member ID (Korean · Nancy Jeon)</span><span class="demo-val" onclick="copyDemo(this)">UNI105935</span></div>
+      <div class="demo-row"><span class="demo-label">Patient ID direct</span><span class="demo-val" onclick="copyDemo(this)">SMG-004</span></div>
+    </div>
+
+    <div class="demo-section">
+      <div class="demo-section-title">SMG Portal (bridge-smg.html)</div>
+      <div class="demo-row"><span class="demo-label">Access</span><span class="demo-label" style="color:#64748B;">Open directly — all tabs load live data</span></div>
+      <div class="demo-row"><span class="demo-label">Panel size</span><span class="demo-label" style="color:#64748B;">10,000 patients · 5 payers · 20,000 providers</span></div>
+    </div>
+
+    <p class="demo-note">All data is synthetic. Auth is disabled in demo mode. Click any blue value above to copy it to your clipboard.</p>
+    <button class="demo-close" onclick="document.getElementById('demo-overlay').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<script>
+function copyDemo(el) {
+  navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+    const orig = el.textContent;
+    el.textContent = 'Copied!';
+    setTimeout(() => { el.textContent = orig; }, 1200);
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

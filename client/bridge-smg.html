@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge — SMG Internal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #0D1421;
+    --card: #162032;
+    --card2: #1C2B3F;
+    --primary: #0A0F1C;
+    --accent: #3B82F6;
+    --accent-soft: rgba(59,130,246,0.14);
+    --text: #E2E8F0;
+    --text-sec: #7A9AB8;
+    --text-mute: #3D5A75;
+    --border: #1C2F47;
+    --border2: #243A52;
+    --green: #10B981;
+    --green-soft: rgba(16,185,129,0.13);
+    --amber: #F59E0B;
+    --amber-soft: rgba(245,158,11,0.13);
+    --red: #EF4444;
+    --red-soft: rgba(239,68,68,0.13);
+    --gold: #F5D060;
+    --gold-soft: rgba(245,208,96,0.12);
+    --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #050A12;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 20px;
+  }
+
+  .phone {
+    width: 393px; height: 852px;
+    background: var(--bg);
+    border-radius: 48px; overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.06);
+    display: flex; flex-direction: column; position: relative;
+  }
+
+  /* ── Login ── */
+  .login-screen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #030810 0%, #0A1628 50%, #0F2040 100%);
+    z-index: 600; overflow-y: auto; padding: 48px 28px 40px;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .login-screen::-webkit-scrollbar { display: none; }
+  .login-screen.su-dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  .su-title { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; margin-bottom: 4px; }
+  .su-subtitle { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+  .su-section-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; }
+  .su-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .su-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .su-input {
+    flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 14px;
+    font-family: 'Inter', sans-serif; outline: none;
+  }
+  .su-input::placeholder { color: rgba(255,255,255,0.22); }
+  .su-input:focus { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .su-select {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 14px;
+    font-family: 'Inter', sans-serif; outline: none; appearance: none;
+    cursor: pointer; margin-bottom: 12px;
+  }
+  .su-select option { background: #0A1628; color: var(--text); }
+  .su-btn {
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: 12px; padding: 15px; font-size: 15px;
+    font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px;
+  }
+  .smg-logo-light { height: 62px; filter: brightness(0) invert(1); opacity: 0.85; display: block; }
+
+  /* ── Greeting ── */
+  .greeting {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #030810 0%, #0B1A2E 50%, #102540 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    z-index: 500; padding: 52px 32px 52px;
+    transition: opacity 0.5s ease, transform 0.5s ease; cursor: pointer;
+  }
+  .greeting.dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  .greeting-top { width: 100%; display: flex; align-items: flex-start; justify-content: space-between; }
+  .greeting-badge {
+    text-align: right;
+  }
+  .greeting-badge-role { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+  .greeting-badge-sub { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.18); margin-top: 2px; }
+  .greeting-mid { display: flex; flex-direction: column; align-items: center; }
+  .greeting-ring { margin-bottom: 26px; }
+  .greeting-name { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 8px; text-align: center; }
+  .greeting-status { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 4px; }
+  .greeting-sub { font-size: 12px; color: rgba(255,255,255,0.25); text-align: center; }
+  .greeting-bottom { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; }
+  .greeting-pills { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+  .greeting-pill { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.65); font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; }
+  .greeting-pill.alert { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.3); color: #FCA5A5; }
+  .greeting-pill.warn  { background: rgba(245,158,11,0.18); border-color: rgba(245,158,11,0.3); color: #FDE68A; }
+  .greeting-pill.info  { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.3); color: #93C5FD; }
+  .greeting-cta { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); color: var(--text); font-size: 15px; font-weight: 600; padding: 14px 0; border-radius: 30px; cursor: pointer; width: 100%; }
+
+  /* ── Status bar ── */
+  .status-bar { height: 52px; background: var(--primary); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .status-bar-logo { position: absolute; left: 50%; transform: translateX(-50%); }
+  .status-time { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35); position: absolute; left: 20px; }
+  .status-right { position: absolute; right: 16px; display: flex; align-items: center; gap: 6px; }
+  .status-role { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
+  .status-alert { background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; }
+
+  /* ── Screen ── */
+  .screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .content { flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .content::-webkit-scrollbar { display: none; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Tab bar ── */
+  .tab-bar { height: 62px; background: var(--primary); display: flex; align-items: stretch; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.06); }
+  .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; border: none; background: transparent; color: rgba(255,255,255,0.28); font-family: 'Inter', sans-serif; transition: color 0.15s; }
+  .tab-btn.active { color: var(--accent); }
+  .tab-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tab-label { font-size: 9px; font-weight: 700; letter-spacing: 0.4px; }
+
+  /* ── Section header ── */
+  .sec-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 6px; }
+  .sec-hdr:first-child { padding-top: 14px; }
+  .sec-title { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: 0.8px; text-transform: uppercase; }
+  .sec-link { font-size: 11px; font-weight: 600; color: var(--accent); }
+
+  /* ── Cards ── */
+  .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); margin: 0 16px 10px; overflow: hidden; }
+
+  /* ── Stat grid ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; margin-bottom: 10px; }
+  .stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 12px 14px; }
+  .stat-val { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .stat-val.blue { color: var(--accent); }
+  .stat-val.green { color: var(--green); }
+  .stat-val.amber { color: var(--amber); }
+  .stat-val.red { color: var(--red); }
+  .stat-lbl { font-size: 10px; color: var(--text-mute); margin-top: 3px; font-weight: 500; }
+  .stat-delta { font-size: 10px; font-weight: 600; margin-top: 5px; }
+  .delta-up { color: var(--green); }
+  .delta-dn { color: var(--red); }
+  .delta-warn { color: var(--amber); }
+
+  /* ── Alert feed row ── */
+  .alert-row { display: flex; align-items: flex-start; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; cursor: pointer; }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .alert-body { flex: 1; }
+  .alert-text { font-size: 12px; color: var(--text); line-height: 1.4; font-weight: 500; }
+  .alert-sub { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
+  .alert-age { font-size: 10px; color: var(--text-mute); flex-shrink: 0; }
+
+  /* ── Data row ── */
+  .data-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; cursor: pointer; transition: background 0.1s; }
+  .data-row:last-child { border-bottom: none; }
+  .data-row:active { background: var(--card2); }
+  .data-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .avatar-red    { background: rgba(239,68,68,0.15);  color: var(--red); }
+  .avatar-amber  { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .avatar-green  { background: rgba(16,185,129,0.15); color: var(--green); }
+  .avatar-blue   { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .avatar-muted  { background: rgba(255,255,255,0.05); color: var(--text-mute); }
+  .data-info { flex: 1; min-width: 0; }
+  .data-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .data-sub { font-size: 10px; color: var(--text-mute); margin-top: 1px; }
+  .data-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .tag { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+  .tag-red    { background: var(--red-soft);   color: var(--red); }
+  .tag-amber  { background: var(--amber-soft); color: var(--amber); }
+  .tag-green  { background: var(--green-soft); color: var(--green); }
+  .tag-blue   { background: var(--accent-soft);color: var(--accent); }
+  .tag-gold   { background: var(--gold-soft);  color: var(--gold); }
+  .tag-muted  { background: rgba(255,255,255,0.06); color: var(--text-mute); }
+  .data-days  { font-size: 10px; color: var(--text-mute); }
+
+  /* ── Filter chips ── */
+  .filter-bar { background: var(--card); padding: 10px 14px; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .chip { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 16px; border: 1px solid var(--border2); background: transparent; color: var(--text-mute); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .chip.chip-red.active   { background: var(--red);   border-color: var(--red); }
+  .chip.chip-amber.active { background: var(--amber); border-color: var(--amber); }
+  .chip.chip-green.active { background: var(--green); border-color: var(--green); }
+
+  /* ── Progress bar ── */
+  .prog-wrap { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .prog-wrap:last-child { border-bottom: none; }
+  .prog-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .prog-lbl { font-size: 12px; font-weight: 500; color: var(--text); }
+  .prog-meta { font-size: 10px; color: var(--text-mute); }
+  .prog-track { height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .prog-target { font-size: 9px; color: var(--text-mute); text-align: right; }
+
+  /* ── Competitive table ── */
+  .comp-row { display: flex; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--border); gap: 8px; }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-metric { font-size: 11px; color: var(--text-sec); flex: 1; }
+  .comp-smg { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 52px; text-align: center; }
+  .comp-vs { font-size: 9px; color: var(--text-mute); min-width: 24px; text-align: center; }
+  .comp-rival { font-size: 12px; font-weight: 600; min-width: 52px; text-align: center; }
+  .comp-rival.win { color: var(--green); }
+  .comp-rival.lose { color: var(--red); }
+
+  /* ── App metric row ── */
+  .app-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
+  .app-row:last-child { border-bottom: none; }
+  .app-name { font-size: 12px; color: var(--text); flex: 1; font-weight: 500; }
+  .app-val { font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
+  .app-target { font-size: 10px; color: var(--text-mute); min-width: 70px; text-align: right; }
+  .app-status { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+  .app-pass { background: var(--green-soft); color: var(--green); }
+  .app-fail { background: var(--red-soft); color: var(--red); }
+
+  /* ── Overlays ── */
+  .overlay {
+    position: absolute; inset: 0; background: var(--bg);
+    z-index: 400; display: none; flex-direction: column; overflow: hidden;
+  }
+  .overlay.open { display: flex; }
+  .overlay-header { background: var(--primary); padding: 14px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .back-btn { background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .back-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .overlay-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .overlay-sub { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+  .overlay-body { flex: 1; overflow-y: auto; padding: 14px 16px 24px; }
+  .overlay-body::-webkit-scrollbar { display: none; }
+
+  /* ── Outreach action sheet ── */
+  .outreach-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-radius: 20px 20px 0 0;
+    border: 1px solid var(--border); border-bottom: none;
+    z-index: 450; padding: 20px 18px 32px;
+    transform: translateY(100%); transition: transform 0.3s ease;
+    max-height: 80%;
+  }
+  .outreach-sheet.open { transform: translateY(0); }
+  .sheet-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 16px; }
+  .sheet-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .sheet-meta { font-size: 11px; color: var(--text-mute); margin-bottom: 14px; }
+  .ai-box { background: var(--bg); border: 1px solid var(--border2); border-radius: 10px; padding: 12px; margin-bottom: 14px; }
+  .ai-label { font-size: 9px; font-weight: 700; color: var(--accent); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; }
+  .ai-text { font-size: 12px; color: var(--text-sec); line-height: 1.6; }
+  .sheet-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sheet-btn { flex: 1; min-width: 80px; font-size: 11px; font-weight: 700; padding: 9px 6px; border-radius: 9px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; }
+  .btn-call   { background: var(--green-soft); color: var(--green); }
+  .btn-notify { background: var(--accent-soft); color: var(--accent); }
+  .btn-log    { background: rgba(255,255,255,0.06); color: var(--text-sec); }
+  .btn-esc    { background: var(--red-soft); color: var(--red); }
+
+  /* ── Inline detail field ── */
+  .detail-field { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .detail-field:last-child { border-bottom: none; }
+  .detail-key { font-size: 11px; color: var(--text-mute); font-weight: 500; }
+  .detail-val { font-size: 12px; font-weight: 600; color: var(--text); text-align: right; }
+
+  /* ── Priority dot ── */
+  .pri-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Payer card ── */
+  .payer-banner { background: linear-gradient(135deg, #0B1E35, #122840); border-radius: 12px; border: 1px solid var(--border); padding: 14px; margin: 0 16px 10px; }
+  .payer-plan { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px; }
+  .payer-star { font-size: 32px; font-weight: 800; color: var(--gold); letter-spacing: -1px; }
+  .payer-star-lbl { font-size: 11px; color: var(--text-mute); }
+  .payer-arrow { font-size: 11px; font-weight: 600; color: var(--green); margin-left: 6px; }
+
+  /* ── Sim log row ── */
+  .sim-row { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .sim-row:last-child { border-bottom: none; }
+  .sim-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .sim-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .sim-date { font-size: 10px; color: var(--text-mute); }
+  .sim-result { font-size: 11px; color: var(--text-sec); line-height: 1.4; }
+
+  /* scrollbar */
+  .overlay-body::-webkit-scrollbar { display: none; }
+
+  /* ── Toast ── */
+  .toast { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1C2B3F; border: 1px solid var(--border2); color: var(--text); font-size: 11px; font-weight: 500; padding: 9px 16px; border-radius: 20px; white-space: nowrap; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 700; }
+  .toast.show { opacity: 1; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ═══════ LOGIN ═══════ -->
+  <div class="login-screen" id="loginScreen">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:52px;">
+      <div style="text-align:right;">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.5px;font-family:'Inter',sans-serif;">INTERNAL</div>
+        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.15);font-family:'Inter',sans-serif;">SMG Operations Portal</div>
+      </div>
+    </div>
+    <div class="su-title">SMG Control Room</div>
+    <div class="su-subtitle">Internal access only</div>
+
+    <form onsubmit="handleSMGLogin(event)">
+      <div class="su-section-label" style="border-top:none;padding-top:0;margin-top:0;">Identity</div>
+      <div class="su-row">
+        <div style="flex:1;">
+          <div class="su-label">First Name</div>
+          <input class="su-input" id="smgFirst" placeholder="First Name" required style="width:100%;">
+        </div>
+        <div style="flex:1;">
+          <div class="su-label">Last Name</div>
+          <input class="su-input" id="smgLast" placeholder="Last Name" required style="width:100%;">
+        </div>
+      </div>
+      <div class="su-label">Employee ID</div>
+      <div class="su-row">
+        <input class="su-input" id="smgEmpId" placeholder="Employee ID" required style="width:100%;">
+      </div>
+
+      <div class="su-section-label">Role & Access</div>
+      <div class="su-label">Role</div>
+      <select class="su-select" id="smgRole">
+        <option value="coordinator">Care Coordinator</option>
+        <option value="operations">Operations Team</option>
+        <option value="physrel">Physician Relations</option>
+        <option value="leadership" selected>Leadership / Strategy</option>
+        <option value="product">App / Product Team</option>
+      </select>
+
+      <button type="submit" class="su-btn">Enter Control Room</button>
+    </form>
+  </div>
+
+  <!-- ═══════ MEMBER DETAIL OVERLAY ═══════ -->
+  <div class="overlay" id="memberOverlay">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('memberOverlay')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="overlay-title" id="moName">—</div>
+        <div class="overlay-sub" id="moSub">—</div>
+      </div>
+    </div>
+    <div class="overlay-body" id="moBody"></div>
+  </div>
+
+  <!-- ═══════ PHYSICIAN OVERLAY ═══════ -->
+  <div class="overlay" id="physOverlay">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('physOverlay')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="overlay-title" id="poName">—</div>
+        <div class="overlay-sub" id="poSub">—</div>
+      </div>
+    </div>
+    <div class="overlay-body" id="poBody"></div>
+  </div>
+
+  <!-- ═══════ BROKER OVERLAY ═══════ -->
+  <div class="overlay" id="brokerOverlay">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('brokerOverlay')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div>
+        <div class="overlay-title" id="boName">—</div>
+        <div class="overlay-sub" id="boSub">—</div>
+      </div>
+    </div>
+    <div class="overlay-body" id="boBody"></div>
+  </div>
+
+  <!-- ═══════ OUTREACH ACTION SHEET ═══════ -->
+  <div class="outreach-sheet" id="outreachSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheetName">—</div>
+    <div class="sheet-meta" id="sheetMeta">—</div>
+    <div class="ai-box">
+      <div class="ai-label">Bridge AI — Suggested Outreach</div>
+      <div class="ai-text" id="sheetAI">—</div>
+    </div>
+    <div class="sheet-actions">
+      <button class="sheet-btn btn-call" onclick="sheetAction('call')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:3px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.83a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call
+      </button>
+      <button class="sheet-btn btn-notify" onclick="sheetAction('notify')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:3px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notify Family
+      </button>
+      <button class="sheet-btn btn-log" onclick="sheetAction('log')">Log Attempt</button>
+      <button class="sheet-btn btn-esc" onclick="sheetAction('escalate')">Escalate</button>
+    </div>
+  </div>
+
+  <!-- ═══════ GREETING ═══════ -->
+  <div class="greeting" id="greeting" onclick="dismissGreeting()">
+    <div class="greeting-top">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:52px;">
+      <div class="greeting-badge">
+        <div class="greeting-badge-role" id="greetRole">LEADERSHIP</div>
+        <div class="greeting-badge-sub">SMG Operations Portal</div>
+      </div>
+    </div>
+    <div class="greeting-mid">
+      <div class="greeting-ring">
+        <!-- r=64, circumference=402.1, 80.8% → dashoffset=77.2 -->
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="11"/>
+          <g transform="rotate(-90 80 80)">
+            <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(59,130,246,0.12)" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="402.1" stroke-linecap="round"/>
+            <circle cx="80" cy="80" r="64" fill="none" stroke="#3B82F6" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="77.2" stroke-linecap="round"/>
+          </g>
+          <text x="80" y="74" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="30" font-weight="800" fill="#E2E8F0" dominant-baseline="central">80.8%</text>
+          <text x="80" y="94" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="600" fill="rgba(255,255,255,0.3)" dominant-baseline="central" letter-spacing="0.5">MEMBER ENGAGEMENT</text>
+        </svg>
+      </div>
+      <div class="greeting-name" id="greetName">Welcome back, James</div>
+      <div class="greeting-status" id="greetStatus">Leadership · SMG Operations</div>
+      <div class="greeting-sub">Tuesday, March 18 · 9:41 AM</div>
+    </div>
+    <div class="greeting-bottom">
+      <div class="greeting-pills">
+        <div class="greeting-pill alert">4,112 at-risk members</div>
+        <div class="greeting-pill warn">28 delayed referrals</div>
+        <div class="greeting-pill info">8 escalations open</div>
+      </div>
+      <button class="greeting-cta">Enter Control Room</button>
+    </div>
+  </div>
+
+  <!-- ═══════ STATUS BAR ═══════ -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-bar-logo">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:28px;">
+    </div>
+    <div class="status-right">
+      <span class="status-role" id="statusRole">INTERNAL</span>
+      <span class="status-alert">8</span>
+    </div>
+  </div>
+
+  <!-- ═══════ SCREEN ═══════ -->
+  <div class="screen">
+    <div class="content" id="content">
+
+      <!-- ━━━━━━━━━━ PULSE ━━━━━━━━━━ -->
+      <div class="tab-pane active" id="pane-pulse">
+
+        <div class="stat-grid" style="margin-top:14px;">
+          <div class="stat-card">
+            <div class="stat-val blue" id="smg-stat-total">88,247</div>
+            <div class="stat-lbl">Total Members</div>
+            <div class="stat-delta delta-up" id="smg-stat-total-d">↑ +412 this quarter</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val red" id="smg-stat-risk">4,112</div>
+            <div class="stat-lbl">At-Risk of Churn</div>
+            <div class="stat-delta delta-warn" id="smg-stat-risk-d">⚠ 4.7% of panel</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val green" id="smg-stat-caregap">67%</div>
+            <div class="stat-lbl">Care Gap Closure</div>
+            <div class="stat-delta delta-up">↑ +3% vs last qtr</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val amber" id="smg-stat-pending">12%</div>
+            <div class="stat-lbl">Pending Claims</div>
+            <div class="stat-delta delta-warn" id="smg-stat-pending-d">⚠ above 10% target</div>
+          </div>
+        </div>
+
+        <div class="sec-hdr"><span class="sec-title">Active Alerts</span><span class="sec-link" id="smg-alert-count">View all 23</span></div>
+        <div class="card">
+          <div class="alert-row" onclick="switchTab('members')">
+            <div class="alert-dot" style="background:var(--red);"></div>
+            <div class="alert-body">
+              <div class="alert-text">4,112 members flagged at-risk of churn this quarter</div>
+              <div class="alert-sub">Module 1 · Behavioral signal — PCP switching + no-show pattern</div>
+            </div>
+            <div class="alert-age">now</div>
+          </div>
+          <div class="alert-row" onclick="switchTab('network')">
+            <div class="alert-dot" style="background:var(--red);"></div>
+            <div class="alert-body">
+              <div class="alert-text">Lee Agency escalation unassigned for 1 day — SLA breach</div>
+              <div class="alert-sub">Module 4 · Broker escalation queue · SMG One SLA: 1hr</div>
+            </div>
+            <div class="alert-age">1d</div>
+          </div>
+          <div class="alert-row" onclick="switchTab('payer')">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">HCC recapture rate 71% — 9 pts below payer target (80%)</div>
+              <div class="alert-sub">Module 5 · MA-01 · Risk score gap may affect contract renewal</div>
+            </div>
+            <div class="alert-age">2d</div>
+          </div>
+          <div class="alert-row" onclick="switchTab('payer')">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">STAR rating 3.8 — 0.2 below 4.0 target for MA-01</div>
+              <div class="alert-sub">Module 5 · AWV completion rate primary driver (58%)</div>
+            </div>
+            <div class="alert-age">2d</div>
+          </div>
+          <div class="alert-row" onclick="switchTab('intel')">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">30-day child retention 41% — below 45% target</div>
+              <div class="alert-sub">Module 7 · App performance · P2 archetype drop-off at family sharing</div>
+            </div>
+            <div class="alert-age">3d</div>
+          </div>
+          <div class="alert-row" onclick="switchTab('network')">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">Dr. Yoon — payment dispute open 62 days, app engagement zero</div>
+              <div class="alert-sub">Module 3 · Physician churn signal — at-risk of leaving network</div>
+            </div>
+            <div class="alert-age">5d</div>
+          </div>
+        </div>
+
+        <div class="sec-hdr"><span class="sec-title">Network Snapshot</span></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val">312</div>
+            <div class="stat-lbl">PCPs in network</div>
+            <div class="stat-delta" style="color:var(--text-mute);">87 SMG One</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">148</div>
+            <div class="stat-lbl">Active brokers</div>
+            <div class="stat-delta" style="color:var(--text-mute);">31 SMG One</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val blue">3.8</div>
+            <div class="stat-lbl">STAR rating (MA-01)</div>
+            <div class="stat-delta delta-warn">⚠ target: 4.0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val green">342</div>
+            <div class="stat-lbl">Open referrals</div>
+            <div class="stat-delta delta-dn">28 delayed &gt;5d</div>
+          </div>
+        </div>
+
+      </div><!-- /pane-pulse -->
+
+      <!-- ━━━━━━━━━━ MEMBERS ━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-members">
+
+        <!-- Population overview -->
+        <div class="sec-hdr" style="padding-top:14px;"><span class="sec-title">Member Population</span></div>
+        <div class="card">
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">Active & Engaged</span><span class="prog-meta" style="color:var(--green);" id="smg-pop-active">71,340 · 80.8%</span></div>
+            <div class="prog-track"><div class="prog-fill" id="smg-pop-active-bar" style="width:80.8%;background:var(--green);"></div></div>
+            <div class="prog-target">target: &gt;82%</div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl" style="color:var(--red);">Termed / Inactive ⚠</span><span class="prog-meta" style="color:var(--red);" id="smg-pop-risk">4,112 · 4.7%</span></div>
+            <div class="prog-track"><div class="prog-fill" id="smg-pop-risk-bar" style="width:4.7%;background:var(--red);"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">Churned (Last 90d)</span><span class="prog-meta" style="color:var(--text-mute);">2,891 · 3.3%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:3.3%;background:var(--text-mute);"></div></div>
+          </div>
+          <div class="prog-wrap" style="border-bottom:none;">
+            <div class="prog-hdr"><span class="prog-lbl">Care Gap Closure</span><span class="prog-meta" style="color:var(--accent);">67% ↑ +3%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:67%;background:var(--accent);"></div></div>
+            <div class="prog-target">target: 75%</div>
+          </div>
+        </div>
+
+        <!-- At-risk members -->
+        <div class="sec-hdr"><span class="sec-title">At-Risk Members</span><span class="sec-link" id="smg-risk-count">4,112 total</span></div>
+        <div class="filter-bar">
+          <div class="chip active" onclick="filterChip(this,'members-risk','all')">All</div>
+          <div class="chip chip-red" onclick="filterChip(this,'members-risk','pcp')">PCP Switching</div>
+          <div class="chip chip-amber" onclick="filterChip(this,'members-risk','noshow')">No-Shows</div>
+          <div class="chip chip-amber" onclick="filterChip(this,'members-risk','loweng')">Low Engagement</div>
+        </div>
+        <div class="card" id="members-risk">
+          <div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">Loading members…</div>
+        </div>
+
+        <!-- Live Patient Lookup -->
+        <div class="sec-hdr" style="margin-top:4px;"><span class="sec-title">Live Patient Lookup</span><span class="sec-link" id="smg-pt-total-lbl">— patients</span></div>
+        <div class="card" style="padding:10px 14px 6px;">
+          <input id="smgPatSearch" type="text" placeholder="Search by name or Patient ID..."
+            style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-bottom:8px;"
+            oninput="smgSearchPatients(this.value)">
+          <div id="smgPatResults"></div>
+        </div>
+
+        <!-- Outreach queue -->
+        <div class="sec-hdr"><span class="sec-title">Today's Outreach Queue</span><span class="sec-link">18 open</span></div>
+        <div class="card">
+          <div class="data-row" onclick="openOutreach('kim-s','Kim, Soo-Young','Missed annual diabetic eye exam · 14 months overdue','Mrs. Kim has not had her annual diabetic eye exam in 14 months. Her daughter (caregiver) is in San Jose and last opened the app 3 days ago. Recommend calling Mrs. Kim directly in Korean (preferred). If no answer within 24h, send app notification to daughter with scheduling link. Note: her BP was elevated overnight — mention both issues in one call.')">
+            <div class="pri-dot" style="background:var(--red);"></div>
+            <div class="data-info">
+              <div class="data-name">Kim, Soo-Young</div>
+              <div class="data-sub">Missed annual exam · Assigned: Maria S.</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-red">High</span>
+            </div>
+          </div>
+          <div class="data-row" onclick="openOutreach('park-j','Park, Ji-Young','Medication adherence — 3 missed metformin doses','Mr. Park has missed his morning metformin three consecutive days. Caregiver is listed as spouse (at home). Best contact window: 9–11 AM (Korean preferred). Suggest confirming pill organizer setup and offering a pharmacy delivery refill. If no response, flag for physician review.')">
+            <div class="pri-dot" style="background:var(--red);"></div>
+            <div class="data-info">
+              <div class="data-name">Park, Ji-Young</div>
+              <div class="data-sub">Medication overdue · Assigned: James P.</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-red">High</span>
+            </div>
+          </div>
+          <div class="data-row" onclick="openOutreach('lee-m','Lee, Mi-Kyung','Care gap: A1C test overdue 6 months','Ms. Lee's last A1C was 8.4% and is now overdue. No caregiver on file — solo outreach only. She has not opened the Bridge app in 43 days (low engagement risk). Prefer text message outreach first, then call if no reply. Offer home lab draw option as incentive.')">
+            <div class="pri-dot" style="background:var(--amber);"></div>
+            <div class="data-info">
+              <div class="data-name">Lee, Mi-Kyung</div>
+              <div class="data-sub">Care gap: A1C test · Unassigned</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-amber">Medium</span>
+              <button class="sheet-btn btn-notify" style="font-size:9px;padding:4px 8px;" onclick="event.stopPropagation();claimOutreach(this)">Claim</button>
+            </div>
+          </div>
+          <div class="data-row" onclick="openOutreach('choi-h','Choi, Hana','No visit in 6 months — care gap accumulating','Ms. Choi has not been seen in 6 months. She has 2 open care gaps: eye exam and nephrology follow-up. Daughter is active on the caregiver app. Recommend messaging daughter first — she has higher response rate than patient. Offer virtual visit as first step.')">
+            <div class="pri-dot" style="background:var(--amber);"></div>
+            <div class="data-info">
+              <div class="data-name">Choi, Hana</div>
+              <div class="data-sub">No visit 6 months · Unassigned</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-amber">Medium</span>
+              <button class="sheet-btn btn-notify" style="font-size:9px;padding:4px 8px;" onclick="event.stopPropagation();claimOutreach(this)">Claim</button>
+            </div>
+          </div>
+          <div class="data-row">
+            <div class="pri-dot" style="background:var(--green);"></div>
+            <div class="data-info">
+              <div class="data-name">Jung, Young-Sook</div>
+              <div class="data-sub">Benefits unused · Auto-notify queued</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-green">Auto</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pane-members -->
+
+      <!-- ━━━━━━━━━━ NETWORK ━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-network">
+
+        <!-- Physician overview -->
+        <div class="sec-hdr" style="padding-top:14px;"><span class="sec-title">Physician Network</span></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val">312</div>
+            <div class="stat-lbl">Total PCPs</div>
+            <div class="stat-delta" style="color:var(--gold);">87 SMG One</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val blue">65%</div>
+            <div class="stat-lbl">App active</div>
+            <div class="stat-delta" style="color:var(--text-mute);">203 physicians</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val green">84%</div>
+            <div class="stat-lbl">Top-quartile closure</div>
+            <div class="stat-delta delta-dn">Bottom avg: 41%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val amber">9%</div>
+            <div class="stat-lbl">Claims late &gt;30d</div>
+            <div class="stat-delta delta-dn">23 disputed open</div>
+          </div>
+        </div>
+
+        <!-- Physician at-risk -->
+        <div class="sec-hdr"><span class="sec-title">Physician Network</span><span class="sec-link" id="phys-count-lbl">Loading…</span></div>
+        <div class="card" id="phys-network-rows">
+          <div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">Loading physicians…</div>
+        </div>
+
+        <!-- Broker overview -->
+        <div class="sec-hdr"><span class="sec-title">Broker Network</span></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val">148</div>
+            <div class="stat-lbl">Total brokers</div>
+            <div class="stat-delta" style="color:var(--gold);">31 SMG One</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val blue">+225</div>
+            <div class="stat-lbl">Net enrollments (90d)</div>
+            <div class="stat-delta delta-up">412 in, 187 out</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val amber">28</div>
+            <div class="stat-lbl">Referrals delayed &gt;5d</div>
+            <div class="stat-delta delta-warn">Avg resolution: 2.8d</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val red">8</div>
+            <div class="stat-lbl">Escalations open</div>
+            <div class="stat-delta delta-dn">2 breaching SLA</div>
+          </div>
+        </div>
+
+        <!-- Broker escalation queue -->
+        <div class="sec-hdr"><span class="sec-title">Open Broker Escalations</span><span class="sec-link" id="broker-esc-lbl">Loading…</span></div>
+        <div class="card" id="broker-esc-rows">
+          <div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">Loading escalations…</div>
+        </div>
+
+        <!-- SMG One upgrade candidates -->
+        <div class="sec-hdr"><span class="sec-title">SMG One Upgrade Candidates</span></div>
+        <div class="card">
+          <div class="data-row" onclick="openBrokerOverlay('sunbrokers')">
+            <div class="data-avatar avatar-green">SB</div>
+            <div class="data-info">
+              <div class="data-name">Sun & Associates</div>
+              <div class="data-sub">22 members · 0 escalations · 4.8★ satisfaction</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-gold">Offer One</span>
+            </div>
+          </div>
+          <div class="data-row" onclick="openBrokerOverlay('choibrokers')">
+            <div class="data-avatar avatar-green">CB</div>
+            <div class="data-info">
+              <div class="data-name">Choi Insurance Group</div>
+              <div class="data-sub">18 members · 1 escalation · 4.6★ satisfaction</div>
+            </div>
+            <div class="data-right">
+              <span class="tag tag-gold">Offer One</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pane-network -->
+
+      <!-- ━━━━━━━━━━ PAYER ━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-payer">
+
+        <!-- Live payer breakdown -->
+        <div class="sec-hdr" style="padding-top:14px;"><span class="sec-title">Payer Breakdown</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">Live · from eligibility data</span></div>
+        <div class="card" id="payer-breakdown-rows">
+          <div style="padding:16px;text-align:center;color:var(--text-mute);font-size:12px;">Loading payer data…</div>
+        </div>
+
+        <!-- Top payer banner (populated from live API) -->
+        <div style="padding-top:14px;">
+          <div class="payer-banner">
+            <div class="payer-plan" id="payer-banner-name">Loading top payer…</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;">
+              <div class="payer-star">3.8</div>
+              <div>
+                <div class="payer-star-lbl">STAR Rating <span class="payer-arrow">↑ target: 4.0</span></div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px;">Contract renewal: Oct 2026</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:16px;font-weight:800;color:var(--amber);">67%</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;">Care Gap Closure</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:16px;font-weight:800;color:var(--red);">71%</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;">HCC Recapture ⚠</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:16px;font-weight:800;color:var(--accent);">82%</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;">CAHPS Score</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-hdr"><span class="sec-title">Quality Metrics vs Target</span></div>
+        <div class="card">
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">Care Gap Closure</span><span class="prog-meta" style="color:var(--amber);">67% → target 75%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:67%;background:var(--amber);"></div></div>
+            <div class="prog-target">⚠ 8 pts below — 8,432 critical gaps open</div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">HCC Recapture Rate</span><span class="prog-meta" style="color:var(--red);">71% → target 80%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:71%;background:var(--red);"></div></div>
+            <div class="prog-target">⚠ 9 pts below — triggers outreach queue population</div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">AWV Completion Rate</span><span class="prog-meta" style="color:var(--red);">58% → target 70%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:58%;background:var(--red);"></div></div>
+            <div class="prog-target">⚠ 12 pts below — primary STAR rating driver</div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">Patient Satisfaction (CAHPS)</span><span class="prog-meta" style="color:var(--accent);">82% → target 85%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:82%;background:var(--accent);"></div></div>
+            <div class="prog-target">3 pts below — responding to communication improvements</div>
+          </div>
+          <div class="prog-wrap" style="border-bottom:none;">
+            <div class="prog-hdr"><span class="prog-lbl">Risk Score Accuracy</span><span class="prog-meta" style="color:var(--green);">94% → target 90%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:94%;background:var(--green);"></div></div>
+            <div class="prog-target">✓ Above target</div>
+          </div>
+        </div>
+
+        <!-- Medi-Cal -->
+        <div class="sec-hdr"><span class="sec-title">Medi-Cal Performance</span></div>
+        <div class="card">
+          <div class="prog-wrap">
+            <div class="prog-hdr"><span class="prog-lbl">HEDIS — Diabetes Control</span><span class="prog-meta" style="color:var(--amber);">54% → target 65%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:54%;background:var(--amber);"></div></div>
+            <div class="prog-target">⚠ 11 pts below — DM population needs A1C outreach</div>
+          </div>
+          <div class="prog-wrap" style="border-bottom:none;">
+            <div class="prog-hdr"><span class="prog-lbl">Preventive Visit Rate</span><span class="prog-meta" style="color:var(--green);">71% → target 70%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:71%;background:var(--green);"></div></div>
+            <div class="prog-target">✓ Above target</div>
+          </div>
+        </div>
+
+        <!-- Competitive intelligence -->
+        <div class="sec-hdr"><span class="sec-title">Competitive Position</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">Est. · CMS + broker surveys</span></div>
+
+        <div style="padding: 0 16px 6px;font-size:10px;color:var(--text-mute);font-weight:500;">vs. Clever Care Health Plan</div>
+        <div class="card" style="margin-bottom:6px;">
+          <div class="comp-row">
+            <span class="comp-metric">Member retention</span>
+            <span class="comp-smg">91%</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival win">est. 88%</span>
+          </div>
+          <div class="comp-row">
+            <span class="comp-metric">STAR rating</span>
+            <span class="comp-smg">3.8</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival lose">est. 4.1 ⚠</span>
+          </div>
+          <div class="comp-row" style="border-bottom:none;">
+            <span class="comp-metric">Broker satisfaction</span>
+            <span class="comp-smg">3.2★</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival lose">est. 3.8★ ⚠</span>
+          </div>
+        </div>
+
+        <div style="padding: 0 16px 6px;font-size:10px;color:var(--text-mute);font-weight:500;">vs. Centa IPA</div>
+        <div class="card" style="margin-bottom:4px;">
+          <div class="comp-row">
+            <span class="comp-metric">Member retention</span>
+            <span class="comp-smg">91%</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival win">est. 87%</span>
+          </div>
+          <div class="comp-row">
+            <span class="comp-metric">STAR rating</span>
+            <span class="comp-smg">3.8</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival win">est. 3.6</span>
+          </div>
+          <div class="comp-row" style="border-bottom:none;">
+            <span class="comp-metric">Broker satisfaction</span>
+            <span class="comp-smg">3.2★</span>
+            <span class="comp-vs">vs</span>
+            <span class="comp-rival win">est. 3.1★</span>
+          </div>
+        </div>
+        <div style="padding: 8px 16px 16px;font-size:10px;color:var(--text-mute);line-height:1.5;">Estimated figures from CMS public data + broker survey (Mar 2026). Not for external distribution.</div>
+
+      </div><!-- /pane-payer -->
+
+      <!-- ━━━━━━━━━━ INTEL ━━━━━━━━━━ -->
+      <div class="tab-pane" id="pane-intel">
+
+        <!-- Live population stats -->
+        <div class="sec-hdr" style="padding-top:14px;"><span class="sec-title">Population Overview</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">Live · patient registry</span></div>
+        <div class="card" id="intel-population-card">
+          <div style="padding:16px;text-align:center;color:var(--text-mute);font-size:12px;">Loading population data…</div>
+        </div>
+
+        <div class="sec-hdr"><span class="sec-title">Clinical Summary</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">Live · labs &amp; medications</span></div>
+        <div class="card" id="intel-clinical-card">
+          <div style="padding:16px;text-align:center;color:var(--text-mute);font-size:12px;">Loading clinical data…</div>
+        </div>
+
+        <div class="sec-hdr"><span class="sec-title">App Performance</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">vs. testing targets</span></div>
+        <div class="card">
+          <!-- Onboarding -->
+          <div class="app-row">
+            <div class="app-status app-fail">✕</div>
+            <span class="app-name">Patient Onboarding Completion</span>
+            <span class="app-val" style="color:var(--red);">58%</span>
+            <span class="app-target">target &gt;60%</span>
+          </div>
+          <div class="app-row">
+            <div class="app-status app-pass">✓</div>
+            <span class="app-name">Caregiver Onboarding Completion</span>
+            <span class="app-val" style="color:var(--green);">79%</span>
+            <span class="app-target">target &gt;75%</span>
+          </div>
+          <div class="app-row">
+            <div class="app-status app-fail">✕</div>
+            <span class="app-name">Family Data Sharing Consent</span>
+            <span class="app-val" style="color:var(--red);">44%</span>
+            <span class="app-target">target &gt;50%</span>
+          </div>
+          <!-- Retention -->
+          <div class="app-row">
+            <div class="app-status app-pass">✓</div>
+            <span class="app-name">Week-1 Caregiver Retention</span>
+            <span class="app-val" style="color:var(--green);">74%</span>
+            <span class="app-target">target &gt;70%</span>
+          </div>
+          <div class="app-row">
+            <div class="app-status app-fail">✕</div>
+            <span class="app-name">30-Day Caregiver Retention</span>
+            <span class="app-val" style="color:var(--red);">41%</span>
+            <span class="app-target">target &gt;45%</span>
+          </div>
+          <div class="app-row">
+            <div class="app-status app-fail">✕</div>
+            <span class="app-name">90-Day Caregiver Retention</span>
+            <span class="app-val" style="color:var(--red);">28%</span>
+            <span class="app-target">target &gt;30%</span>
+          </div>
+          <!-- Notifications -->
+          <div class="app-row">
+            <div class="app-status app-pass">✓</div>
+            <span class="app-name">Critical Alert Response Rate</span>
+            <span class="app-val" style="color:var(--green);">83%</span>
+            <span class="app-target">target &gt;80%</span>
+          </div>
+          <div class="app-row" style="border-bottom:none;">
+            <div class="app-status app-pass">✓</div>
+            <span class="app-name">Notification Opt-Out Rate</span>
+            <span class="app-val" style="color:var(--green);">17%</span>
+            <span class="app-target">target &lt;20%</span>
+          </div>
+        </div>
+
+        <!-- Drop-off analysis -->
+        <div class="sec-hdr"><span class="sec-title">Drop-off Analysis</span></div>
+        <div class="card">
+          <div class="alert-row" style="cursor:default;">
+            <div class="alert-dot" style="background:var(--red);"></div>
+            <div class="alert-body">
+              <div class="alert-text">Patient onboarding failing at family sharing screen</div>
+              <div class="alert-sub">P2 Traditional Korean Elders — privacy concern with data sharing. Recommend: add Korean-language explanation of consent scope before sharing prompt.</div>
+            </div>
+          </div>
+          <div class="alert-row" style="cursor:default;">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">30-day caregiver retention drop — long-distance caregivers churning</div>
+              <div class="alert-sub">P3 Overwhelmed caregivers disengage after first alert resolved. Recommend: proactive weekly digest to keep them engaged, not just crisis notifications.</div>
+            </div>
+          </div>
+          <div class="alert-row" style="cursor:default;border-bottom:none;">
+            <div class="alert-dot" style="background:var(--amber);"></div>
+            <div class="alert-body">
+              <div class="alert-text">Family data consent below target across all archetypes</div>
+              <div class="alert-sub">P1 Active seniors resist consent. Recommend: physician endorsement framing ("Dr. Park recommends sharing access") increases consent rate by est. +12%.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation log -->
+        <div class="sec-hdr"><span class="sec-title">Simulation Run Log</span><span class="sec-link">View all 24</span></div>
+        <div class="card">
+          <div class="sim-row">
+            <div class="sim-hdr">
+              <span class="sim-name">P2 Korean Elder — Family Sharing Friction</span>
+              <span class="sim-date">Mar 17</span>
+            </div>
+            <div class="sim-result">Found: consent screen missing Korean explanation. Triggered: redesign of family sharing consent flow with Korean-language privacy summary.</div>
+          </div>
+          <div class="sim-row">
+            <div class="sim-hdr">
+              <span class="sim-name">C1 Long-Distance Caregiver — 30-Day Drop</span>
+              <span class="sim-date">Mar 14</span>
+            </div>
+            <div class="sim-result">Found: post-crisis disengagement pattern. Triggered: weekly digest pilot for out-of-area caregivers (A/B test in progress).</div>
+          </div>
+          <div class="sim-row">
+            <div class="sim-hdr">
+              <span class="sim-name">Broker — Friday 5PM Call Elimination</span>
+              <span class="sim-date">Mar 10</span>
+            </div>
+            <div class="sim-result">Found: referral status check reduced escalation calls by 68% in simulation. Triggered: "Get Live Update" button added to broker referral detail view.</div>
+          </div>
+          <div class="sim-row" style="border-bottom:none;">
+            <div class="sim-hdr">
+              <span class="sim-name">Dr. Yoon — Physician Disengagement Signal</span>
+              <span class="sim-date">Mar 8</span>
+            </div>
+            <div class="sim-result">Found: payment dispute + zero app engagement = churn signal. Triggered: internal alert rule for physicians with open disputes &gt;30d + engagement drop.</div>
+          </div>
+        </div>
+
+      </div><!-- /pane-intel -->
+
+    </div><!-- /content -->
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-pulse" onclick="switchTab('pulse')">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="tab-label">PULSE</span>
+      </button>
+      <button class="tab-btn" id="tab-members" onclick="switchTab('members')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="tab-label">MEMBERS</span>
+      </button>
+      <button class="tab-btn" id="tab-network" onclick="switchTab('network')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+        <span class="tab-label">NETWORK</span>
+      </button>
+      <button class="tab-btn" id="tab-payer" onclick="switchTab('payer')">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span class="tab-label">PAYER</span>
+      </button>
+      <button class="tab-btn" id="tab-intel" onclick="switchTab('intel')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span class="tab-label">INTEL</span>
+      </button>
+    </div>
+  </div><!-- /screen -->
+
+  <div class="toast" id="toast"></div>
+
+</div><!-- /phone -->
+
+<script>
+// ── Login ──
+const ROLE_LABELS = {
+  coordinator: ['CARE COORD.', 'SMG Operations Portal'],
+  operations:  ['OPERATIONS', 'SMG Operations Portal'],
+  physrel:     ['PHYS. REL.', 'SMG Operations Portal'],
+  leadership:  ['LEADERSHIP', 'SMG Operations Portal'],
+  product:     ['APP / PRODUCT', 'SMG Operations Portal'],
+};
+const ROLE_ACCESS = {
+  coordinator: ['members'],
+  operations:  ['pulse','members','network'],
+  physrel:     ['pulse','network'],
+  leadership:  ['pulse','members','network','payer','intel'],
+  product:     ['pulse','intel'],
+};
+
+function handleSMGLogin(e) {
+  e.preventDefault();
+  const first = document.getElementById('smgFirst').value.trim() || 'James';
+  const last  = document.getElementById('smgLast').value.trim()  || 'Lee';
+  const role  = document.getElementById('smgRole').value;
+  const [roleLabel, roleSub] = ROLE_LABELS[role];
+
+  document.getElementById('greetName').textContent = `Welcome back, ${first}`;
+  document.getElementById('greetStatus').textContent = `${ROLE_LABELS[role][0].replace('.',' ')} · SMG Internal`;
+  document.getElementById('greetRole').textContent = roleLabel;
+  document.getElementById('statusRole').textContent = roleLabel;
+
+  // Role-based tab visibility
+  const allTabs = ['pulse','members','network','payer','intel'];
+  const allowed = ROLE_ACCESS[role];
+  allTabs.forEach(t => {
+    const btn = document.getElementById('tab-' + t);
+    if (btn) btn.style.display = allowed.includes(t) ? '' : 'none';
+  });
+  // Default to first allowed tab
+  const firstTab = allowed[0] || 'pulse';
+  switchTab(firstTab);
+
+  document.getElementById('loginScreen').classList.add('su-dismiss');
+  setTimeout(() => { document.getElementById('loginScreen').style.display = 'none'; }, 500);
+}
+
+// ── Greeting ──
+function dismissGreeting() {
+  document.getElementById('greeting').classList.add('dismiss');
+}
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const pane = document.getElementById('pane-' + name);
+  const btn  = document.getElementById('tab-' + name);
+  if (pane) pane.classList.add('active');
+  if (btn)  btn.classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+}
+
+// ── Filter chips ──
+function filterChip(chipEl, listId, cat) {
+  chipEl.closest('.filter-bar').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chipEl.classList.add('active');
+  document.querySelectorAll(`#${listId} .data-row`).forEach(row => {
+    row.style.display = (cat === 'all' || row.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+// ── Member overlay ──
+const MEMBERS = {
+  kim: { name:'Kim, Soo-Young · 김순자', sub:'F, 76 · High Churn Risk · Score: 91', fields:[
+    {k:'Risk Signals', v:'PCP switching request + 3 missed appts + low app engagement'},
+    {k:'Last Visit', v:'Feb 12, 2026 (34 days ago)'},
+    {k:'Open Care Gaps', v:'Diabetic eye exam (14mo overdue), A1C recheck'},
+    {k:'Caregiver', v:'Daughter — San Jose, last app open 3 days ago'},
+    {k:'Language', v:'Korean preferred'},
+    {k:'Assigned Coordinator', v:'Maria S.'},
+    {k:'Action', v:'Outreach queued — call + family notification'},
+  ]},
+  park: { name:'Park, Ji-Young', sub:'M, 68 · High Churn Risk · Score: 87', fields:[
+    {k:'Risk Signals', v:'3 consecutive no-shows · Requested PCP transfer inquiry'},
+    {k:'Last Visit', v:'Jan 28, 2026 (49 days ago)'},
+    {k:'Open Care Gaps', v:'AWV overdue, colorectal screening'},
+    {k:'Caregiver', v:'Spouse — on file, low app engagement'},
+    {k:'Assigned Coordinator', v:'James P.'},
+  ]},
+  lee: { name:'Lee, Mi-Kyung', sub:'F, 54 · Medium Churn Risk · Score: 72', fields:[
+    {k:'Risk Signals', v:'App last opened 43 days ago · No caregiver on file'},
+    {k:'Last Visit', v:'Dec 14, 2025 (94 days ago)'},
+    {k:'Open Care Gaps', v:'A1C test (6mo overdue)'},
+    {k:'Assigned Coordinator', v:'Unassigned — available to claim'},
+  ]},
+  choi: { name:'Choi, Hana', sub:'F, 58 · Medium Churn Risk · Score: 68', fields:[
+    {k:'Risk Signals', v:'Missed last 2 appointments · Referral delays causing friction'},
+    {k:'Last Visit', v:'Sep 22, 2025 (177 days ago)'},
+    {k:'Open Care Gaps', v:'Eye exam, nephrology follow-up'},
+    {k:'Caregiver', v:'Daughter — active app user (last open today)'},
+    {k:'Best Outreach', v:'Message daughter first — higher response rate'},
+  ]},
+  jung: { name:'Jung, Byung-Ho · 정병호', sub:'M, 74 · Medium Churn Risk · Score: 64', fields:[
+    {k:'Risk Signals', v:'Requested PCP transfer · AWV overdue Thu'},
+    {k:'Last Visit', v:'Feb 28, 2026 (18 days ago)'},
+    {k:'Open Care Gaps', v:'COPD follow-up, colonoscopy (2yr overdue)'},
+    {k:'Language', v:'Korean preferred'},
+    {k:'Assigned Coordinator', v:'Unassigned'},
+  ]},
+};
+
+function openMemberOverlay(id) {
+  const m = MEMBERS[id]; if (!m) return;
+  document.getElementById('moName').textContent = m.name;
+  document.getElementById('moSub').textContent  = m.sub;
+  document.getElementById('moBody').innerHTML   = m.fields.map(f =>
+    `<div class="detail-field"><span class="detail-key">${f.k}</span><span class="detail-val" style="max-width:55%;text-align:right;">${f.v}</span></div>`
+  ).join('');
+  openOverlay('memberOverlay');
+}
+
+// ── Physician overlay ──
+const PHYSICIANS = {
+  yoon: { name:'Dr. Robert Yoon', sub:'Family Medicine · Bottom quartile · ⚠ Churn Risk', fields:[
+    {k:'Panel Size', v:'620 patients'},
+    {k:'Care Gap Closure', v:'41% (bottom quartile)'},
+    {k:'No-Show Rate', v:'18% (above 10% target)'},
+    {k:'HCC Recapture', v:'52%'},
+    {k:'App Engagement', v:'Zero — last login 34 days ago'},
+    {k:'Payment Status', v:'2 disputes open — 62 days unresolved ⚠'},
+    {k:'Churn Signals', v:'Payment dispute + engagement drop + low scores'},
+    {k:'Recommended Action', v:'Physician Relations outreach within 48h'},
+  ]},
+  kim: { name:'Dr. Janet Kim', sub:'Internal Medicine · Disengaged', fields:[
+    {k:'Panel Size', v:'480 patients'},
+    {k:'Care Gap Closure', v:'44%'},
+    {k:'App Engagement', v:'Low — no nudges sent in 30 days'},
+    {k:'Payment Status', v:'Current — no disputes'},
+    {k:'Recommended Action', v:'Re-engagement call from Physician Relations'},
+  ]},
+  park: { name:'Dr. James Park', sub:'Family Medicine · SMG One · Engaged', fields:[
+    {k:'Panel Size', v:'800 patients'},
+    {k:'Care Gap Closure', v:'72% (top quartile)'},
+    {k:'AWV Completion', v:'58% (improving)'},
+    {k:'HCC Recapture', v:'79%'},
+    {k:'App Engagement', v:'High — daily active user'},
+    {k:'Payment Status', v:'Current — all claims paid'},
+    {k:'SMG One Status', v:'Active — priority escalation enabled'},
+  ]},
+  lee: { name:'Dr. Sarah Lee', sub:'Geriatrics · SMG One · Top Performer', fields:[
+    {k:'Panel Size', v:'620 patients'},
+    {k:'Care Gap Closure', v:'94% (top 5%)'},
+    {k:'AWV Completion', v:'81%'},
+    {k:'HCC Recapture', v:'88%'},
+    {k:'App Engagement', v:'Very High — runs nudge campaigns'},
+    {k:'Payment Status', v:'Current'},
+    {k:'Note', v:'Model physician for SMG One value proposition'},
+  ]},
+};
+
+function openPhysOverlay(id) {
+  const p = PHYSICIANS[id]; if (!p) return;
+  document.getElementById('poName').textContent = p.name;
+  document.getElementById('poSub').textContent  = p.sub;
+  document.getElementById('poBody').innerHTML   = p.fields.map(f =>
+    `<div class="detail-field"><span class="detail-key">${f.k}</span><span class="detail-val" style="max-width:58%;text-align:right;">${f.v}</span></div>`
+  ).join('');
+  openOverlay('physOverlay');
+}
+
+// ── Broker overlay ──
+const BROKERS = {
+  kimbrokers: { name:'Kim Brokers', sub:'SMG One · 18 members · Escalation: Park, J.', fields:[
+    {k:'Members Enrolled', v:'18 active'},
+    {k:'Open Referrals', v:'3 (1 delayed)'},
+    {k:'Escalation Reason', v:'Prior auth delayed — Park, Ji-Young cardiology'},
+    {k:'Escalation Age', v:'3 hours — within SMG One 1hr SLA ⚠'},
+    {k:'Assigned To', v:'James P.'},
+    {k:'Resolution ETA', v:'By 12:00 PM today'},
+  ]},
+  leeagency: { name:'Lee Agency', sub:'Standard · 12 members · SLA BREACH', fields:[
+    {k:'Members Enrolled', v:'12 active'},
+    {k:'Open Referrals', v:'2 (1 lost)'},
+    {k:'Escalation Reason', v:'Referral lost — Choi, Hana neurology'},
+    {k:'Escalation Age', v:'1 day — SMG One SLA breached (1hr) ⚠'},
+    {k:'Assigned To', v:'Unassigned — requires immediate claim'},
+    {k:'Action Required', v:'Assign to coordinator + call broker now'},
+  ]},
+  parkbrokers: { name:'Park Brokers', sub:'Standard · 9 members', fields:[
+    {k:'Members Enrolled', v:'9 active'},
+    {k:'Escalation Reason', v:'Payer denial appeal — Lee, Mi-Kyung'},
+    {k:'Escalation Age', v:'45 minutes — within SLA'},
+    {k:'Assigned To', v:'Maria S.'},
+  ]},
+  sunbrokers: { name:'Sun & Associates', sub:'Standard → SMG One Candidate', fields:[
+    {k:'Members Enrolled', v:'22 active'},
+    {k:'Churn Rate', v:'0% (last 6 months)'},
+    {k:'Escalations', v:'0 total'},
+    {k:'Broker Satisfaction', v:'4.8★'},
+    {k:'SMG One Eligibility', v:'Qualifies — proactive offer recommended'},
+    {k:'Projected Revenue', v:'+$6,200/yr if retained at this volume'},
+  ]},
+  choibrokers: { name:'Choi Insurance Group', sub:'Standard → SMG One Candidate', fields:[
+    {k:'Members Enrolled', v:'18 active'},
+    {k:'Churn Rate', v:'2.1%'},
+    {k:'Escalations', v:'1 (resolved within SLA)'},
+    {k:'Broker Satisfaction', v:'4.6★'},
+    {k:'SMG One Eligibility', v:'Qualifies — borderline on escalation count'},
+  ]},
+};
+
+function openBrokerOverlay(id) {
+  const b = BROKERS[id]; if (!b) return;
+  document.getElementById('boName').textContent = b.name;
+  document.getElementById('boSub').textContent  = b.sub;
+  document.getElementById('boBody').innerHTML   = b.fields.map(f =>
+    `<div class="detail-field"><span class="detail-key">${f.k}</span><span class="detail-val" style="max-width:58%;text-align:right;">${f.v}</span></div>`
+  ).join('');
+  openOverlay('brokerOverlay');
+}
+
+// ── Overlay helpers ──
+function openOverlay(id) { document.getElementById(id).classList.add('open'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── Outreach sheet ──
+function openOutreach(id, name, meta, aiText) {
+  document.getElementById('sheetName').textContent = name;
+  document.getElementById('sheetMeta').textContent = meta;
+  document.getElementById('sheetAI').textContent   = aiText;
+  document.getElementById('outreachSheet').classList.add('open');
+}
+document.getElementById('outreachSheet').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+function sheetAction(action) {
+  const msgs = { call:'Call logged. Outcome tracking started.', notify:'Family notification sent via app.', log:'Attempt logged in member record.', escalate:'Escalated to care manager.' };
+  document.getElementById('outreachSheet').classList.remove('open');
+  showToast(msgs[action] || 'Action recorded.');
+}
+
+function claimOutreach(btn) {
+  btn.textContent = 'Claimed';
+  btn.style.background = 'var(--green-soft)';
+  btn.style.color = 'var(--green)';
+  showToast('Outreach item claimed and assigned to you.');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+
+<!-- ══ LIVE DATA INTEGRATION ══ -->
+<script>
+// Use relative URL so it works regardless of port/host
+const SMG_API = (window.location.protocol === 'file:')
+  ? 'http://localhost:3000/api'
+  : '/api';
+
+async function smgFetch(path) {
+  try {
+    const r = await fetch(SMG_API + path);
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      console.warn('[SMG] API error', r.status, path, err);
+      return null;
+    }
+    return await r.json();
+  } catch (e) {
+    console.warn('[SMG] Fetch failed:', path, e.message);
+    return null;
+  }
+}
+
+// ── Load dashboard stats from API
+async function smgLoadStats() {
+  const stats = await smgFetch('/patients/stats');
+  if (!stats) return;
+
+  // Pulse stat cards
+  const el = id => document.getElementById(id);
+  el('smg-stat-total').textContent   = stats.totalPatients.toLocaleString();
+  el('smg-stat-total-d').textContent = '↑ Live · ' + stats.totalPatients.toLocaleString() + ' registered';
+  el('smg-stat-risk').textContent    = stats.pendingAuths.toLocaleString();
+  el('smg-stat-risk-d').textContent  = '⚠ ' + stats.pendingAuths + ' pending review';
+  el('smg-stat-pending').textContent = stats.pendingClaims.toLocaleString();
+  el('smg-stat-pending-d').textContent = '⚠ ' + stats.pendingClaims + ' awaiting resolution';
+
+  // Alert count
+  const totalAlerts = stats.pendingAuths + stats.criticalLabs;
+  el('smg-alert-count').textContent = 'View all ' + totalAlerts;
+
+  // Member population bars
+  const total = stats.totalPatients;
+  const active = stats.activeEligibility;
+  const termed = total - active;
+  const activePct = total > 0 ? ((active / total) * 100).toFixed(1) : 0;
+  const riskPct   = total > 0 ? ((termed  / total) * 100).toFixed(1) : 0;
+
+  el('smg-pop-active').textContent   = active.toLocaleString() + ' · ' + activePct + '%';
+  el('smg-pop-active-bar').style.width = activePct + '%';
+  el('smg-pop-risk').textContent     = termed.toLocaleString() + ' · ' + riskPct + '%';
+  el('smg-pop-risk-bar').style.width = Math.min(riskPct, 100) + '%';
+
+  // At-risk / pending auths header
+  el('smg-risk-count').textContent   = stats.pendingAuths + ' pending';
+  el('smg-pt-total-lbl').textContent = stats.totalPatients.toLocaleString() + ' patients';
+}
+
+// ── Patient search inside SMG dashboard
+let smgSearchTimer = null;
+async function smgSearchPatients(q) {
+  clearTimeout(smgSearchTimer);
+  const resultEl = document.getElementById('smgPatResults');
+  if (!q || q.length < 2) { resultEl.innerHTML = ''; return; }
+
+  smgSearchTimer = setTimeout(async () => {
+    const data = await smgFetch('/patients?q=' + encodeURIComponent(q) + '&limit=6');
+    if (!data || !data.patients.length) {
+      resultEl.innerHTML = '<div style="padding:8px 4px;font-size:12px;color:var(--text-mute);">No patients found</div>';
+      return;
+    }
+
+    const colors = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#14B8A6'];
+    resultEl.innerHTML = data.patients.map(p => {
+      const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase();
+      const color = colors[p.patient_id?.charCodeAt(4) % colors.length || 0];
+      const eligColor = p.elig_status === 'Active' ? 'var(--green)' : p.elig_status === 'Pending' ? 'var(--amber)' : 'var(--red)';
+      return `
+        <div onclick="smgOpenPatient('${p.patient_id}')" style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;border-radius:6px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
+          <div style="width:32px;height:32px;border-radius:50%;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">${p.last_name}, ${p.first_name}</div>
+            <div style="font-size:11px;color:var(--text-sec);">${p.patient_id} · DOB: ${p.dob || '—'} · PCP: ${p.pcp_name || '—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:11px;font-weight:700;color:${eligColor};">${p.elig_status || '—'}</div>
+            <div style="font-size:10px;color:var(--text-mute);">${p.claim_count || 0} claims · ${p.rx_count || 0} Rx</div>
+          </div>
+        </div>`;
+    }).join('');
+  }, 280);
+}
+
+// ── Open patient detail overlay from search result
+async function smgOpenPatient(pid) {
+  // Show loading state immediately
+  document.getElementById('moName').textContent = 'Loading...';
+  document.getElementById('moSub').textContent  = pid;
+  document.getElementById('moBody').innerHTML   = '<div style="padding:20px;text-align:center;color:var(--text-mute);font-size:13px;">Fetching patient data…</div>';
+  openOverlay('memberOverlay');
+
+  const data = await smgFetch('/patients/' + encodeURIComponent(pid));
+  if (!data || !data.patient) {
+    document.getElementById('moName').textContent = 'Not found';
+    document.getElementById('moBody').innerHTML = '<div style="padding:20px;text-align:center;color:var(--red);font-size:13px;">Patient ID "' + pid + '" not found in database.</div>';
+    return;
+  }
+
+  const p    = data.patient;
+  const elig = data.eligibility?.[0];
+  const claims = data.claims || [];
+  const auths  = data.authorizations || [];
+  const labs   = data.labs || [];
+  const rx     = data.pharmacy || [];
+
+  const age = p.dob ? Math.floor((new Date() - new Date(p.dob)) / 31557600000) : '—';
+  const critLabs    = labs.filter(l => l.flag === 'Critical' || l.flag === 'High');
+  const pendingAuths = auths.filter(a => a.status === 'Pending');
+  const refillDue   = rx.filter(r => r.refill_due_date && new Date(r.refill_due_date) <= new Date(Date.now() + 14*86400000));
+  const activeMeds  = rx.filter(r => r.status === 'Active');
+
+  const engName = (p.last_name || '') + ', ' + (p.first_name || '');
+  document.getElementById('moName').innerHTML = p.korean_name
+    ? engName + ' <span style="font-size:14px;font-weight:500;opacity:0.7;margin-left:4px;">' + p.korean_name + '</span>'
+    : engName;
+  document.getElementById('moSub').textContent  = (p.gender || '') + ', ' + age + ' · ' + p.patient_id + ' · ' + (p.language || 'English');
+
+  const rows = [
+    {k:'Patient ID',      v: p.patient_id},
+    ...(p.korean_name ? [{k:'Korean Name', v: p.korean_name}] : []),
+    {k:'Date of Birth',   v: (p.dob || '—') + (age !== '—' ? '  (age ' + age + ')' : '')},
+    {k:'Gender',          v: p.gender || '—'},
+    {k:'Language',        v: p.language || 'English'},
+    {k:'Phone',           v: p.phone || '—'},
+    {k:'Address',         v: [p.address, p.city, p.state, p.zip].filter(Boolean).join(', ') || '—'},
+    null, // divider
+    {k:'Payer',           v: elig ? elig.payer_name : '—'},
+    {k:'Plan',            v: elig ? (elig.plan_name || '—') + (elig.plan_type ? ' · ' + elig.plan_type : '') : '—'},
+    {k:'Member ID',       v: elig?.member_id || '—'},
+    {k:'Elig. Status',    v: elig ? elig.status : '—'},
+    {k:'Effective',       v: elig?.effective_date || '—'},
+    null, // divider
+    {k:'PCP',             v: data.pcp?.provider_name || '—'},
+    {k:'Practice',        v: data.pcp?.practice_name || '—'},
+    {k:'Practice Phone',  v: data.pcp?.practice_phone || '—'},
+    null, // divider
+    {k:'Claims',          v: claims.length + ' total · ' + claims.filter(c=>c.status==='Pending').length + ' pending'},
+    {k:'Authorizations',  v: auths.length + ' total · ' + pendingAuths.length + ' pending'},
+    {k:'Lab Alerts',      v: critLabs.length ? critLabs.map(l => l.test_name + ': ' + l.result_value + (l.unit||'') + ' (' + l.flag + ')').join(' · ') : 'None critical'},
+    {k:'Active Rx',       v: activeMeds.length + ' medication' + (activeMeds.length!==1?'s':'')},
+    {k:'Refills Due (14d)',v: refillDue.length ? refillDue.map(r => r.medication_name).join(', ') : 'None'},
+  ];
+
+  document.getElementById('moBody').innerHTML = rows.map(f => {
+    if (!f) return '<div style="height:1px;background:rgba(255,255,255,0.07);margin:4px 0;"></div>';
+    return `<div class="detail-field"><span class="detail-key">${f.k}</span><span class="detail-val" style="max-width:62%;text-align:right;font-size:12px;">${f.v}</span></div>`;
+  }).join('');
+
+  // Clear search
+  document.getElementById('smgPatSearch').value = '';
+  document.getElementById('smgPatResults').innerHTML = '';
+}
+
+// ── Load at-risk members from real patient data
+async function loadAtRiskMembers() {
+  const container = document.getElementById('members-risk');
+  if (!container) return;
+  const data = await smgFetch('/patients?limit=10&sort=updated_at&dir=desc');
+  if (!data || !data.patients.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">No patients found</div>';
+    return;
+  }
+  const colorMap = ['avatar-red','avatar-red','avatar-amber','avatar-amber','avatar-blue'];
+  const tagMap   = ['tag-red','tag-red','tag-amber','tag-amber','tag-blue'];
+  const lblMap   = ['High Risk','High Risk','Medium','Medium','Monitored'];
+  container.innerHTML = data.patients.map((p, i) => {
+    const score   = Math.min(99, 50 + (p.critical_lab_count || 0) * 15 + (p.pending_auths || 0) * 10);
+    const level   = score >= 80 ? 0 : score >= 70 ? 1 : score >= 60 ? 2 : score >= 50 ? 3 : 4;
+    const cat     = p.pending_auths > 0 ? 'pcp' : p.critical_lab_count > 0 ? 'noshow' : 'loweng';
+    const initials = ((p.last_name?.[0]||'') + (p.first_name?.[0]||'')).toUpperCase();
+    const name    = (p.last_name||'') + ', ' + (p.first_name||'');
+    const display = p.korean_name ? name + ' · ' + p.korean_name : name;
+    const subParts = [];
+    if (p.gender) subParts.push(p.gender);
+    if (p.dob) subParts.push(Math.floor((Date.now() - new Date(p.dob)) / 31557600000) + 'y');
+    if (p.pcp_name) subParts.push(p.pcp_name);
+    if (p.pending_auths > 0) subParts.push(p.pending_auths + ' pending auth');
+    return `<div class="data-row" data-cat="${cat}" onclick="smgOpenPatient('${p.patient_id}')">
+      <div class="data-avatar ${colorMap[level]}">${initials}</div>
+      <div class="data-info">
+        <div class="data-name">${display}</div>
+        <div class="data-sub">${subParts.join(' · ')}</div>
+      </div>
+      <div class="data-right">
+        <span class="tag ${tagMap[level]}">${lblMap[level]}</span>
+        <span class="data-days">Score: ${score}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Load physician network from PCP providers
+async function loadPhysicianNetwork() {
+  const container = document.getElementById('phys-network-rows');
+  if (!container) return;
+  const data = await smgFetch('/pcp/providers');
+  if (!data || !data.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">No providers found</div>';
+    return;
+  }
+  const lbl = document.getElementById('phys-count-lbl');
+  if (lbl) lbl.textContent = data.length + ' providers';
+  const colorPool = ['avatar-blue','avatar-green','avatar-amber','avatar-red'];
+  container.innerHTML = data.slice(0, 8).map((p, i) => {
+    const words   = p.provider_name.replace(/^Dr\.?\s*/i,'').split(/\s+/);
+    const initials = words.map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const sub     = (p.specialty || 'Primary Care') + ' · ' + p.patient_count + ' patients';
+    const cls     = colorPool[i % colorPool.length];
+    return `<div class="data-row">
+      <div class="data-avatar ${cls}">${initials}</div>
+      <div class="data-info">
+        <div class="data-name">${p.provider_name}</div>
+        <div class="data-sub">${sub}${p.practice_name ? ' · ' + p.practice_name : ''}</div>
+      </div>
+      <div class="data-right">
+        <span class="tag tag-blue">${p.patient_count}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Load broker escalations from open authorizations
+async function loadBrokerEscalations() {
+  const container = document.getElementById('broker-esc-rows');
+  if (!container) return;
+  const data = await smgFetch('/mso/auths?status=Pending&limit=10');
+  if (!data || !data.authorizations.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:var(--text-mute);">No open escalations</div>';
+    const lbl = document.getElementById('broker-esc-lbl');
+    if (lbl) lbl.textContent = '0 open';
+    return;
+  }
+  const auths = data.authorizations;
+  const lbl = document.getElementById('broker-esc-lbl');
+  if (lbl) lbl.textContent = auths.length + ' open';
+  container.innerHTML = auths.map(auth => {
+    const name    = (auth.last_name||'') + ', ' + (auth.first_name||'');
+    const days    = auth.requested_date
+      ? Math.floor((Date.now() - new Date(auth.requested_date)) / 86400000) : 0;
+    const sub     = [auth.auth_type, auth.service_type].filter(Boolean).join(' · ') || 'Authorization';
+    const tagCls  = days > 5 ? 'tag-red' : days > 2 ? 'tag-amber' : 'tag-blue';
+    const ageLabel = days === 0 ? 'Today' : days + 'd open';
+    const initials = ((auth.last_name?.[0]||'') + (auth.first_name?.[0]||'')).toUpperCase();
+    return `<div class="data-row" onclick="smgOpenPatient('${auth.patient_id}')">
+      <div class="data-avatar avatar-amber">${initials}</div>
+      <div class="data-info">
+        <div class="data-name">${name}</div>
+        <div class="data-sub">${sub}</div>
+      </div>
+      <div class="data-right">
+        <span class="tag ${tagCls}">${ageLabel}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Payer tab: live payer breakdown from /api/mso/payer-summary
+async function loadPayerSummary() {
+  try {
+    const d = await fetch(SMG_API + '/mso/payer-summary').then(r => r.json());
+    const box = document.getElementById('payer-breakdown-rows');
+    if (!box) return;
+    const payers = d.payers || [];
+    if (!payers.length) { box.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-mute);font-size:12px;">No payer data available</div>'; return; }
+
+    // Update the payer banner name with the top payer
+    const bannerName = document.getElementById('payer-banner-name');
+    if (bannerName && payers[0]) bannerName.textContent = payers[0].payer_name + (payers[0].plan_type ? ' · ' + payers[0].plan_type : '');
+
+    box.innerHTML = payers.map((p, i) => `
+      <div class="data-row" style="${i === payers.length - 1 ? 'border-bottom:none;' : ''}">
+        <div class="data-info">
+          <div class="data-name" style="font-size:13px;">${p.payer_name}</div>
+          <div class="data-sub">${p.plan_type || 'Unknown plan type'}</div>
+        </div>
+        <div class="data-right" style="text-align:right;">
+          <div style="font-size:14px;font-weight:700;color:var(--accent);">${p.members}</div>
+          <div style="font-size:10px;color:var(--text-mute);">${p.active} active · ${p.inactive} inactive</div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    const box = document.getElementById('payer-breakdown-rows');
+    if (box) box.innerHTML = '<div style="padding:12px 16px;font-size:11px;color:var(--text-mute);">Payer data unavailable</div>';
+  }
+}
+
+// ── Intel tab: live population + clinical data from /api/patients/intel
+async function loadIntelData() {
+  try {
+    const d = await fetch(SMG_API + '/patients/intel').then(r => r.json());
+
+    // Population card
+    const pop = document.getElementById('intel-population-card');
+    if (pop && d.total !== undefined) {
+      const korPct  = d.total ? Math.round(d.korean  / d.total * 100) : 0;
+      const engPct  = d.total ? Math.round(d.english / d.total * 100) : 0;
+      const othPct  = d.total ? Math.round(d.other   / d.total * 100) : 0;
+      pop.innerHTML = `
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Total Patients</div></div>
+          <div class="data-right"><span style="font-size:16px;font-weight:800;color:var(--accent);">${d.total.toLocaleString()}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Korean-speaking</div><div class="data-sub">${korPct}% of panel</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;">${d.korean.toLocaleString()}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">English-speaking</div><div class="data-sub">${engPct}% of panel</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;">${d.english.toLocaleString()}</span></div>
+        </div>
+        <div class="data-row" style="border-bottom:none;">
+          <div class="data-info"><div class="data-name">Other languages</div><div class="data-sub">${othPct}% of panel</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;">${d.other.toLocaleString()}</span></div>
+        </div>`;
+    }
+
+    // Clinical card
+    const clin = document.getElementById('intel-clinical-card');
+    if (clin) {
+      const overdueRate = d.activeMeds ? Math.round(d.overdueMeds / d.activeMeds * 100) : 0;
+      clin.innerHTML = `
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Critical Lab Flags</div><div class="data-sub">Requires immediate attention</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;color:${d.criticalLabs > 0 ? 'var(--red)' : 'var(--green)'};">${d.criticalLabs}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Abnormal Lab Results</div><div class="data-sub">High / Low / Critical flags</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;color:var(--amber);">${d.abnormalLabs}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Active Medications</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;color:var(--accent);">${d.activeMeds}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Overdue Refills</div><div class="data-sub">${overdueRate}% of active meds</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;color:var(--amber);">${d.overdueMeds}</span></div>
+        </div>
+        <div class="data-row">
+          <div class="data-info"><div class="data-name">Pending Authorizations</div></div>
+          <div class="data-right"><span style="font-size:14px;font-weight:700;color:var(--amber);">${d.pendingAuths}</span></div>
+        </div>
+        <div class="data-row" style="border-bottom:none;">
+          <div class="data-info"><div class="data-name">Approved / Denied Auths</div></div>
+          <div class="data-right"><span style="font-size:12px;font-weight:600;color:var(--green);">${d.approvedAuths} ✓</span><span style="font-size:12px;font-weight:600;color:var(--red);margin-left:8px;">${d.deniedAuths} ✕</span></div>
+        </div>`;
+    }
+  } catch(e) {
+    const pop  = document.getElementById('intel-population-card');
+    const clin = document.getElementById('intel-clinical-card');
+    if (pop)  pop.innerHTML  = '<div style="padding:12px 16px;font-size:11px;color:var(--text-mute);">Population data unavailable</div>';
+    if (clin) clin.innerHTML = '<div style="padding:12px 16px;font-size:11px;color:var(--text-mute);">Clinical data unavailable</div>';
+  }
+}
+
+// ── SSE: reconnect and listen for data changes
+function smgConnectSSE() {
+  try {
+    const es = new EventSource(SMG_API + '/upload/events');
+    es.addEventListener('file-updated', () => {
+      smgLoadStats(); loadAtRiskMembers(); loadPayerSummary(); loadIntelData();
+      showToast('Data synced — file updated');
+    });
+    es.addEventListener('upload-complete', () => {
+      smgLoadStats(); loadAtRiskMembers(); loadPhysicianNetwork(); loadBrokerEscalations();
+      loadPayerSummary(); loadIntelData();
+    });
+    es.onerror = () => { es.close(); setTimeout(smgConnectSSE, 5000); };
+  } catch {}
+}
+
+// ── Init
+smgLoadStats();
+loadAtRiskMembers();
+loadPhysicianNetwork();
+loadBrokerEscalations();
+loadPayerSummary();
+loadIntelData();
+smgConnectSSE();
+</script>
+</body>
+</html>

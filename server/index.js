@@ -16,8 +16,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(auditMiddleware);
 
-// ── Serve static files (existing HTML views + assets)
-app.use(express.static(path.join(__dirname, '..')));
+// ── Serve static files
+app.use(express.static(path.join(__dirname, '..', 'client')));  // portal HTML files
+app.use(express.static(path.join(__dirname, '..')));             // root assets (logo, etc.)
 
 // ── Public API routes (no auth required)
 app.use('/api/auth', require('./routes/auth'));
@@ -41,7 +42,7 @@ app.get('/api/health', (req, res) => {
 
 // ── Catch-all: serve admin portal for any unknown route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'bridge-admin.html'));
+  res.sendFile(path.join(__dirname, '..', 'client', 'bridge-admin.html'));
 });
 
 // ── Boot
