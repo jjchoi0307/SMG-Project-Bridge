@@ -5,7 +5,8 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node --experimental-sqlite server/index.js",
-    "dev": "nodemon --exec 'node --experimental-sqlite' server/index.js"
+    "dev":   "nodemon --exec 'node --experimental-sqlite' server/index.js",
+    "seed":  "node --experimental-sqlite server/seed.js"
   },
   "dependencies": {
     "chokidar": "^3.6.0",
