@@ -165,7 +165,7 @@ Create a `.env` file in the project root (no `.env.example` is provided — thes
 
 ## Demo Credentials
 
-All seeded accounts share the default password: **`smg2026`**
+All seeded accounts share the default password: **`smg2026`** or **`smgadmin`**
 
 | Username | Role | Portal |
 |---|---|---|
