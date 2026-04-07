@@ -15,3 +15,6 @@ testing/rlm_results/
 *.pdf
 *.png
 !dummy-data/*.xlsx
+!smg.logo.transparent.v1.png
+!docs/**/*.pdf
+!docs/screenshots/*.png
