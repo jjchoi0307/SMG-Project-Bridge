@@ -41,7 +41,7 @@
 const { verifySession } = require('../utils/auth');
 
 const AUTH_MODE    = process.env.BRIDGE_AUTH_MODE    || 'local';
-const AUTH_ENABLED = process.env.BRIDGE_AUTH_ENABLED !== 'false';
+const AUTH_ENABLED = process.env.BRIDGE_AUTH_ENABLED === 'true'; // default OFF for demo
 
 // ── Token verification — replace this block when migrating to Clerk/Auth0 ────
 function verifyToken(req) {

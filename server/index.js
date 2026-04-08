@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, '..', 'client')));  // portal HTML f
 app.use(express.static(path.join(__dirname, '..')));             // root assets (logo, etc.)
 
 // ── Public API routes (no auth required)
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth',           require('./routes/auth'));
+app.use('/api/patient-portal', require('./routes/patientPortal'));
 
 // ── Apply auth to all remaining /api routes
 // Set BRIDGE_AUTH_ENABLED=false to bypass during local dev / stress testing

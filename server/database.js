@@ -206,6 +206,25 @@ function initDb() {
       updated_at       TEXT DEFAULT (datetime('now'))
     );
 
+    -- Doctor/PCP visit notes (After Visit Summaries)
+    CREATE TABLE IF NOT EXISTS visit_notes (
+      id               INTEGER PRIMARY KEY AUTOINCREMENT,
+      patient_id       TEXT REFERENCES patients(patient_id),
+      visit_type       TEXT DEFAULT 'Follow-up',  -- Annual Wellness | Follow-up | Sick Visit | Telehealth
+      visit_date       TEXT,
+      provider_name    TEXT,
+      provider_npi     TEXT,
+      practice_name    TEXT,
+      reason_for_visit TEXT,
+      discussion       TEXT,
+      diagnoses        TEXT,                       -- JSON array string: ["Diagnosis 1","Diagnosis 2"]
+      medications      TEXT,                       -- plain text summary
+      next_steps       TEXT,                       -- JSON array string: ["Step 1","Step 2"]
+      signed_at        TEXT,
+      source_file      TEXT,
+      created_at       TEXT DEFAULT (datetime('now'))
+    );
+
     -- Indexes for fast lookups by patient
     CREATE INDEX IF NOT EXISTS idx_patients_pid      ON patients(patient_id);
     CREATE INDEX IF NOT EXISTS idx_eligibility_pid   ON eligibility(patient_id);
@@ -214,6 +233,7 @@ function initDb() {
     CREATE INDEX IF NOT EXISTS idx_labs_pid          ON lab_results(patient_id);
     CREATE INDEX IF NOT EXISTS idx_medrx_pid         ON medication_requests(patient_id);
     CREATE INDEX IF NOT EXISTS idx_pharmacy_pid      ON pharmacy_records(patient_id);
+    CREATE INDEX IF NOT EXISTS idx_visit_notes_pid   ON visit_notes(patient_id);
 
     -- Auth: user accounts per portal
     CREATE TABLE IF NOT EXISTS users (
