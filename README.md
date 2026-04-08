@@ -1,6 +1,6 @@
 # SMG Bridge
 
-Healthcare data operations platform for SMG MSO — unifies siloed patient data from eligibility files, PCP offices, and pharmacies into a single, role-scoped hub with six web portals, including a patient-facing mobile app with caregiver support.
+Healthcare data operations platform for SMG MSO (AMM) — unifies siloed patient data from eligibility files, PCP offices, and pharmacies into a single, role-scoped hub with six web portals, including a patient-facing mobile app with caregiver support.
 
 ---
 
