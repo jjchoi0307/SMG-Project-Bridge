@@ -15,7 +15,8 @@ SMG Bridge solves a core problem in managed care: patient data lives in three se
 - Audit trail on all write operations
 - CSV exports for all data types
 - Prior auth, claims, lab result, and pharmacy refill tracking
-- Patient-facing mobile app with caregiver view and dynamic after-visit summaries
+- Appointment calendar — 2-panel month view connecting confirmed appointments with pending requests; doctors and admins can confirm, reschedule, or cancel inline
+- Patient-facing mobile app with caregiver view, dynamic after-visit summaries, and live appointment confirmation feedback
 
 ---
 
@@ -76,6 +77,55 @@ The server routes unknown paths to `bridge-admin.html` as the catch-all.
 
 ---
 
+## Admin Portal
+
+`bridge-admin.html` is the full-access operations hub for the SMG team.
+
+**Sidebar sections:**
+
+| Section | Pages |
+|---|---|
+| Data | Upload Files, Patient Registry, Eligibility, Claims, Authorizations |
+| Clinical | Lab Results, Pharmacy |
+| Patient Portal | Today's Schedule, **Appointment Calendar**, Caregiver Consents |
+| Member Portals | Bridge v2 (patient app launcher) |
+
+### Appointment Calendar
+
+The appointment calendar replaces the old flat request queue. It provides a 2-panel view:
+
+- **Left panel** — mini monthly grid with color-coded dot indicators per day (green = confirmed, amber = pending, purple = rescheduled) and a scrollable list of all pending requests sorted by date
+- **Right panel** — day detail showing time-sorted confirmed appointments, pending request cards with inline time-selector and confirm / reschedule / cancel actions, and rescheduled entries with their original date
+
+Appointment data is shared with the doctor portal and patient app through `localStorage` (`bridge_appt_requests`). When a request is confirmed with a scheduled time, it flows back to the patient's "Upcoming Visits" view automatically.
+
+---
+
+## Doctor Portal
+
+`bridge-doctor.html` is an NPI-scoped portal — a doctor enters their name and 10-digit NPI at login to access only their patient panel.
+
+**Sidebar sections:**
+
+| Section | Pages |
+|---|---|
+| Data Management | Patient List, Eligibility, Claims |
+| MSO Operations | Authorizations, Pharmacy, Medications |
+| Clinical | Lab Results, Today's Schedule |
+| Patient Portal | **Appointment Calendar**, Caregiver Consents, Launch Bridge App |
+
+All data queries are scoped to the doctor's NPI via `pcp_providers` JOINs. The appointment calendar and caregiver consent sections share the same `localStorage` keys as the admin portal, so confirmations made in either portal are visible in both.
+
+**Demo NPIs:**
+
+| Doctor | NPI |
+|---|---|
+| Dr. Oh, Michael | `4455667788` |
+| Dr. Choi, Brian | `5544332211` |
+| Dr. Park, Steven | `0987654321` |
+
+---
+
 ## Member App — Patient & Caregiver
 
 `bridge-members-v2.html` is a bilingual (English/Korean) mobile-first app with two modes: **Patient** and **Caregiver**.
@@ -90,15 +140,16 @@ Accessed by entering an SMG Member ID (`SMG-XXXXXXX`) or insurance member ID —
 - Upcoming appointment with PCP name
 
 **My Meds tab**
-- Full medication list pulled from `pharmacy_records` (falls back from `medication_requests`)
+- Full medication list pulled from `pharmacy_records` (falls back to `medication_requests`)
 - Expandable cards with dosage, pharmacy, refills remaining
 - "I've taken my meds" confirmation button — updates caregiver view in real time
 
 **My Visit tab**
-- Action Needed alerts — dynamic per patient (annual wellness overdue, pending/approved authorizations)
-- Upcoming Visits — PCP card + specialist referrals from authorizations
-- Approvals & Authorizations — real-time status from the admin portal
-- Transport — tap to call PCP office or SMG at (562) 766-2000
+- **Action Needed** — dynamic alerts per patient (annual wellness overdue, pending/approved authorizations)
+- **Upcoming Visits** — confirmed appointment requests appear here as date-boxed cards (month, day, confirmed time, "Confirmed ✓" badge) alongside the static PCP and specialist referral cards. Confirmation flows directly from the admin or doctor portal — no manual step required.
+- **Awaiting Confirmation** — pending requests the patient has submitted show with amber styling and "Your care team will confirm soon." Once a doctor confirms and sets a time, the card moves up to Upcoming Visits automatically.
+- **Approvals & Authorizations** — real-time status from the admin portal
+- **Transport** — tap to call PCP office or SMG at (562) 766-2000
 
 **Records tab**
 - Lab Results — most recent results with Normal / High / Low / Critical flags
@@ -134,7 +185,7 @@ SMG - Project Bridge/
 │   │   ├── patientPortal.js      # Public patient lookup — no auth required
 │   │   ├── patients.js           # Patient CRUD, search, KPIs, population intel
 │   │   ├── mso.js                # Eligibility, claims, prior authorizations
-│   │   ├── pcp.js                # Provider panels, labs, medications
+│   │   ├── pcp.js                # Provider panels, labs, medications, pharmacy, panel-meds
 │   │   ├── pharmacy.js           # Refill tracking, pharmacy requests
 │   │   ├── upload.js             # Bulk .xlsx import + SSE progress stream
 │   │   └── export.js             # CSV exports for all data types
@@ -168,13 +219,24 @@ Authentication is **disabled by default**. All endpoints are open in demo mode. 
 | Auth | `/api/auth` | `POST /login`, `POST /logout`, `GET /me` |
 | Patient Portal | `/api/patient-portal` | `GET /lookup/:id` — public, no auth |
 | Patients | `/api/patients` | list, get, update, `/stats`, `/intel` |
-| MSO | `/api/mso` | eligibility, claims, prior auths, payer summary |
-| PCP | `/api/pcp` | provider panel, labs, medications, dashboard |
+| MSO | `/api/mso` | eligibility (`?npi=`), claims (`?npi=`), prior auths, payer summary |
+| PCP | `/api/pcp` | panel (`?npi=`), panel/stats, labs, medications, pharmacy (`?npi=`), panel-meds (`?npi=`) |
 | Pharmacy | `/api/pharmacy` | refills due, requests, real-time broadcast |
 | Upload | `/api/upload` | `POST /` (bulk xlsx), `GET /events` (SSE stream) |
 | Export | `/api/export` | CSV for patients, eligibility, claims, labs, auths, pharmacy |
 
 Health check: `GET /api/health` → `{ status: 'ok', timestamp, version }`
+
+### NPI Scoping on MSO Routes
+
+The MSO eligibility and claims endpoints accept an optional `?npi=` query parameter. When provided, results are filtered to patients on that doctor's panel via a `pcp_providers` subquery — giving doctor portals a scoped view of their own patients' insurance and claims data without a separate data store.
+
+```
+GET /api/mso/eligibility?npi=4455667788
+GET /api/mso/claims/summary?npi=4455667788
+GET /api/pcp/pharmacy?npi=4455667788
+GET /api/pcp/panel-meds?npi=4455667788
+```
 
 ### Public Patient Lookup
 
@@ -260,8 +322,9 @@ The seed process loads ~10,000 synthetic patients from `dummy-data/*.xlsx`. `see
 ## Development Notes
 
 - **No build step** for the frontend — edit `.html` files in `client/` directly
-- **Schema auto-migrates** on every server startup — `server/database.js` handles missing columns from older versions, including the new `visit_notes` table
+- **Schema auto-migrates** on every server startup — `server/database.js` handles missing columns from older versions, including the `visit_notes` table
 - **Drop-and-import** — drop any `.xlsx` file into `/uploads/` and Chokidar picks it up automatically
+- **Appointment data** — shared between portals via `localStorage` keys `bridge_appt_requests` and `bridge_caregiver_consents`. No server persistence required for demo; a real deployment would store these server-side.
 - **SSE streams:**
   - `/api/upload/events` — real-time upload progress and completion events
   - Pharmacy route broadcasts refill request status updates
