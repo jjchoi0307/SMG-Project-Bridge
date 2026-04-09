@@ -19,3 +19,6 @@ testing/rlm_results/
 !smg.logo.transparent.v1.png
 !docs/**/*.pdf
 !docs/screenshots/*.png
+
+# Generated demo file (large — regenerate with: npm run demo)
+client/bridge-demo.html
