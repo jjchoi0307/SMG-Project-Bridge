@@ -3,1591 +3,1176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bridge — Clinical</title>
+<title>SMG Bridge — Clinical Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: { colors: {
+      'smg-bg':'#0D1421','smg-sidebar':'#0A1020','smg-card':'#162032','smg-card2':'#1C2B3F',
+      'smg-border':'#1C2F47','smg-border2':'#243A52','smg-accent':'#3B82F6',
+      'smg-green':'#10B981','smg-amber':'#F59E0B','smg-red':'#EF4444',
+      'smg-purple':'#8B5CF6','smg-teal':'#14B8A6','smg-text':'#E2E8F0',
+      'smg-text-sec':'#7A9AB8','smg-text-mute':'#3D5A75',
+    }, fontFamily:{sans:['Inter','-apple-system','sans-serif']}, borderRadius:{smg:'12px'} } }
+  }
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-  :root {
-    --bg: #F1F5F9;
-    --card: #FFFFFF;
-    --primary: #1E3A5F;
-    --primary-mid: #254A78;
-    --primary-soft: #E8EEF6;
-    --accent: #2563EB;
-    --accent-soft: #EFF6FF;
-    --text: #0F172A;
-    --text-sec: #475569;
-    --text-mute: #94A3B8;
-    --border: #E2E8F0;
-    --border-soft: #F1F5F9;
-    --green: #059669;
-    --green-soft: #ECFDF5;
-    --amber: #D97706;
-    --amber-soft: #FFFBEB;
-    --red: #DC2626;
-    --red-soft: #FEF2F2;
-    --blue: #2563EB;
-    --blue-soft: #EFF6FF;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-  body {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background: #8C9BAB;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 32px 20px;
-  }
-
-  .phone {
-    width: 393px;
-    height: 852px;
-    background: var(--bg);
-    border-radius: 48px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.12);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  /* ── Greeting ── */
-  .greeting {
-    position: absolute; inset: 0;
-    background: linear-gradient(160deg, #0D1F35 0%, #1E3A5F 55%, #2A517F 100%);
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: space-between;
-    z-index: 500; padding: 52px 32px 52px;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    cursor: pointer;
-  }
-  .greeting.dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
-
-  /* top row: logo + lang toggle */
-  .greeting-top {
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-  }
-  .smg-logo-light { height: 62px; filter: brightness(0) invert(1); opacity: 0.92; display: block; }
-  .smg-logo-color { height: 38px; display: block; }
-
-  /* EN/KO toggle on greeting */
-  .greet-lang-toggle {
-    background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 20px; display: flex; padding: 3px; gap: 2px;
-  }
-  .greet-lang-btn {
-    font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 16px;
-    border: none; background: transparent; color: rgba(255,255,255,0.5);
-    cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.18s;
-  }
-  .greet-lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
-
-  /* middle: ring + name block */
-  .greeting-mid { display: flex; flex-direction: column; align-items: center; }
-  .greeting-ring { margin-bottom: 28px; }
-  .greeting-ring svg { display: block; }
-  .greeting-name { font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -0.6px; margin-bottom: 8px; text-align: center; }
-  .greeting-status { font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 5px; }
-  .greeting-sub { font-size: 13px; color: rgba(255,255,255,0.45); text-align: center; }
-
-  /* bottom: pills + CTA */
-  .greeting-bottom { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
-  .greeting-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .greeting-pill {
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 500;
-    padding: 6px 13px; border-radius: 20px;
-  }
-  .greeting-pill.alert { background: rgba(220,38,38,0.25); border-color: rgba(220,38,38,0.4); color: #FCA5A5; }
-  .greeting-pill.dollar { background: rgba(5,150,105,0.25); border-color: rgba(5,150,105,0.4); color: #6EE7B7; }
-  .greeting-cta {
-    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
-    color: #fff; font-size: 16px; font-weight: 600; padding: 15px 0;
-    border-radius: 30px; cursor: pointer; transition: background 0.2s;
-    width: 100%;
-  }
-  .greeting-cta:hover { background: rgba(255,255,255,0.22); }
-
-  /* ── Login screen ── */
-  .login-screen {
-    position: absolute; inset: 0;
-    background: linear-gradient(160deg, #0D1F35 0%, #1E3A5F 55%, #2A517F 100%);
-    z-index: 600; overflow-y: auto; padding: 48px 28px 40px;
-    transition: opacity 0.45s ease, transform 0.45s ease;
-  }
-  .login-screen::-webkit-scrollbar { display: none; }
-  .login-screen.su-dismiss { opacity: 0; transform: scale(1.04); pointer-events: none; }
-  .su-title { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.4px; margin-bottom: 4px; }
-  .su-subtitle { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
-  .su-section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; font-family: 'Inter', -apple-system, sans-serif; }
-  .su-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
-  .su-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .su-input {
-    flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 14px;
-    font-family: 'Inter', sans-serif; outline: none;
-  }
-  .su-input::placeholder { color: rgba(255,255,255,0.35); }
-  .su-input:focus { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.14); }
-  .su-btn {
-    width: 100%; background: rgba(255,255,255,0.9); color: #1E3A5F;
-    border: none; border-radius: 12px; padding: 15px; font-size: 15px;
-    font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px;
-    transition: background 0.2s;
-  }
-  .su-btn:hover { background: #fff; }
-
-  /* ── Status bar ── */
-  .status-bar {
-    height: 52px; background: var(--primary);
-    display: flex; align-items: center; justify-content: center;
-    position: relative; flex-shrink: 0;
-    padding: 0 20px;
-  }
-  .status-bar-logo {
-    position: absolute; left: 50%; transform: translateX(-50%);
-  }
-  .status-time { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); position: absolute; left: 20px; }
-  .status-badge {
-    position: absolute; right: 20px;
-    background: var(--red); color: #fff;
-    font-size: 11px; font-weight: 700;
-    padding: 3px 8px; border-radius: 10px;
-  }
-
-  /* ── Screen ── */
-  .screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
-  /* ── Tab bar ── */
-  .tab-bar {
-    height: 62px; background: var(--primary);
-    display: flex; align-items: stretch; flex-shrink: 0;
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .tab-btn {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; cursor: pointer; border: none; background: transparent;
-    color: rgba(255,255,255,0.45); font-family: 'Inter', sans-serif;
-    transition: color 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .tab-btn.active { color: #fff; }
-  .tab-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .tab-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
-
-  /* ── Content area ── */
-  .content { flex: 1; overflow-y: auto; overflow-x: hidden; }
-  .tab-pane { display: none; padding: 14px 16px 20px; }
-  .tab-pane.active { display: block; }
-
-  /* ── Section header ── */
-  .sec-hdr {
-    display: flex; align-items: center; justify-content: space-between;
-    margin: 16px 0 8px;
-  }
-  .sec-hdr:first-child { margin-top: 0; }
-  .sec-title { font-size: 11px; font-weight: 700; color: var(--text-mute); letter-spacing: 0.8px; text-transform: uppercase; }
-  .sec-link { font-size: 12px; font-weight: 600; color: var(--accent); }
-
-  /* ── Card ── */
-  .card {
-    background: var(--card); border-radius: 12px;
-    box-shadow: var(--shadow-sm); overflow: hidden;
-    margin-bottom: 10px;
-  }
-
-  /* ── Patient row ── */
-  .pt-row {
-    display: flex; align-items: center; padding: 10px 14px;
-    border-bottom: 1px solid var(--border-soft); gap: 12px;
-    cursor: pointer;
-  }
-  .pt-row:last-child { border-bottom: none; }
-  .pt-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--primary-soft); display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: var(--primary); flex-shrink: 0;
-  }
-  .pt-info { flex: 1; min-width: 0; }
-  .pt-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pt-meta { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
-  .pt-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-  .pt-time { font-size: 11px; color: var(--text-mute); }
-  .pt-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
-  .tag-green { background: var(--green-soft); color: var(--green); }
-  .tag-amber { background: var(--amber-soft); color: var(--amber); }
-  .tag-red { background: var(--red-soft); color: var(--red); }
-  .tag-blue { background: var(--blue-soft); color: var(--blue); }
-  .tag-gray { background: #F3F4F6; color: #6B7280; }
-
-  /* ── Alert row ── */
-  .alert-row {
-    display: flex; align-items: flex-start; padding: 10px 14px;
-    border-bottom: 1px solid var(--border-soft); gap: 10px;
-  }
-  .alert-row:last-child { border-bottom: none; }
-  .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-  .alert-body { flex: 1; }
-  .alert-text { font-size: 12px; color: var(--text); line-height: 1.4; font-weight: 500; }
-  .alert-sub { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
-  .alert-actions { display: flex; gap: 6px; margin-top: 6px; }
-  .btn-sm {
-    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px;
-    border: none; cursor: pointer; font-family: 'Inter', sans-serif;
-  }
-  .btn-approve { background: var(--green-soft); color: var(--green); }
-  .btn-decline { background: #F3F4F6; color: #6B7280; }
-  .btn-review { background: var(--blue-soft); color: var(--blue); }
-  .btn-action { background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
-
-  /* ── Stat row ── */
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .stat-card {
-    background: var(--card); border-radius: 12px; padding: 12px 14px;
-    box-shadow: var(--shadow-sm);
-  }
-  .stat-val { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
-  .stat-val.green { color: var(--green); }
-  .stat-val.amber { color: var(--amber); }
-  .stat-val.red { color: var(--red); }
-  .stat-val.blue { color: var(--accent); }
-  .stat-lbl { font-size: 11px; color: var(--text-mute); margin-top: 2px; font-weight: 500; }
-  .stat-delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
-  .delta-up { color: var(--green); }
-  .delta-dn { color: var(--red); }
-
-  /* ── HCC row ── */
-  .hcc-row {
-    display: flex; align-items: center; padding: 10px 14px;
-    border-bottom: 1px solid var(--border-soft); gap: 10px;
-  }
-  .hcc-row:last-child { border-bottom: none; }
-  .hcc-info { flex: 1; }
-  .hcc-name { font-size: 12px; font-weight: 600; color: var(--text); }
-  .hcc-code { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
-  .hcc-dollar { font-size: 13px; font-weight: 700; color: var(--green); min-width: 64px; text-align: right; }
-
-  /* ── Progress bar ── */
-  .prog-row { margin-bottom: 10px; }
-  .prog-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .prog-lbl { font-size: 12px; font-weight: 500; color: var(--text); }
-  .prog-pct { font-size: 12px; font-weight: 700; color: var(--accent); }
-  .prog-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .prog-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.6s ease; }
-  .prog-fill.green { background: var(--green); }
-  .prog-fill.amber { background: var(--amber); }
-
-  /* ── Heatmap ── */
-  .heatmap { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; margin-bottom: 10px; }
-  .heat-cell {
-    border-radius: 6px; padding: 8px 6px; text-align: center;
-  }
-  .heat-label { font-size: 9px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
-  .heat-pct { font-size: 16px; font-weight: 800; }
-  .heat-sub { font-size: 9px; margin-top: 2px; }
-  .heat-red { background: #FEE2E2; }
-  .heat-red .heat-pct { color: var(--red); }
-  .heat-red .heat-sub { color: #EF4444; }
-  .heat-amber { background: #FEF3C7; }
-  .heat-amber .heat-pct { color: var(--amber); }
-  .heat-amber .heat-sub { color: #F59E0B; }
-  .heat-green { background: var(--green-soft); }
-  .heat-green .heat-pct { color: var(--green); }
-  .heat-green .heat-sub { color: #10B981; }
-  .heat-blue { background: var(--blue-soft); }
-  .heat-blue .heat-pct { color: var(--blue); }
-  .heat-blue .heat-sub { color: #3B82F6; }
-
-  /* ── Message row ── */
-  .msg-row {
-    display: flex; align-items: flex-start; padding: 10px 14px;
-    border-bottom: 1px solid var(--border-soft); gap: 10px; cursor: pointer;
-  }
-  .msg-row:last-child { border-bottom: none; }
-  .msg-avatar {
-    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-  }
-  .msg-avatar.ai { background: linear-gradient(135deg, #1E3A5F, #2563EB); color: #fff; font-size: 11px; }
-  .msg-avatar.pt { background: var(--primary-soft); color: var(--primary); }
-  .msg-body { flex: 1; min-width: 0; }
-  .msg-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-  .msg-from { font-size: 12px; font-weight: 600; color: var(--text); }
-  .msg-time { font-size: 11px; color: var(--text-mute); }
-  .msg-preview { font-size: 12px; color: var(--text-sec); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .msg-unread { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-
-  /* ── Patient detail overlay ── */
-  .pt-detail {
-    position: absolute; inset: 0; background: var(--bg);
-    z-index: 400; display: none; flex-direction: column;
-    overflow: hidden;
-  }
-  .pt-detail.open { display: flex; }
-  .detail-header {
-    background: var(--primary); padding: 14px 16px 12px;
-    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-  }
-  .back-btn { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-  .back-btn svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-  .detail-patient-name { font-size: 16px; font-weight: 700; color: #fff; }
-  .detail-patient-meta { font-size: 12px; color: rgba(255,255,255,0.6); }
-  .detail-body { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
-  .detail-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 9px 0; border-bottom: 1px solid var(--border-soft);
-    font-size: 13px;
-  }
-  .detail-row:last-child { border-bottom: none; }
-  .detail-key { color: var(--text-sec); font-weight: 500; }
-  .detail-val { color: var(--text); font-weight: 600; text-align: right; }
-  .detail-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-  .chip { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
-
-  /* ── Search bar ── */
-  .search-bar {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--card); border-radius: 10px; padding: 9px 12px;
-    margin-bottom: 12px; box-shadow: var(--shadow-sm);
-  }
-  .search-bar svg { width: 16px; height: 16px; fill: none; stroke: var(--text-mute); stroke-width: 2; flex-shrink: 0; }
-  .search-bar input { border: none; outline: none; font-size: 13px; color: var(--text); background: transparent; flex: 1; font-family: 'Inter', sans-serif; }
-  .search-bar input::placeholder { color: var(--text-mute); }
-
-  /* ── Divider ── */
-  .divider { height: 1px; background: var(--border); margin: 8px 0; }
-
-  /* ── Nudge approval card ── */
-  .nudge-card {
-    background: var(--card); border-radius: 12px; padding: 12px 14px;
-    box-shadow: var(--shadow-sm); margin-bottom: 8px;
-  }
-  .nudge-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .nudge-title { font-size: 13px; font-weight: 600; color: var(--text); }
-  .nudge-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
-  .nudge-body { font-size: 12px; color: var(--text-sec); line-height: 1.5; margin-bottom: 10px; }
-  .nudge-patient { font-size: 11px; color: var(--text-mute); margin-bottom: 8px; }
-  .nudge-actions { display: flex; gap: 8px; }
-  .btn-approve-lg { flex: 1; background: var(--green-soft); color: var(--green); font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
-  .btn-edit-lg { flex: 1; background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
-  .btn-decline-lg { flex: 1; background: #F3F4F6; color: #6B7280; font-size: 12px; font-weight: 700; padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
-
-  /* ── Panel ring mini stats ── */
-  .ring-row { display: flex; align-items: center; gap: 16px; padding: 14px; }
-  .ring-stats { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .ring-stat-row { display: flex; justify-content: space-between; align-items: center; }
-  .ring-stat-lbl { font-size: 12px; color: var(--text-sec); }
-  .ring-stat-val { font-size: 13px; font-weight: 700; color: var(--text); }
-
-  /* ── Schedule slot ── */
-  .slot-row {
-    display: flex; align-items: center; padding: 10px 14px;
-    border-bottom: 1px solid var(--border-soft); gap: 10px;
-  }
-  .slot-row:last-child { border-bottom: none; }
-  .slot-time { font-size: 11px; font-weight: 600; color: var(--text-mute); width: 44px; flex-shrink: 0; }
-  .slot-bar { width: 3px; border-radius: 2px; height: 36px; flex-shrink: 0; }
-  .slot-info { flex: 1; }
-  .slot-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .slot-detail { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
-  .slot-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
-
-  /* ── Revenue total banner ── */
-  .rev-banner {
-    background: linear-gradient(135deg, #1E3A5F, #2563EB);
-    border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .rev-banner-lbl { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
-  .rev-banner-val { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-  .rev-banner-sub { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
-  .rev-banner-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 6px 12px; text-align: center; }
-  .rev-banner-badge-val { font-size: 18px; font-weight: 800; color: #fff; }
-  .rev-banner-badge-lbl { font-size: 10px; color: rgba(255,255,255,0.6); }
-
-  /* scrollbar hide */
-  .content::-webkit-scrollbar { display: none; }
-  .detail-body::-webkit-scrollbar { display: none; }
+  @keyframes pulse   { 0%,100%{opacity:1}50%{opacity:.3} }
+  @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+  .animate-pulse-sync{animation:pulse 1.4s infinite}
+  .animate-slide-in{animation:slideIn .25s ease}
+  .hide-scrollbar::-webkit-scrollbar{display:none}
+  .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+  .page{display:none} .page.active{display:flex;flex-direction:column}
+  .drawer{transition:right .3s cubic-bezier(.4,0,.2,1);right:-720px}
+  .drawer.open{right:0}
+  .drawer-overlay{display:none} .drawer-overlay.open{display:block}
+  .d-pane{display:none} .d-pane.active{display:block}
+  #login-overlay{display:flex} #login-overlay.hidden{display:none}
+  .nav-item.active{background:rgba(20,184,166,.1);color:#14B8A6}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #243A52;color:#7A9AB8;cursor:pointer;transition:all .15s;background:#1C2B3F;user-select:none}
+  .chip:hover{background:rgba(20,184,166,.08);border-color:#14B8A6;color:#14B8A6}
+  .chip.active{background:rgba(20,184,166,.12);border-color:#14B8A6;color:#14B8A6}
+  .d-tab.active{color:#14B8A6;border-bottom-color:#14B8A6}
+  .ptbl{width:100%;border-collapse:collapse;font-size:13px}
+  .ptbl th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;color:#3D5A75;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid #1C2F47;background:#1C2B3F;white-space:nowrap}
+  .ptbl td{padding:12px 16px;border-bottom:1px solid #1C2F47;vertical-align:middle}
+  .ptbl tr:last-child td{border-bottom:none}
+  .ptbl tr.click:hover td{background:rgba(20,184,166,.04);cursor:pointer}
+  .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .pn{font-weight:600;color:#E2E8F0;font-size:13px} .ps{font-size:11px;color:#7A9AB8;margin-top:1px}
+  .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .badge.cr{background:rgba(239,68,68,.12);color:#EF4444}
+  .badge.hi{background:rgba(245,158,11,.12);color:#F59E0B}
+  .badge.lo{background:rgba(59,130,246,.12);color:#3B82F6}
+  .badge.ok{background:rgba(16,185,129,.12);color:#10B981}
+  .badge.pn{background:rgba(59,130,246,.12);color:#3B82F6}
+  .empty-state{display:flex;flex-direction:column;align-items:center;padding:56px 24px;text-align:center}
+  .empty-icon{margin-bottom:12px;opacity:.4} .empty-text{font-size:14px;font-weight:500;color:#7A9AB8}
+  .empty-sub{font-size:12px;color:#3D5A75;margin-top:4px}
+  .pag-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid #1C2F47;font-size:12px;color:#7A9AB8}
+  .pag-btns{display:flex;gap:3px}
+  .pag-page{background:none;border:1px solid transparent;color:#7A9AB8;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+  .pag-page.active{background:rgba(20,184,166,.12);border-color:#14B8A6;color:#14B8A6}
+  .pag-page:hover:not(.active):not(:disabled){border-color:#243A52;color:#E2E8F0}
+  .pag-page:disabled{opacity:.3;cursor:not-allowed}
+  .il{font-size:10px;font-weight:700;color:#3D5A75;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+  .iv{font-size:14px;font-weight:500;color:#E2E8F0} .iv.empty{color:#3D5A75;font-style:italic;font-weight:400}
+  .dr{padding:12px 0;border-bottom:1px solid #1C2F47;display:flex;flex-direction:column;gap:4px}
+  .dr:last-child{border-bottom:none}
+  .drh{display:flex;justify-content:space-between;align-items:center}
+  .drt{font-size:13px;font-weight:600;color:#E2E8F0} .drs{font-size:12px;color:#7A9AB8} .drm{font-size:11px;color:#3D5A75}
+  .ns{font-size:10px;font-weight:700;color:#3D5A75;letter-spacing:.7px;text-transform:uppercase;padding:0 10px;margin-top:20px;margin-bottom:4px}
 </style>
 </head>
-<body>
-<div class="phone">
+<body class="font-sans bg-smg-bg text-smg-text min-h-screen flex">
 
-  <!-- ═══════════ LOGIN SCREEN ═══════════ -->
-  <div class="login-screen" id="loginScreen">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
-      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:52px;">
-      <div style="text-align:right;">
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;">PHYSICIAN</div>
-        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);">SMG Clinical Portal</div>
-      </div>
-    </div>
-    <div class="su-title" >Welcome, Doctor</div>
-    <div class="su-subtitle">Sign in to access your clinical dashboard</div>
-
-    <form onsubmit="handleDoctorLogin(event)">
-      <div class="su-section-label" style="border-top:none;padding-top:0;margin-top:0;">Your Name</div>
-      <div class="su-row">
-        <div style="flex:1;">
-          <div class="su-label">First Name</div>
-          <input class="su-input" id="drFirst" placeholder="First Name" required style="width:100%;">
-        </div>
-        <div style="flex:1;">
-          <div class="su-label">Last Name</div>
-          <input class="su-input" id="drLast" placeholder="Last Name" required style="width:100%;">
-        </div>
-      </div>
-
-      <div class="su-section-label">Credentials</div>
-      <div class="su-label">NPI Number</div>
-      <div class="su-row">
-        <input class="su-input" id="drNpi" placeholder="NPI Number" required style="width:100%;">
-      </div>
-      <div class="su-label">Specialty</div>
-      <div class="su-row">
-        <input class="su-input" id="drSpecialty" placeholder="Specialty" required style="width:100%;">
-      </div>
-
-      <div class="su-section-label">Location</div>
-      <div class="su-label">Clinic / Practice</div>
-      <div class="su-row">
-        <input class="su-input" id="drClinic" placeholder="Clinic / Practice" style="width:100%;">
-      </div>
-
-      <div class="su-section-label">Membership Tier</div>
-      <div style="display:flex;gap:10px;margin-bottom:12px;">
-        <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:11px 14px;cursor:pointer;">
-          <input type="radio" name="drTier" value="standard" style="accent-color:#60A5FA;">
-          <span style="color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;">SMG</span>
-        </label>
-        <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.35);border-radius:10px;padding:11px 14px;cursor:pointer;">
-          <input type="radio" name="drTier" value="smgone" checked style="accent-color:#F5D060;">
-          <span style="color:#F5D060;font-size:13px;font-weight:700;">SMG ONE</span>
-        </label>
-      </div>
-
-      <button type="submit" class="su-btn">Access Dashboard</button>
-    </form>
-  </div>
-
-  <!-- ═══════════ GREETING ═══════════ -->
-  <div class="greeting" id="greeting" onclick="dismissGreeting()">
-
-    <!-- Top: logo + lang toggle -->
-    <div class="greeting-top" onclick="event.stopPropagation()">
-      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light">
-      <div class="greet-lang-toggle">
-        <button class="greet-lang-btn active" id="gl-en" onclick="setGreetLang('en')">EN</button>
-        <button class="greet-lang-btn" id="gl-ko" onclick="setGreetLang('ko')">한국어</button>
-      </div>
-    </div>
-
-    <!-- Middle: panel ring + name -->
-    <div class="greeting-mid">
-      <div class="greeting-ring">
-        <!-- r=64 → circumference=402.1 · 70% filled → dashoffset=120.6 -->
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="11"/>
-          <g transform="rotate(-90 80 80)">
-            <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="402.1" stroke-linecap="round"/>
-            <circle id="ring-progress-circle" cx="80" cy="80" r="64" fill="none" stroke="#60A5FA" stroke-width="11" stroke-dasharray="402.1" stroke-dashoffset="120.6" stroke-linecap="round"/>
-          </g>
-          <text id="ring-pct-text" x="80" y="76" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="32" font-weight="800" fill="white" dominant-baseline="central">70%</text>
-          <text x="80" y="96" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8.5" font-weight="600" fill="rgba(255,255,255,0.55)" dominant-baseline="central" letter-spacing="1" data-en="PANEL UP TO DATE" data-ko="패널 최신 상태">PANEL UP TO DATE</text>
-        </svg>
-      </div>
-
-      <div class="greeting-name" id="greetName" data-en="Good morning, Dr. Park" data-ko="안녕하세요, 박 선생님">Good morning, Dr. Park</div>
-      <div class="greeting-status" id="greetStatus" data-en="18 patients today · SMG Koreatown" data-ko="오늘 환자 18명 · SMG 코리아타운">18 patients today · SMG Koreatown</div>
-      <div class="greeting-sub" data-en="Tuesday, March 17" data-ko="2026년 3월 17일 화요일">Tuesday, March 17</div>
-    </div>
-
-    <!-- Bottom: pills + CTA -->
-    <div class="greeting-bottom">
-      <div class="greeting-pills">
-        <div class="greeting-pill alert" id="greet-alerts-pill" data-en="3 Overnight Alerts" data-ko="야간 알림 3건">3 Overnight Alerts</div>
-        <div class="greeting-pill" id="greet-nudges-pill" data-en="5 Nudges Pending" data-ko="대기 알림 5건">5 Nudges Pending</div>
-        <div class="greeting-pill dollar" data-en="$12,400 HCC Opportunity" data-ko="$12,400 HCC 기회">$12,400 HCC Opportunity</div>
-      </div>
-      <button class="greeting-cta" data-en="Start Day" data-ko="시작하기">Start Day</button>
-    </div>
-
-  </div>
-
-  <!-- ═══════════ PATIENT DETAIL OVERLAY ═══════════ -->
-  <div class="pt-detail" id="ptDetail">
-    <div class="detail-header">
-      <button class="back-btn" onclick="closePtDetail()">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
+<!-- LOGIN -->
+<div id="login-overlay" class="fixed inset-0 bg-smg-bg z-[9999] items-center justify-center">
+  <div class="bg-smg-card border border-smg-border rounded-2xl p-9 w-[420px] flex flex-col gap-4 shadow-2xl">
+    <div class="flex items-center gap-2.5 mb-1">
+      <img src="smg.logo.transparent.v1.png" alt="SMG" class="h-8" style="filter:brightness(0) invert(1);opacity:.85;">
       <div>
-        <div class="detail-patient-name" id="detailName">—</div>
-        <div class="detail-patient-meta" id="detailMeta">—</div>
+        <div class="text-[13px] font-bold text-smg-text-sec tracking-wide">BRIDGE</div>
+        <div class="text-[9px] font-bold tracking-widest bg-teal-500/10 text-smg-teal border border-teal-500/25 rounded px-1.5 py-0.5 mt-0.5 inline-block">CLINICAL PORTAL</div>
       </div>
     </div>
-    <div class="detail-body" id="detailBody"></div>
-  </div>
-
-  <!-- ═══════════ STATUS BAR ═══════════ -->
-  <div class="status-bar">
-    <span class="status-time">9:41</span>
-    <div class="status-bar-logo">
-      <img src="smg.logo.transparent.v1.png" alt="SMG" class="smg-logo-light" style="height:34px;">
-    </div>
-    <div class="status-badge" id="alertBadge">3</div>
-  </div>
-
-  <!-- ═══════════ SCREEN ═══════════ -->
-  <div class="screen">
-    <div class="content" id="content">
-
-      <!-- ━━━━━━━━━━━━━━━ TODAY ━━━━━━━━━━━━━━━ -->
-      <div class="tab-pane active" id="pane-today">
-
-        <!-- Overnight Alerts -->
-        <div class="sec-hdr"><span class="sec-title">Overnight Alerts</span><span class="sec-link" id="alerts-dismiss-link">Dismiss all</span></div>
-        <div class="card" id="today-alerts-card">
-          <div class="alert-row">
-            <div class="alert-dot" style="background:#DC2626;"></div>
-            <div class="alert-body">
-              <div class="alert-text">Susan Kim — BP 158/96 reported at 11:42 PM</div>
-              <div class="alert-sub">Jiyeon escalated · MCA-7842-9301</div>
-              <div class="alert-actions">
-                <button class="btn-sm btn-review" onclick="openPtDetail('kim')">Review</button>
-                <button class="btn-sm btn-approve">Acknowledge</button>
-              </div>
-            </div>
-          </div>
-          <div class="alert-row">
-            <div class="alert-dot" style="background:#D97706;"></div>
-            <div class="alert-body">
-              <div class="alert-text">Min-jun Lee — missed evening metformin × 3 days</div>
-              <div class="alert-sub">Caregiver flagged · MCA-3310-4482</div>
-              <div class="alert-actions">
-                <button class="btn-sm btn-review" onclick="openPtDetail('lee')">Review</button>
-                <button class="btn-sm btn-decline">Snooze 48h</button>
-              </div>
-            </div>
-          </div>
-          <div class="alert-row">
-            <div class="alert-dot" style="background:#D97706;"></div>
-            <div class="alert-body">
-              <div class="alert-text">Hana Choi — A1C lab result ready for review</div>
-              <div class="alert-sub">Quest Diagnostics · ordered 3/10</div>
-              <div class="alert-actions">
-                <button class="btn-sm btn-review" onclick="openPtDetail('choi')">View Result</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Today's Schedule -->
-        <div class="sec-hdr"><span class="sec-title">Today's Schedule</span><span class="sec-link" style="color:var(--text-mute);font-weight:500;">18 total</span></div>
-        <div class="card">
-          <div class="slot-row">
-            <div class="slot-time">8:00</div>
-            <div class="slot-bar" style="background:#DC2626;"></div>
-            <div class="slot-info">
-              <div class="slot-name">Susan Kim <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 김순자</span></div>
-              <div class="slot-detail">HTN follow-up · BP alert overnight</div>
-            </div>
-            <span class="slot-tag tag-red">ALERT</span>
-          </div>
-          <div class="slot-row">
-            <div class="slot-time">8:30</div>
-            <div class="slot-bar" style="background:#2563EB;"></div>
-            <div class="slot-info">
-              <div class="slot-name">David Park</div>
-              <div class="slot-detail">Annual Wellness Visit · AWV</div>
-            </div>
-            <span class="slot-tag tag-blue">AWV</span>
-          </div>
-          <div class="slot-row">
-            <div class="slot-time">9:00</div>
-            <div class="slot-bar" style="background:#059669;"></div>
-            <div class="slot-info">
-              <div class="slot-name">Ji-young Oh</div>
-              <div class="slot-detail">DM Type 2 management</div>
-            </div>
-            <span class="slot-tag tag-green">STABLE</span>
-          </div>
-          <div class="slot-row">
-            <div class="slot-time">9:30</div>
-            <div class="slot-bar" style="background:#D97706;"></div>
-            <div class="slot-info">
-              <div class="slot-name">Robert Yoon</div>
-              <div class="slot-detail">CKD Stage 3 · labs pending</div>
-            </div>
-            <span class="slot-tag tag-amber">LABS</span>
-          </div>
-          <div class="slot-row">
-            <div class="slot-time">10:00</div>
-            <div class="slot-bar" style="background:#2563EB;"></div>
-            <div class="slot-info">
-              <div class="slot-name">Alice Han</div>
-              <div class="slot-detail">Annual Wellness Visit · AWV</div>
-            </div>
-            <span class="slot-tag tag-blue">AWV</span>
-          </div>
-          <div class="slot-row">
-            <div class="slot-time">10:30</div>
-            <div class="slot-bar" style="background:#059669;"></div>
-            <div class="slot-info">
-              <div class="slot-name">Min-jun Lee</div>
-              <div class="slot-detail">Medication adherence · DM</div>
-            </div>
-            <span class="slot-tag tag-amber">ALERT</span>
-          </div>
-        </div>
-
-        <!-- AWV Due -->
-        <div class="sec-hdr"><span class="sec-title">AWV Due This Week</span><span class="sec-link">View all 9</span></div>
-        <div class="card">
-          <div class="pt-row" onclick="openPtDetail('park')">
-            <div class="pt-avatar">DP</div>
-            <div class="pt-info">
-              <div class="pt-name">David Park</div>
-              <div class="pt-meta">M, 68 · Last AWV: Mar 2025</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-blue">TODAY</span>
-            </div>
-          </div>
-          <div class="pt-row" onclick="openPtDetail('han')">
-            <div class="pt-avatar">AH</div>
-            <div class="pt-info">
-              <div class="pt-name">Alice Han</div>
-              <div class="pt-meta">F, 71 · Last AWV: Feb 2025</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-blue">TODAY</span>
-            </div>
-          </div>
-          <div class="pt-row" onclick="openPtDetail('jung')">
-            <div class="pt-avatar">BJ</div>
-            <div class="pt-info">
-              <div class="pt-name">Byung-ho Jung</div>
-              <div class="pt-meta">M, 74 · Last AWV: Jan 2025</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-amber">THU</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Nudge Approvals -->
-        <div class="sec-hdr"><span class="sec-title">Nudge Approvals</span><span class="sec-link" id="nudge-approvals-hdr">5 pending</span></div>
-        <div id="nudge-approvals-container">
-        <div class="nudge-card">
-          <div class="nudge-hdr">
-            <span class="nudge-title">BP Check Reminder</span>
-            <span class="nudge-tag tag-red">URGENT</span>
-          </div>
-          <div class="nudge-patient">Susan Kim · 김순자 · 76F</div>
-          <div class="nudge-body">"Hi Susan, Dr. Park wanted to check in after last night's reading. Can you take your BP now and share it with Jiyeon?"</div>
-          <div class="nudge-actions">
-            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
-            <button class="btn-edit-lg">Edit</button>
-            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
-          </div>
-        </div>
-
-        <div class="nudge-card">
-          <div class="nudge-hdr">
-            <span class="nudge-title">Medication Reminder</span>
-            <span class="nudge-tag tag-amber">ROUTINE</span>
-          </div>
-          <div class="nudge-patient">Min-jun Lee · 이민준 · 63M</div>
-          <div class="nudge-body">"Min-jun, it looks like you may have missed your evening metformin the past few days. Would you like a refill or a callback from the clinic?"</div>
-          <div class="nudge-actions">
-            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
-            <button class="btn-edit-lg">Edit</button>
-            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
-          </div>
-        </div>
-        </div><!-- /nudge-approvals-container -->
-
-      </div><!-- /pane-today -->
-
-      <!-- ━━━━━━━━━━━━━━━ PANEL HEALTH ━━━━━━━━━━━━━━━ -->
-      <div class="tab-pane" id="pane-panel">
-
-        <!-- Panel ring -->
-        <div class="card" style="margin-bottom:10px;">
-          <div class="ring-row">
-            <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0;">
-              <circle cx="45" cy="45" r="36" fill="none" stroke="#E2E8F0" stroke-width="8"/>
-              <g transform="rotate(-90 45 45)">
-                <circle id="panel-ring-circle" cx="45" cy="45" r="36" fill="none" stroke="#2563EB" stroke-width="8" stroke-dasharray="226.2" stroke-dashoffset="67.9" stroke-linecap="round"/>
-              </g>
-              <text id="panel-ring-pct" x="45" y="43" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="18" font-weight="800" fill="#0F172A" dominant-baseline="central">70%</text>
-              <text id="panel-ring-of" x="45" y="59" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="600" fill="#94A3B8" dominant-baseline="central">OF 800</text>
-            </svg>
-            <div class="ring-stats">
-              <div class="ring-stat-row">
-                <span class="ring-stat-lbl">Panel size</span>
-                <span class="ring-stat-val" id="ring-stat-size">800</span>
-              </div>
-              <div class="ring-stat-row">
-                <span class="ring-stat-lbl">Active elig.</span>
-                <span class="ring-stat-val" id="ring-stat-active" style="color:var(--green);">560</span>
-              </div>
-              <div class="ring-stat-row">
-                <span class="ring-stat-lbl">Pending claims</span>
-                <span class="ring-stat-val" id="ring-stat-claims" style="color:var(--amber);">—</span>
-              </div>
-              <div class="ring-stat-row">
-                <span class="ring-stat-lbl">Critical labs</span>
-                <span class="ring-stat-val" id="ring-stat-crit" style="color:var(--red);">—</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Condition heatmap -->
-        <div class="sec-hdr"><span class="sec-title">Condition Control</span></div>
-        <div class="heatmap">
-          <div class="heat-cell heat-amber">
-            <div class="heat-label">HTN</div>
-            <div class="heat-pct">61%</div>
-            <div class="heat-sub">controlled</div>
-          </div>
-          <div class="heat-cell heat-red">
-            <div class="heat-label">DM</div>
-            <div class="heat-pct">54%</div>
-            <div class="heat-sub">A1C &lt;8</div>
-          </div>
-          <div class="heat-cell heat-green">
-            <div class="heat-label">CHOL</div>
-            <div class="heat-pct">78%</div>
-            <div class="heat-sub">on statin</div>
-          </div>
-          <div class="heat-cell heat-blue">
-            <div class="heat-label">CKD</div>
-            <div class="heat-pct">66%</div>
-            <div class="heat-sub">monitored</div>
-          </div>
-          <div class="heat-cell heat-red">
-            <div class="heat-label">DEPR</div>
-            <div class="heat-pct">42%</div>
-            <div class="heat-sub">screened</div>
-          </div>
-        </div>
-
-        <!-- Preventive screenings -->
-        <div class="sec-hdr"><span class="sec-title">Preventive Screenings</span></div>
-        <div class="card" style="padding:14px;">
-          <div class="prog-row">
-            <div class="prog-hdr"><span class="prog-lbl">Annual Wellness Visit</span><span class="prog-pct">58%</span></div>
-            <div class="prog-track"><div class="prog-fill" style="width:58%;"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-hdr"><span class="prog-lbl">Colorectal Cancer Screening</span><span class="prog-pct amber" style="color:var(--amber);">44%</span></div>
-            <div class="prog-track"><div class="prog-fill amber" style="width:44%;"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-hdr"><span class="prog-lbl">Mammography (F 50–74)</span><span class="prog-pct green" style="color:var(--green);">72%</span></div>
-            <div class="prog-track"><div class="prog-fill green" style="width:72%;"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-hdr"><span class="prog-lbl">Eye Exam (DM patients)</span><span class="prog-pct" style="color:var(--red);">38%</span></div>
-            <div class="prog-track"><div class="prog-fill" style="width:38%;background:var(--red);"></div></div>
-          </div>
-          <div class="prog-row" style="margin-bottom:0;">
-            <div class="prog-hdr"><span class="prog-lbl">Flu Vaccine (65+)</span><span class="prog-pct green" style="color:var(--green);">81%</span></div>
-            <div class="prog-track"><div class="prog-fill green" style="width:81%;"></div></div>
-          </div>
-        </div>
-
-        <!-- Care gap leaderboard -->
-        <div class="sec-hdr"><span class="sec-title">Longest Overdue</span><span class="sec-link">View all</span></div>
-        <div class="card">
-          <div class="pt-row" onclick="openPtDetail('kim')">
-            <div class="pt-avatar" style="background:#FEF2F2;color:var(--red);">SK</div>
-            <div class="pt-info">
-              <div class="pt-name">Susan Kim · 김순자</div>
-              <div class="pt-meta">AWV overdue 14 months · HTN uncontrolled</div>
-            </div>
-            <span class="pt-tag tag-red">3 gaps</span>
-          </div>
-          <div class="pt-row" onclick="openPtDetail('jung')">
-            <div class="pt-avatar" style="background:#FEF3C7;color:var(--amber);">BJ</div>
-            <div class="pt-info">
-              <div class="pt-name">Byung-ho Jung</div>
-              <div class="pt-meta">Colonoscopy overdue 2 yrs · DM screen needed</div>
-            </div>
-            <span class="pt-tag tag-amber">2 gaps</span>
-          </div>
-          <div class="pt-row" onclick="openPtDetail('shin')">
-            <div class="pt-avatar" style="background:#FEF3C7;color:var(--amber);">YS</div>
-            <div class="pt-info">
-              <div class="pt-name">Young-sook Shin</div>
-              <div class="pt-meta">Mammogram overdue 18 months · depression unscreened</div>
-            </div>
-            <span class="pt-tag tag-amber">2 gaps</span>
-          </div>
-        </div>
-
-        <!-- No-show stats -->
-        <div class="sec-hdr"><span class="sec-title">Utilization</span></div>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-val amber">14%</div>
-            <div class="stat-lbl">No-show rate</div>
-            <div class="stat-delta delta-dn">▲ 2% vs last mo.</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val blue">3.1</div>
-            <div class="stat-lbl">Avg visits/yr</div>
-            <div class="stat-delta delta-up">▼ 0.2 vs target</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val red">22</div>
-            <div class="stat-lbl">ED visits (90d)</div>
-            <div class="stat-delta delta-dn">▲ 4 vs last qtr</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val green">94%</div>
-            <div class="stat-lbl">Retention rate</div>
-            <div class="stat-delta delta-up">— stable</div>
-          </div>
-        </div>
-
-      </div><!-- /pane-panel -->
-
-      <!-- ━━━━━━━━━━━━━━━ REVENUE ━━━━━━━━━━━━━━━ -->
-      <div class="tab-pane" id="pane-revenue">
-
-        <!-- Total opportunity banner -->
-        <div class="rev-banner">
-          <div>
-            <div class="rev-banner-lbl">Uncaptured Revenue</div>
-            <div class="rev-banner-val" id="rev-uncaptured">$48,200</div>
-            <div class="rev-banner-sub" id="rev-panel-sub">Estimated this quarter · 800-pt panel</div>
-          </div>
-          <div class="rev-banner-badge">
-            <div class="rev-banner-badge-val" id="rev-hcc-count">23</div>
-            <div class="rev-banner-badge-lbl">pending claims</div>
-          </div>
-        </div>
-
-        <!-- HCC coding opportunities -->
-        <div class="sec-hdr"><span class="sec-title">HCC Coding Opportunities</span><span class="sec-link" id="rev-hcc-lbl">Loading…</span></div>
-        <div class="card" id="rev-hcc-list">
-          <div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">Loading opportunities…</div>
-        </div>
-
-        <!-- AWV completion -->
-        <div class="sec-hdr"><span class="sec-title">AWV Revenue</span></div>
-        <div class="card" style="padding:14px;">
-          <div class="prog-row">
-            <div class="prog-hdr"><span class="prog-lbl">AWV Completion Rate (YTD)</span><span class="prog-pct" id="rev-awv-pct">58%</span></div>
-            <div class="prog-track"><div class="prog-fill" id="rev-awv-bar" style="width:58%;"></div></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft);">
-            <div style="text-align:center;">
-              <div id="rev-awv-completed" style="font-size:20px;font-weight:800;color:var(--text);">463</div>
-              <div style="font-size:11px;color:var(--text-mute);">Completed</div>
-            </div>
-            <div style="text-align:center;">
-              <div id="rev-awv-remaining" style="font-size:20px;font-weight:800;color:var(--amber);">337</div>
-              <div style="font-size:11px;color:var(--text-mute);">Remaining</div>
-            </div>
-            <div style="text-align:center;">
-              <div id="rev-awv-captured" style="font-size:20px;font-weight:800;color:var(--green);">$81K</div>
-              <div style="font-size:11px;color:var(--text-mute);">Captured</div>
-            </div>
-            <div style="text-align:center;">
-              <div id="rev-awv-atrisk" style="font-size:20px;font-weight:800;color:var(--red);">$61K</div>
-              <div style="font-size:11px;color:var(--text-mute);">At risk</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Monthly trend -->
-        <div class="sec-hdr"><span class="sec-title">Monthly Trend</span></div>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-val green" id="rev-billed-month">$28,400</div>
-            <div class="stat-lbl">Billed this month</div>
-            <div class="stat-delta delta-up" id="rev-billed-delta">Live from claims</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val blue" id="rev-total-paid">$12,400</div>
-            <div class="stat-lbl">Total paid (all time)</div>
-            <div class="stat-delta" style="color:var(--text-mute);">From claims data</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="rev-claim-count">—</div>
-            <div class="stat-lbl">Total claims</div>
-            <div class="stat-delta delta-up" id="rev-pending-delta">— pending</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val amber" id="rev-avg-billed">$340</div>
-            <div class="stat-lbl">Avg billed/claim</div>
-            <div class="stat-delta" style="color:var(--text-mute);">All claims</div>
-          </div>
-        </div>
-
-      </div><!-- /pane-revenue -->
-
-      <!-- ━━━━━━━━━━━━━━━ PATIENTS ━━━━━━━━━━━━━━━ -->
-      <div class="tab-pane" id="pane-patients">
-
-        <div class="search-bar">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search patients…" oninput="filterPatients(this.value)">
-        </div>
-
-        <div class="sec-hdr" style="margin-top:0;"><span class="sec-title">All Patients</span><span class="sec-link" id="panel-count-text" style="color:var(--text-mute);font-weight:500;">800 total</span></div>
-        <div class="card" id="patient-list">
-          <div class="pt-row" data-name="susan kim 김순자" onclick="openPtDetail('kim')">
-            <div class="pt-avatar" style="background:#FEF2F2;color:var(--red);">SK</div>
-            <div class="pt-info">
-              <div class="pt-name">Susan Kim <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 김순자</span></div>
-              <div class="pt-meta">F, 76 · HTN · DM · MCA-7842-9301</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-red">HIGH</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="min-jun lee 이민준" onclick="openPtDetail('lee')">
-            <div class="pt-avatar">ML</div>
-            <div class="pt-info">
-              <div class="pt-name">Min-jun Lee <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 이민준</span></div>
-              <div class="pt-meta">M, 63 · DM Type 2 · MCA-3310-4482</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-amber">MED</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="hana choi 최하나" onclick="openPtDetail('choi')">
-            <div class="pt-avatar">HC</div>
-            <div class="pt-info">
-              <div class="pt-name">Hana Choi <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 최하나</span></div>
-              <div class="pt-meta">F, 58 · DM · Neuropathy · MCA-5521-0093</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-amber">MED</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="david park 박대원" onclick="openPtDetail('park')">
-            <div class="pt-avatar">DP</div>
-            <div class="pt-info">
-              <div class="pt-name">David Park <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 박대원</span></div>
-              <div class="pt-meta">M, 68 · HTN · AWV today · MCA-2201-7744</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-blue">AWV</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="alice han 한앨리스" onclick="openPtDetail('han')">
-            <div class="pt-avatar">AH</div>
-            <div class="pt-info">
-              <div class="pt-name">Alice Han</div>
-              <div class="pt-meta">F, 71 · CHF · CKD · MCA-8803-2210</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-red">HIGH</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="robert yoon 윤로버트" onclick="openPtDetail('yoon')">
-            <div class="pt-avatar">RY</div>
-            <div class="pt-info">
-              <div class="pt-name">Robert Yoon</div>
-              <div class="pt-meta">M, 72 · CKD Stage 3 · MCA-6612-8891</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-amber">MED</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="byung-ho jung 정병호" onclick="openPtDetail('jung')">
-            <div class="pt-avatar">BJ</div>
-            <div class="pt-info">
-              <div class="pt-name">Byung-ho Jung <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 정병호</span></div>
-              <div class="pt-meta">M, 74 · COPD · DM · MCA-1190-3344</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-amber">MED</span>
-            </div>
-          </div>
-          <div class="pt-row" data-name="young-sook shin 신영숙" onclick="openPtDetail('shin')">
-            <div class="pt-avatar">YS</div>
-            <div class="pt-info">
-              <div class="pt-name">Young-sook Shin <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· 신영숙</span></div>
-              <div class="pt-meta">F, 62 · Depression · HTN · MCA-4430-6677</div>
-            </div>
-            <div class="pt-right">
-              <span class="pt-tag tag-green">LOW</span>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /pane-patients -->
-
-      <!-- ━━━━━━━━━━━━━━━ MESSAGES ━━━━━━━━━━━━━━━ -->
-      <div class="tab-pane" id="pane-messages">
-
-        <!-- Jiyeon escalations -->
-        <div class="sec-hdr"><span class="sec-title">Jiyeon Escalations</span><span class="sec-link">2 unread</span></div>
-        <div class="card">
-          <div class="msg-row">
-            <div class="msg-avatar ai">AI</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">Jiyeon (Susan Kim)</span>
-                <span class="msg-time">11:48 PM</span>
-              </div>
-              <div class="msg-preview">BP 158/96 — patient reports headache, escalating to Dr. Park per protocol</div>
-            </div>
-            <div class="msg-unread"></div>
-          </div>
-          <div class="msg-row">
-            <div class="msg-avatar ai">AI</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">Jiyeon (Min-jun Lee)</span>
-                <span class="msg-time">9:30 PM</span>
-              </div>
-              <div class="msg-preview">Caregiver James reports patient skipped metformin 3 days in a row — asking for guidance</div>
-            </div>
-            <div class="msg-unread"></div>
-          </div>
-          <div class="msg-row">
-            <div class="msg-avatar ai">AI</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">Jiyeon (Hana Choi)</span>
-                <span class="msg-time">Yesterday</span>
-              </div>
-              <div class="msg-preview">Patient asking about A1C result — result now available, recommend provider review</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bridge AI digest -->
-        <div class="sec-hdr"><span class="sec-title">Bridge AI Weekly Digest</span></div>
-        <div class="card" style="padding:14px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Week of Mar 10–16 · SMG Koreatown</div>
-          <div style="font-size:12px;color:var(--text-sec);line-height:1.6;">
-            • <b>47 nudges sent</b> — 89% patient response rate<br>
-            • <b>3 BP escalations</b> handled by Jiyeon overnight<br>
-            • <b>6 AWVs completed</b> this week (+2 vs last week)<br>
-            • <b>$4,200 HCC</b> coded from Bridge-flagged visits<br>
-            • No-show rate: <span style="color:var(--amber);font-weight:600;">14%</span> (↑ from 12%)
-          </div>
-          <button class="btn-action" style="margin-top:12px;width:100%;">View Full Report</button>
-        </div>
-
-        <!-- Nudge queue -->
-        <div class="sec-hdr"><span class="sec-title">Outgoing Nudge Queue</span><span class="sec-link">5 pending</span></div>
-        <div class="card">
-          <div class="msg-row">
-            <div class="msg-avatar pt">SK</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">→ Susan Kim</span>
-                <span class="msg-time">Pending</span>
-              </div>
-              <div class="msg-preview">BP check follow-up — awaiting Dr. Park approval</div>
-            </div>
-            <span class="pt-tag tag-amber" style="flex-shrink:0;align-self:center;">Pending</span>
-          </div>
-          <div class="msg-row">
-            <div class="msg-avatar pt">ML</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">→ Min-jun Lee</span>
-                <span class="msg-time">Pending</span>
-              </div>
-              <div class="msg-preview">Metformin adherence check — awaiting approval</div>
-            </div>
-            <span class="pt-tag tag-amber" style="flex-shrink:0;align-self:center;">Pending</span>
-          </div>
-          <div class="msg-row">
-            <div class="msg-avatar pt">BJ</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">→ Byung-ho Jung</span>
-                <span class="msg-time">Pending</span>
-              </div>
-              <div class="msg-preview">AWV scheduling reminder — Thu slot available</div>
-            </div>
-            <span class="pt-tag tag-blue" style="flex-shrink:0;align-self:center;">AWV</span>
-          </div>
-        </div>
-
-        <!-- Direct messages -->
-        <div class="sec-hdr"><span class="sec-title">Patient Messages</span></div>
-        <div class="card">
-          <div class="msg-row">
-            <div class="msg-avatar pt">DP</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">David Park</span>
-                <span class="msg-time">8:12 AM</span>
-              </div>
-              <div class="msg-preview">Can I get a parking validation for today's AWV visit?</div>
-            </div>
-          </div>
-          <div class="msg-row">
-            <div class="msg-avatar pt">HC</div>
-            <div class="msg-body">
-              <div class="msg-hdr">
-                <span class="msg-from">Hana Choi</span>
-                <span class="msg-time">Mar 15</span>
-              </div>
-              <div class="msg-preview">When will my A1C results come back from Quest?</div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /pane-messages -->
-
-    </div><!-- /content -->
-
-    <!-- Tab bar -->
-    <div class="tab-bar" style="position:relative;">
-      <button class="tab-btn active" id="tab-today" onclick="switchTab('today')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span class="tab-label">TODAY</span>
-      </button>
-      <button class="tab-btn" id="tab-panel" onclick="switchTab('panel')">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span class="tab-label">PANEL</span>
-      </button>
-      <button class="tab-btn" id="tab-revenue" onclick="switchTab('revenue')">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span class="tab-label">REVENUE</span>
-      </button>
-      <button class="tab-btn" id="tab-patients" onclick="switchTab('patients')">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span class="tab-label">PATIENTS</span>
-      </button>
-      <button class="tab-btn" id="tab-messages" onclick="switchTab('messages')">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span class="tab-label">MESSAGES</span>
-      </button>
-      <div style="position:absolute;top:6px;right:8px;display:flex;gap:3px;" id="main-lang-toggle">
-        <button id="ml-en" onclick="setGreetLang('en')" style="font-size:9px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-family:inherit;">EN</button>
-        <button id="ml-ko" onclick="setGreetLang('ko')" style="font-size:9px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;font-family:inherit;">한국어</button>
+    <h2 class="text-[22px] font-extrabold -mt-1">Physician Sign In</h2>
+    <p class="text-[13px] text-smg-text-sec -mt-2 mb-1">Enter your NPI to access your patient panel.</p>
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <label class="block text-[11px] font-bold text-smg-text-sec tracking-wide mb-1.5">FIRST NAME</label>
+        <input type="text" id="login-first" placeholder="First" autocomplete="given-name"
+          class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text font-sans text-[14px] outline-none focus:border-smg-teal">
+      </div>
+      <div class="flex-1">
+        <label class="block text-[11px] font-bold text-smg-text-sec tracking-wide mb-1.5">LAST NAME</label>
+        <input type="text" id="login-last" placeholder="Last" autocomplete="family-name"
+          class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text font-sans text-[14px] outline-none focus:border-smg-teal">
       </div>
     </div>
-  </div><!-- /screen -->
-</div><!-- /phone -->
+    <div>
+      <label class="block text-[11px] font-bold text-smg-text-sec tracking-wide mb-1.5">NPI NUMBER</label>
+      <input type="text" id="login-npi" placeholder="10-digit NPI" maxlength="10"
+        oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')doLogin()"
+        class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text font-sans text-[14px] outline-none focus:border-smg-teal font-mono tracking-widest">
+    </div>
+    <button onclick="doLogin()" id="login-btn"
+      class="w-full bg-smg-teal text-white border-none rounded-lg py-3 text-[14px] font-bold font-sans cursor-pointer hover:bg-teal-400 mt-1 disabled:opacity-50 transition-colors">
+      Access My Panel →
+    </button>
+    <div id="login-error" class="text-smg-red text-[12px] -mt-1" style="display:none;"></div>
+    <div class="text-[11px] text-smg-text-mute text-center">Demo NPI: <span class="text-smg-teal cursor-pointer font-mono" onclick="document.getElementById('login-npi').value='1234567890'">1234567890</span></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="w-60 bg-smg-sidebar border-r border-smg-border flex flex-col flex-shrink-0 fixed top-0 left-0 bottom-0 z-[100]">
+  <div class="px-5 py-6 border-b border-smg-border flex items-center gap-2.5">
+    <img src="smg.logo.transparent.v1.png" alt="SMG" class="h-9" style="filter:brightness(0) invert(1);opacity:.85;">
+    <div>
+      <div class="text-[13px] font-bold text-smg-text-sec tracking-wide">BRIDGE</div>
+      <div class="text-[9px] font-bold tracking-widest bg-teal-500/10 text-smg-teal border border-teal-500/25 rounded px-1.5 py-0.5 mt-0.5 inline-block">CLINICAL PORTAL</div>
+    </div>
+  </div>
+  <div class="flex-1 p-3 overflow-y-auto hide-scrollbar">
+    <div class="ns">Overview</div>
+    <div class="nav-item active flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('dashboard')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Dashboard
+    </div>
+
+    <div class="ns">Data Management</div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('patients')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> My Patients
+      <span class="ml-auto text-[10px] font-bold bg-smg-teal/20 text-smg-teal rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-patient-count">—</span>
+    </div>
+
+    <div class="ns">MSO Operations</div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('eligibility')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Eligibility
+      <span class="ml-auto text-[10px] font-bold bg-smg-amber/20 text-smg-amber rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-elig-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('claims')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Claims
+      <span class="ml-auto text-[10px] font-bold bg-smg-amber/20 text-smg-amber rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-claims-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('auths')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Authorizations
+      <span class="ml-auto text-[10px] font-bold bg-smg-amber/20 text-smg-amber rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-auths-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('pharmacy')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span> Pharmacy
+    </div>
+
+    <div class="ns">Clinical</div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('schedule')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> Today's Schedule
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('labs')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Lab Results
+      <span class="ml-auto text-[10px] font-bold bg-smg-red/20 text-smg-red rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-labs-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('medications')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="3"/><path d="m22 22-1.5-1.5"/></svg></span> Medications
+    </div>
+
+    <div class="ns">Patient Portal</div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('apptQueue')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg></span> Appt. Calendar
+      <span class="ml-auto text-[10px] font-bold bg-smg-purple/20 text-smg-purple rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-appt-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('consents')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span> Caregiver Consents
+      <span class="ml-auto text-[10px] font-bold bg-smg-purple/20 text-smg-purple rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-consent-badge">—</span>
+    </div>
+    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('launch')">
+      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span> Launch Bridge App
+    </div>
+  </div>
+  <div class="p-4 border-t border-smg-border text-[11px] text-smg-text-mute">
+    <div class="text-[12px] font-semibold text-smg-text-sec mb-1" id="sidebar-doctor-name">—</div>
+    <div class="text-[11px] text-smg-text-mute" id="sidebar-practice">—</div>
+    <div class="flex items-center gap-1.5 mt-2">
+      <div class="w-1.5 h-1.5 rounded-full bg-smg-green animate-pulse-sync"></div>
+      <span>Live</span>
+      <button onclick="doLogout()" class="ml-auto text-[11px] text-smg-text-mute hover:text-smg-red cursor-pointer bg-transparent border-none font-sans">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="ml-60 flex-1 flex flex-col min-h-screen">
+  <!-- Topbar -->
+  <div class="h-14 px-7 flex items-center justify-between bg-smg-sidebar border-b border-smg-border flex-shrink-0 sticky top-0 z-50">
+    <div class="text-base font-bold tracking-tight" id="pageTitle">Dashboard</div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 bg-smg-card border border-smg-border rounded-lg px-3 py-1.5 min-w-[240px]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" class="text-smg-text-mute flex-shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search my patients…" oninput="onGlobalSearch(this.value)"
+          class="bg-transparent border-none text-smg-text text-[13px] font-sans outline-none w-full placeholder:text-smg-text-mute">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page active gap-6" id="page-dashboard" style="padding:28px;">
+    <div class="grid grid-cols-4 gap-4">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-teal-500/40 transition-all" onclick="showPage('patients')">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(20,184,166,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-teal" id="ds-panel">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Panel Size</div>
+        <div class="text-[11px] text-smg-text-mute">Active patients</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-green-500/40 transition-all" onclick="showPage('eligibility');filterEligibility(null,'Active');">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-green" id="ds-elig-active">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Active Eligibility</div>
+        <div class="text-[11px] text-smg-text-mute">Verified members</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-amber-500/40 transition-all" onclick="showPage('claims');filterClaims(null,'Pending');">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-amber" id="ds-claims">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Pending Claims</div>
+        <div class="text-[11px] text-smg-text-mute">Awaiting processing</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-amber-500/40 transition-all" onclick="showPage('auths');filterAuths(null,'Pending');">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-amber" id="ds-auths">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Pending Auths</div>
+        <div class="text-[11px] text-smg-text-mute">Requires review</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-red-500/40 transition-all" onclick="showPage('labs');filterLabs(null,'Critical');">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-red" id="ds-critical">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Critical Labs</div>
+        <div class="text-[11px] text-smg-text-mute">Needs attention</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-amber-500/40 transition-all" onclick="showPage('pharmacy')">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-amber" id="ds-refills">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Refills Due (7d)</div>
+        <div class="text-[11px] text-smg-text-mute">Panel prescriptions</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-purple-500/40 transition-all" onclick="showPage('apptQueue')">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-purple" id="ds-appts">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Appt. Requests</div>
+        <div class="text-[11px] text-smg-text-mute">From patient app</div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-purple-500/40 transition-all" onclick="showPage('consents')">
+        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-purple" id="ds-consents">—</div>
+        <div class="text-[12px] text-smg-text-sec font-medium mb-0.5">Pending Consents</div>
+        <div class="text-[11px] text-smg-text-mute">Caregiver access</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="flex items-center justify-between mb-3.5">
+          <div class="text-[14px] font-bold">Recent Critical Labs</div>
+          <button class="text-[12px] text-smg-teal cursor-pointer font-semibold bg-transparent border-none" onclick="showPage('labs');filterLabs(null,'Critical');">View all →</button>
+        </div>
+        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="ds-critical-list"><div class="empty-state"><div class="empty-text">No critical labs</div></div></div></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-3.5">
+          <div class="text-[14px] font-bold">Pending Authorizations</div>
+          <button class="text-[12px] text-smg-teal cursor-pointer font-semibold bg-transparent border-none" onclick="showPage('auths');filterAuths(null,'Pending');">View all →</button>
+        </div>
+        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="ds-auths-list"><div class="empty-state"><div class="empty-text">No pending authorizations</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MY PATIENTS ── -->
+  <div class="page gap-5" id="page-patients" style="padding:28px;">
+    <div class="flex gap-3 items-center">
+      <input type="text" id="patientSearch" placeholder="Search by name or patient ID…"
+        class="flex-1 bg-smg-card border border-smg-border rounded-lg px-3.5 py-2 text-smg-text text-[13px] font-sans outline-none focus:border-smg-teal placeholder:text-smg-text-mute"
+        oninput="debounceSearch(this.value)">
+    </div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="patientsTable"><div class="empty-state"><div class="empty-text">Loading patients…</div></div></div></div>
+  </div>
+
+  <!-- ── ELIGIBILITY ── -->
+  <div class="page gap-5" id="page-eligibility" style="padding:28px;">
+    <div class="grid grid-cols-3 gap-4">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-smg-green transition-all" onclick="filterEligibility(null,'Active')">
+        <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-green" id="e-active">—</div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Active Members <span style="font-size:10px;color:#10B981;opacity:.7;">— click to filter</span></div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-smg-red transition-all" onclick="filterEligibility(null,'Termed')">
+        <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-red" id="e-termed">—</div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Termed / Inactive <span style="font-size:10px;color:#EF4444;opacity:.7;">— click to filter</span></div>
+      </div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer hover:border-smg-amber transition-all" onclick="filterEligibility(null,'Pending')">
+        <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-amber" id="e-pending">—</div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Pending Verification <span style="font-size:10px;color:#F59E0B;opacity:.7;">— click to filter</span></div>
+      </div>
+    </div>
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <span class="chip active" onclick="filterEligibility(this,'')">All</span>
+      <span class="chip" onclick="filterEligibility(this,'Active')">Active</span>
+      <span class="chip" onclick="filterEligibility(this,'Termed')">Termed</span>
+      <span class="chip" onclick="filterEligibility(this,'Inactive')">Inactive</span>
+      <span class="chip" onclick="filterEligibility(this,'Pending')">Pending</span>
+    </div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="eligTable"><div class="empty-state"><div class="empty-text">Loading eligibility…</div></div></div></div>
+  </div>
+
+  <!-- ── CLAIMS ── -->
+  <div class="page gap-5" id="page-claims" style="padding:28px;">
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <span class="chip active" onclick="filterClaims(this,'')">All</span>
+      <span class="chip" onclick="filterClaims(this,'Pending')">Pending</span>
+      <span class="chip" onclick="filterClaims(this,'Paid')">Paid</span>
+      <span class="chip" onclick="filterClaims(this,'Approved')">Approved</span>
+      <span class="chip" onclick="filterClaims(this,'Denied')">Denied</span>
+    </div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="claimsTable"><div class="empty-state"><div class="empty-text">Loading claims…</div></div></div></div>
+  </div>
+
+  <!-- ── AUTHORIZATIONS ── -->
+  <div class="page gap-5" id="page-auths" style="padding:28px;">
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <span class="chip active" onclick="filterAuths(this,'')">All</span>
+      <span class="chip" onclick="filterAuths(this,'Pending')">Pending</span>
+      <span class="chip" onclick="filterAuths(this,'Approved')">Approved</span>
+      <span class="chip" onclick="filterAuths(this,'Denied')">Denied</span>
+      <span class="chip" onclick="filterAuths(this,'Expired')">Expired</span>
+    </div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="authsTable"><div class="empty-state"><div class="empty-text">Loading authorizations…</div></div></div></div>
+  </div>
+
+  <!-- ── PHARMACY ── -->
+  <div class="page gap-5" id="page-pharmacy" style="padding:28px;">
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="pharmacyTable"><div class="empty-state"><div class="empty-text">Loading pharmacy records…</div></div></div></div>
+  </div>
+
+  <!-- ── SCHEDULE ── -->
+  <div class="page gap-5" id="page-schedule" style="padding:28px;">
+    <div class="text-[13px] font-semibold text-smg-text-sec" id="schedule-date-label">Today's appointments</div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="scheduleTable"><div class="empty-state"><div class="empty-text">Loading schedule…</div></div></div></div>
+  </div>
+
+  <!-- ── LAB RESULTS ── -->
+  <div class="page gap-5" id="page-labs" style="padding:28px;">
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <span class="chip active" onclick="filterLabs(this,'')">All</span>
+      <span class="chip" onclick="filterLabs(this,'Critical')">Critical</span>
+      <span class="chip" onclick="filterLabs(this,'High')">High</span>
+      <span class="chip" onclick="filterLabs(this,'Low')">Low</span>
+      <span class="chip" onclick="filterLabs(this,'Normal')">Normal</span>
+    </div>
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="labsTable"><div class="empty-state"><div class="empty-text">Loading lab results…</div></div></div></div>
+  </div>
+
+  <!-- ── MEDICATIONS ── -->
+  <div class="page gap-5" id="page-medications" style="padding:28px;">
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="medsTable"><div class="empty-state"><div class="empty-text">Loading medications…</div></div></div></div>
+  </div>
+
+  <!-- ── APPOINTMENT CALENDAR ── -->
+  <div class="page gap-0" id="page-apptQueue" style="padding:0;">
+    <div style="display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 56px);">
+      <div style="border-right:1px solid #1C2F47;padding:20px 16px;background:#0A1020;overflow-y:auto;" class="hide-scrollbar">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <button onclick="calPrevMonth()" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #1C2F47;border-radius:6px;color:#7A9AB8;cursor:pointer;font-size:16px;line-height:1;font-family:inherit;">‹</button>
+          <div id="cal-month-label" style="font-size:13px;font-weight:700;color:#E2E8F0;">—</div>
+          <button onclick="calNextMonth()" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #1C2F47;border-radius:6px;color:#7A9AB8;cursor:pointer;font-size:16px;line-height:1;font-family:inherit;">›</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">S</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">M</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">T</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">W</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">T</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">F</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">S</div>
+        </div>
+        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:16px;padding:8px 10px;background:#162032;border-radius:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Confirmed</span></div>
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Pending</span></div>
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#8B5CF6;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Rescheduled</span></div>
+        </div>
+        <div id="cal-pending-count" style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#3D5A75;text-transform:uppercase;margin-bottom:8px;">PENDING REQUESTS</div>
+        <div id="cal-pending-list"></div>
+      </div>
+      <div style="padding:28px;overflow-y:auto;" id="cal-day-detail">
+        <div style="text-align:center;padding:80px 20px;color:#3D5A75;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40" style="margin:0 auto 12px;display:block;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div style="font-size:14px;">Loading calendar…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CAREGIVER CONSENTS ── -->
+  <div class="page gap-5" id="page-consents" style="padding:28px;">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div class="text-[13px] font-semibold text-smg-text-sec">Digital caregiver consent records</div>
+      <div class="flex gap-1.5" id="consent-chips">
+        <span class="chip active" onclick="filterConsents(this,'all')">All</span>
+        <span class="chip" onclick="filterConsents(this,'pending')">Pending Review</span>
+        <span class="chip" onclick="filterConsents(this,'approved')">Approved</span>
+        <span class="chip" onclick="filterConsents(this,'declined')">Declined</span>
+      </div>
+    </div>
+    <input id="consent-search" type="text" placeholder="Search by patient or caregiver name…" oninput="loadConsents()"
+      class="bg-smg-card border border-smg-border rounded-lg px-3.5 py-2 text-smg-text text-[12px] font-sans outline-none focus:border-smg-teal w-full placeholder:text-smg-text-mute">
+    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="consentsTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="empty-text">No consent records yet</div><div class="empty-sub">Caregiver access requests from the Bridge app appear here</div></div></div></div>
+  </div>
+
+  <!-- ── LAUNCH BRIDGE APP ── -->
+  <div class="page gap-6" id="page-launch" style="padding:28px;">
+    <div style="max-width:800px;">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <div class="text-[18px] font-bold mb-1">Launch Bridge for a Patient</div>
+          <div class="text-[13px] text-smg-text-sec">Search within your panel and open their Bridge experience directly</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+        <div class="bg-smg-card border border-smg-teal/40 rounded-smg p-5 cursor-pointer" onclick="window.open('bridge-members-v2.html?role=patient','_blank')">
+          <div style="margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+          <div style="font-size:15px;font-weight:700;color:#14B8A6;margin-bottom:4px;">Patient View</div>
+          <div style="font-size:12px;color:#7A9AB8;line-height:1.6;">Open the patient-facing Bridge portal. Bilingual EN/한국어.</div>
+        </div>
+        <div class="bg-smg-card border border-smg-purple/40 rounded-smg p-5 cursor-pointer" onclick="window.open('bridge-members-v2.html?role=caregiver','_blank')">
+          <div style="margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div style="font-size:15px;font-weight:700;color:#8B5CF6;margin-bottom:4px;">Caregiver View</div>
+          <div style="font-size:12px;color:#7A9AB8;line-height:1.6;">Open the caregiver-facing Bridge portal for a patient's family member.</div>
+        </div>
+      </div>
+      <div class="text-[14px] font-bold mb-3">Open Bridge for a Specific Patient</div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <input type="text" id="launch-search" placeholder="Search by name or patient ID within your panel…" oninput="searchForPortalLaunch(this.value)"
+          class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text text-[13px] font-sans outline-none focus:border-smg-teal placeholder:text-smg-text-mute mb-4">
+        <div id="launch-results" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- PATIENT DRAWER -->
+<div class="drawer-overlay fixed inset-0 bg-black/50 z-[200] backdrop-blur-sm" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer fixed top-0 bottom-0 w-[680px] bg-smg-bg border-l border-smg-border z-[201] overflow-y-auto flex flex-col" id="patientDrawer">
+  <div class="px-6 py-5 border-b border-smg-border flex items-start justify-between flex-shrink-0 sticky top-0 bg-smg-bg z-10">
+    <div>
+      <div style="font-size:18px;font-weight:800;letter-spacing:-.4px;" id="drawerName">Patient Name</div>
+      <div style="font-size:12px;color:#7A9AB8;margin-top:2px;" id="drawerSub">ID · DOB · Gender</div>
+    </div>
+    <button class="bg-smg-card border border-smg-border text-smg-text-sec rounded-lg px-3 py-1.5 text-[12px] cursor-pointer font-sans" onclick="closeDrawer()">✕ Close</button>
+  </div>
+  <div style="padding:0 24px;border-bottom:1px solid #1C2F47;">
+    <div class="flex gap-1 flex-wrap">
+      <div class="d-tab active px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'overview')">Overview</div>
+      <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'labs')">Lab Results</div>
+      <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'auths')">Authorizations</div>
+      <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'medications')">Medications</div>
+      <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'claims')">Claims</div>
+    </div>
+  </div>
+  <div class="flex-1 p-6">
+    <div class="d-pane active" id="dpane-overview"><div class="grid grid-cols-2 gap-x-8 gap-y-5" id="drawerOverview"></div></div>
+    <div class="d-pane" id="dpane-labs"><div id="drawerLabs"><div class="empty-state"><div class="empty-text">No labs on record</div></div></div></div>
+    <div class="d-pane" id="dpane-auths"><div id="drawerAuths"><div class="empty-state"><div class="empty-text">No authorizations on record</div></div></div></div>
+    <div class="d-pane" id="dpane-medications"><div id="drawerMeds"><div class="empty-state"><div class="empty-text">No medications on record</div></div></div></div>
+    <div class="d-pane" id="dpane-claims"><div id="drawerClaims"><div class="empty-state"><div class="empty-text">No claims on record</div></div></div></div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
 
 <script>
-// ── API ──
-const API = (window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
-async function api(path, opts = {}) {
-  try {
-    const r = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return await r.json();
-  } catch(e) { console.error('API:', path, e); return null; }
-}
+const API = 'http://localhost:3000/api';
 
 // ── State ──
-let doctorNPI = null;
-let panelStats = {};
+let _npi='', _doctorName='', _practiceName='';
+let patientQuery='', searchDebounce=null;
+let patientPage=1, labPage=1, authPage=1, eligPage=1, claimsPage=1, pharmaPage=1, medsPage=1;
+let labFilter='', authFilter='', eligFilter='', claimsFilter='';
+let apptQueueFilter='all', consentFilter='all';
+let _apptNameMap={};
+const PAGE_SIZE=50;
+const PAGE_TITLES={
+  dashboard:'Dashboard', patients:'My Patients',
+  eligibility:'Eligibility', claims:'Claims', auths:'Authorizations', pharmacy:'Pharmacy',
+  schedule:"Today's Schedule", labs:'Lab Results', medications:'Medications',
+  apptQueue:'Appointment Calendar', consents:'Caregiver Consents', launch:'Launch Bridge App',
+};
 
-// ── Doctor login ──
-async function handleDoctorLogin(e) {
-  e.preventDefault();
-  const first  = document.getElementById('drFirst').value.trim()  || 'James';
-  const last   = document.getElementById('drLast').value.trim()   || 'Park';
-  const npi    = document.getElementById('drNpi').value.trim();
-  const clinic = document.getElementById('drClinic').value.trim() || 'SMG Koreatown';
-
-  doctorNPI = npi;
-
-  // Update greeting name
-  document.getElementById('greetName').textContent = `Good morning, Dr. ${last}`;
-  document.getElementById('greetName').dataset.en  = `Good morning, Dr. ${last}`;
-  document.getElementById('greetName').dataset.ko  = `안녕하세요, ${last} 선생님`;
-
-  if (npi) {
-    const stats = await api(`/pcp/panel/stats?npi=${encodeURIComponent(npi)}`);
-    if (stats && !stats.error) {
-      panelStats = stats;
-      const practiceName = stats.practiceName || clinic;
-      document.getElementById('greetStatus').textContent = `${stats.panelCount.toLocaleString()} patients · ${practiceName}`;
-      document.getElementById('greetStatus').dataset.en  = `${stats.panelCount.toLocaleString()} patients · ${practiceName}`;
-      document.getElementById('greetStatus').dataset.ko  = `환자 ${stats.panelCount.toLocaleString()}명 · ${practiceName}`;
-
-      const alertCount = stats.criticalLabs.length;
-      const authCount  = stats.pendingAuths.length;
-
-      const alertPill = document.getElementById('greet-alerts-pill');
-      if (alertPill) {
-        alertPill.textContent = `${alertCount} Critical Lab${alertCount !== 1 ? 's' : ''}`;
-        alertPill.dataset.en  = alertPill.textContent;
-        alertPill.dataset.ko  = `위험 검사 ${alertCount}건`;
-      }
-      const nudgePill = document.getElementById('greet-nudges-pill');
-      if (nudgePill) {
-        nudgePill.textContent = `${authCount} Auth${authCount !== 1 ? 's' : ''} Pending`;
-        nudgePill.dataset.en  = nudgePill.textContent;
-        nudgePill.dataset.ko  = `승인 대기 ${authCount}건`;
-      }
-      const badge = document.getElementById('alertBadge');
-      if (badge) { badge.textContent = alertCount; badge.style.display = alertCount > 0 ? '' : 'none'; }
-
-      // Update PANEL ring
-      document.getElementById('ring-stat-size').textContent    = stats.panelCount.toLocaleString();
-      document.getElementById('ring-stat-crit').textContent    = alertCount;
-      document.getElementById('ring-stat-claims').textContent  = stats.pendingClaimsCount.toLocaleString();
-      document.getElementById('panel-ring-of').textContent     = `OF ${stats.panelCount.toLocaleString()}`;
-
-      // Load revenue tab data
-      loadRevenueTab(stats.panelCount, stats.pendingClaimsCount);
-    }
-  } else {
-    document.getElementById('greetStatus').textContent = `Your panel · ${clinic}`;
-    // Load revenue tab with no panel context
-    loadRevenueTab(0, 0);
-  }
-
-  document.getElementById('loginScreen').classList.add('su-dismiss');
-  setTimeout(() => { document.getElementById('loginScreen').style.display = 'none'; }, 500);
+async function api(path) {
+  try { const r=await fetch(API+path); if(!r.ok) return null; return await r.json(); } catch{ return null; }
 }
 
-// ── Greeting lang toggle ──
-let greetLang = 'en';
-function setGreetLang(lang) {
-  greetLang = lang;
-  // Update greeting overlay toggle
-  const glEn = document.getElementById('gl-en');
-  const glKo = document.getElementById('gl-ko');
-  if (glEn) glEn.classList.toggle('active', lang === 'en');
-  if (glKo) glKo.classList.toggle('active', lang === 'ko');
-  // Update persistent main tab bar toggle
-  const mlEn = document.getElementById('ml-en');
-  const mlKo = document.getElementById('ml-ko');
-  if (mlEn) { mlEn.style.background = lang === 'en' ? 'rgba(255,255,255,0.2)' : 'transparent'; mlEn.style.color = lang === 'en' ? '#fff' : 'rgba(255,255,255,0.4)'; }
-  if (mlKo) { mlKo.style.background = lang === 'ko' ? 'rgba(255,255,255,0.2)' : 'transparent'; mlKo.style.color = lang === 'ko' ? '#fff' : 'rgba(255,255,255,0.4)'; }
-  // Apply to all data-en elements in the DOM (greeting + any static content)
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = lang === 'ko' ? (el.dataset.ko || el.dataset.en) : el.dataset.en;
+// ── Login / Logout ──
+async function doLogin() {
+  const first=document.getElementById('login-first').value.trim();
+  const last=document.getElementById('login-last').value.trim();
+  const npi=document.getElementById('login-npi').value.trim();
+  const err=document.getElementById('login-error'), btn=document.getElementById('login-btn');
+  if(!npi||npi.length<10){err.textContent='Please enter a valid 10-digit NPI.';err.style.display='block';return;}
+  err.style.display='none'; btn.disabled=true; btn.textContent='Verifying…';
+  const data=await api(`/pcp/panel/stats?npi=${encodeURIComponent(npi)}`);
+  btn.disabled=false; btn.textContent='Access My Panel →';
+  if(!data||data.error){err.textContent='NPI not found. Please check your number and try again.';err.style.display='block';return;}
+  _npi=npi;
+  _doctorName=first&&last?`Dr. ${first} ${last}`:(data.providerName||'Doctor');
+  _practiceName=data.practiceName||'SMG Network';
+  document.getElementById('sidebar-doctor-name').textContent=_doctorName;
+  document.getElementById('sidebar-practice').textContent=_practiceName;
+  // Sidebar badges
+  const eligByStatus={};(data.eligSummary||[]).forEach(e=>eligByStatus[e.status]=e.count);
+  const claimsByStatus={};(data.claimsSummary||[]).forEach(c=>claimsByStatus[c.status]=c.count);
+  document.getElementById('nav-patient-count').textContent=data.panelCount||'—';
+  document.getElementById('nav-elig-badge').textContent=eligByStatus['Pending']||0;
+  document.getElementById('nav-claims-badge').textContent=claimsByStatus['Pending']||0;
+  document.getElementById('nav-auths-badge').textContent=data.pendingAuths?.length||0;
+  document.getElementById('nav-labs-badge').textContent=data.criticalLabs?.length||0;
+  updatePortalBadges();
+  initDemoDataIfEmpty();
+  document.getElementById('login-overlay').classList.add('hidden');
+  loadDashboard(data);
+  loadPatients();
+}
+
+function doLogout() {
+  _npi=''; _doctorName=''; _practiceName='';
+  document.getElementById('login-overlay').classList.remove('hidden');
+  ['login-npi','login-first','login-last'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── Navigation ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name)?.classList.add('active');
+  document.querySelector(`.nav-item[onclick*="'${name}'"]`)?.classList.add('active');
+  document.getElementById('pageTitle').textContent=PAGE_TITLES[name]||name;
+  if(name==='patients')  loadPatients();
+  if(name==='eligibility') loadEligibility(undefined,1);
+  if(name==='claims')    loadClaims(undefined,1);
+  if(name==='auths')     loadAuths(undefined,1);
+  if(name==='pharmacy')  loadPharmacy(1);
+  if(name==='schedule')  loadSchedule();
+  if(name==='labs')      loadLabs(undefined,1);
+  if(name==='medications') loadMedications(1);
+  if(name==='apptQueue') loadApptCalendar();
+  if(name==='consents')  loadConsents();
+}
+
+// ── Global search ──
+function onGlobalSearch(q){patientQuery=q;showPage('patients');debounceSearch(q);}
+function debounceSearch(q){patientQuery=q;clearTimeout(searchDebounce);searchDebounce=setTimeout(()=>loadPatients(1),280);}
+
+// ── Dashboard ──
+function loadDashboard(stats) {
+  if(!stats) return;
+  const eligByStatus={};(stats.eligSummary||[]).forEach(e=>eligByStatus[e.status]=e.count);
+  const claimsByStatus={};(stats.claimsSummary||[]).forEach(c=>claimsByStatus[c.status]=c.count);
+  const appts=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  const consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+  document.getElementById('ds-panel').textContent=(stats.panelCount||0).toLocaleString();
+  document.getElementById('ds-elig-active').textContent=(eligByStatus['Active']||0).toLocaleString();
+  document.getElementById('ds-claims').textContent=(claimsByStatus['Pending']||0).toLocaleString();
+  document.getElementById('ds-auths').textContent=(stats.pendingAuths?.length||0).toLocaleString();
+  document.getElementById('ds-critical').textContent=(stats.criticalLabs?.length||0).toLocaleString();
+  document.getElementById('ds-refills').textContent=(stats.refillsDue||0).toLocaleString();
+  document.getElementById('ds-appts').textContent=appts.filter(r=>r.status==='pending').length;
+  document.getElementById('ds-consents').textContent=consents.filter(c=>c.status==='pending').length;
+  // Critical labs list
+  const clEl=document.getElementById('ds-critical-list');
+  if(stats.criticalLabs?.length){
+    clEl.innerHTML=stats.criticalLabs.slice(0,6).map(l=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid #1C2F47;" class="cursor-pointer hover:bg-teal-500/4" onclick="openPatient('${l.patient_id}')">
+        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${l.first_name} ${l.last_name}${l.korean_name?` <span style="font-size:11px;color:#3D5A75;">${l.korean_name}</span>`:''}</div>
+        <div style="font-size:11px;color:#7A9AB8;">${l.test_name} — ${l.result_value||'—'} ${l.unit||''}</div></div>
+        <span class="badge cr">Critical</span></div>`).join('');
+  } else { clEl.innerHTML=`<div class="empty-state"><div class="empty-text">No critical labs</div></div>`; }
+  // Pending auths list
+  const auEl=document.getElementById('ds-auths-list');
+  if(stats.pendingAuths?.length){
+    auEl.innerHTML=stats.pendingAuths.slice(0,6).map(a=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid #1C2F47;" class="cursor-pointer hover:bg-teal-500/4" onclick="openPatient('${a.patient_id}')">
+        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${a.first_name} ${a.last_name}</div>
+        <div style="font-size:11px;color:#7A9AB8;">${a.service_type||'Authorization'} · Req: ${a.requested_date||'—'}</div></div>
+        <span class="badge pn">Pending</span></div>`).join('');
+  } else { auEl.innerHTML=`<div class="empty-state"><div class="empty-text">No pending authorizations</div></div>`; }
+}
+
+// ── My Patients ──
+async function loadPatients(page) {
+  if(!_npi) return;
+  if(page!==undefined) patientPage=page;
+  const q=patientQuery?`&q=${encodeURIComponent(patientQuery)}`:'';
+  const data=await api(`/pcp/panel?npi=${_npi}&page=${patientPage}&limit=${PAGE_SIZE}${q}`);
+  const el=document.getElementById('patientsTable');
+  if(!data) return;
+  document.getElementById('nav-patient-count').textContent=data.total||0;
+  if(!data.patients.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No patients found</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>DOB</th><th>Phone</th><th>Eligibility</th><th>Critical Labs</th><th>Pending Auths</th></tr></thead>
+    <tbody>${data.patients.map(p=>{
+      const name=p.korean_name?`${p.first_name} ${p.last_name} <span style="font-weight:500;color:#3D5A75;font-size:11px;">${p.korean_name}</span>`:`${p.first_name} ${p.last_name}`;
+      const ec=p.elig_status==='Active'?'ok':p.elig_status==='Pending'?'pn':'cr';
+      return `<tr class="click" onclick="openPatient('${p.patient_id}')">
+        <td><div style="display:flex;align-items:center;gap:10px;"><div class="av" style="background:rgba(20,184,166,.12);color:#14B8A6;">${(p.first_name||'?')[0]}${(p.last_name||'?')[0]}</div>
+        <div><div class="pn">${name}</div><div class="ps">${p.patient_id}</div></div></div></td>
+        <td style="font-size:12px;">${p.dob||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${p.phone||'—'}</td>
+        <td><span class="badge ${ec}">${p.elig_status||'—'}</span></td>
+        <td>${p.critical_lab_count>0?`<span class="badge cr">${p.critical_lab_count} critical</span>`:'<span style="color:#3D5A75;">—</span>'}</td>
+        <td>${p.pending_auths>0?`<span class="badge pn">${p.pending_auths} pending</span>`:'<span style="color:#3D5A75;">—</span>'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(patientPage,data.total,PAGE_SIZE,'loadPatientsPage')}`;
+}
+function loadPatientsPage(p){loadPatients(p);}
+
+// ── Eligibility ──
+function _activateChip(sel,el,val){
+  document.querySelectorAll(sel+' .chip').forEach(c=>c.classList.remove('active'));
+  if(el){el.classList.add('active');}
+  else{document.querySelectorAll(sel+' .chip').forEach(c=>{if(c.textContent.trim()===(val||'All'))c.classList.add('active');});}
+}
+function filterEligibility(el,val){_activateChip('#page-eligibility',el,val);loadEligibility(val,1);}
+function loadEligPage(p){loadEligibility(undefined,p);}
+
+async function loadEligibility(filter,page) {
+  if(!_npi) return;
+  if(filter!==undefined){eligFilter=filter;eligPage=1;}
+  if(page!==undefined) eligPage=page;
+  const sp=eligFilter?`&status=${encodeURIComponent(eligFilter)}`:'';
+  const data=await api(`/mso/eligibility?npi=${_npi}&page=${eligPage}&limit=${PAGE_SIZE}${sp}`);
+  const el=document.getElementById('eligTable');
+  if(!data) return;
+  // Stat cards (only update if no filter active so counts reflect totals)
+  if(!eligFilter){
+    // Re-fetch counts for stat cards
+    const [act,ter,pen]=await Promise.all([
+      api(`/mso/eligibility?npi=${_npi}&status=Active&limit=1`),
+      api(`/mso/eligibility?npi=${_npi}&status=Termed&limit=1`),
+      api(`/mso/eligibility?npi=${_npi}&status=Pending&limit=1`),
+    ]);
+    document.getElementById('e-active').textContent=(act?.total||0).toLocaleString();
+    document.getElementById('e-termed').textContent=(ter?.total||0).toLocaleString();
+    document.getElementById('e-pending').textContent=(pen?.total||0).toLocaleString();
+    document.getElementById('nav-elig-badge').textContent=(pen?.total||0);
+  }
+  if(!data.eligibility?.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No eligibility records${eligFilter?` — status: ${eligFilter}`:''}</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Payer</th><th>Plan</th><th>Member ID</th><th>Status</th><th>Effective</th><th>Term Date</th></tr></thead>
+    <tbody>${data.eligibility.map(e=>{
+      const ec=e.status==='Active'?'ok':e.status==='Pending'?'pn':'cr';
+      const name=e.korean_name?`${e.first_name} ${e.last_name} <span style="color:#3D5A75;font-size:11px;">${e.korean_name}</span>`:`${e.first_name} ${e.last_name}`;
+      return `<tr class="click" onclick="openPatient('${e.patient_id}')">
+        <td><div class="pn">${name}</div><div class="ps">${e.patient_id}</div></td>
+        <td style="font-size:12px;">${e.payer_name||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${e.plan_name||'—'}</td>
+        <td style="font-size:12px;font-family:monospace;">${e.member_id||'—'}</td>
+        <td><span class="badge ${ec}">${e.status}</span></td>
+        <td style="font-size:12px;">${e.effective_date||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${e.term_date||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(eligPage,data.total,PAGE_SIZE,'loadEligPage')}`;
+}
+
+// ── Claims ──
+function filterClaims(el,val){_activateChip('#page-claims',el,val);loadClaims(val,1);}
+function loadClaimsPage(p){loadClaims(undefined,p);}
+
+async function loadClaims(filter,page) {
+  if(!_npi) return;
+  if(filter!==undefined){claimsFilter=filter;claimsPage=1;}
+  if(page!==undefined) claimsPage=page;
+  const sp=claimsFilter?`&status=${encodeURIComponent(claimsFilter)}`:'';
+  const data=await api(`/mso/claims/summary?npi=${_npi}&page=${claimsPage}&limit=${PAGE_SIZE}${sp}`);
+  const el=document.getElementById('claimsTable');
+  if(!data) return;
+  const pendingCount=data.claims?.filter(c=>c.status==='Pending').length||0;
+  document.getElementById('nav-claims-badge').textContent=pendingCount;
+  if(!data.claims?.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No claims${claimsFilter?` — status: ${claimsFilter}`:''}</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Claim #</th><th>DOS</th><th>CPT</th><th>Billed</th><th>Paid</th><th>Status</th></tr></thead>
+    <tbody>${data.claims.map(c=>{
+      const sc=c.status==='Paid'||c.status==='Approved'?'ok':c.status==='Denied'?'cr':c.status==='Pending'?'pn':'hi';
+      const name=c.korean_name?`${c.first_name} ${c.last_name} <span style="color:#3D5A75;font-size:11px;">${c.korean_name}</span>`:`${c.first_name} ${c.last_name}`;
+      return `<tr class="click" onclick="openPatient('${c.patient_id}')">
+        <td><div class="pn">${name}</div><div class="ps">${c.patient_id}</div></td>
+        <td style="font-size:12px;font-family:monospace;">${c.claim_number||'—'}</td>
+        <td style="font-size:12px;">${c.dos||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${c.cpt_code||'—'}</td>
+        <td style="font-size:12px;">$${(c.billed_amount||0).toFixed(2)}</td>
+        <td style="font-size:12px;color:#10B981;">$${(c.paid_amount||0).toFixed(2)}</td>
+        <td><span class="badge ${sc}">${c.status}</span></td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(claimsPage,data.total,PAGE_SIZE,'loadClaimsPage')}`;
+}
+
+// ── Authorizations ──
+function filterAuths(el,val){_activateChip('#page-auths',el,val);loadAuths(val,1);}
+function loadAuthsPage(p){loadAuths(undefined,p);}
+
+async function loadAuths(filter,page) {
+  if(!_npi) return;
+  if(filter!==undefined){authFilter=filter;authPage=1;}
+  if(page!==undefined) authPage=page;
+  const sp=authFilter?`&status=${encodeURIComponent(authFilter)}`:'';
+  const data=await api(`/pcp/auths?npi=${_npi}&page=${authPage}&limit=${PAGE_SIZE}${sp}`);
+  const el=document.getElementById('authsTable');
+  if(!data) return;
+  document.getElementById('nav-auths-badge').textContent=data.auths?.filter(a=>a.status==='Pending').length||0;
+  if(!data.auths?.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No authorizations${authFilter?` — status: ${authFilter}`:''}</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Service Type</th><th>Payer</th><th>Requested</th><th>Status</th><th>Decision Date</th></tr></thead>
+    <tbody>${data.auths.map(a=>{
+      const sc=a.status==='Approved'?'ok':a.status==='Denied'?'cr':a.status==='Pending'?'pn':'hi';
+      return `<tr class="click" onclick="openPatient('${a.patient_id}')">
+        <td><div class="pn">${a.first_name} ${a.last_name}</div><div class="ps">${a.patient_id}</div></td>
+        <td style="font-size:12px;">${a.service_type||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${a.payer_name||'—'}</td>
+        <td style="font-size:12px;">${a.requested_date||'—'}</td>
+        <td><span class="badge ${sc}">${a.status}</span></td>
+        <td style="font-size:12px;color:#7A9AB8;">${a.decision_date||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(authPage,data.total,PAGE_SIZE,'loadAuthsPage')}`;
+}
+
+// ── Pharmacy ──
+function loadPharmacyPage(p){loadPharmacy(p);}
+async function loadPharmacy(page) {
+  if(!_npi) return;
+  if(page!==undefined) pharmaPage=page;
+  const data=await api(`/pcp/pharmacy?npi=${_npi}&page=${pharmaPage}&limit=${PAGE_SIZE}`);
+  const el=document.getElementById('pharmacyTable');
+  if(!data) return;
+  if(!data.pharmacy?.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="empty-text">No pharmacy records</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Medication</th><th>Pharmacy</th><th>Refill Due</th><th>Days Supply</th><th>Status</th></tr></thead>
+    <tbody>${data.pharmacy.map(pr=>{
+      const name=pr.korean_name?`${pr.first_name} ${pr.last_name} <span style="color:#3D5A75;font-size:11px;">${pr.korean_name}</span>`:`${pr.first_name} ${pr.last_name}`;
+      const sc=pr.status==='Active'?'ok':pr.status==='Overdue'?'cr':'hi';
+      return `<tr class="click" onclick="openPatient('${pr.patient_id}')">
+        <td><div class="pn">${name}</div><div class="ps">${pr.patient_id}</div></td>
+        <td style="font-size:13px;font-weight:500;">${pr.medication_name||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${pr.pharmacy_name||'—'}</td>
+        <td style="font-size:12px;">${pr.refill_due_date||'—'}</td>
+        <td style="font-size:12px;">${pr.days_supply||'—'}</td>
+        <td><span class="badge ${sc}">${pr.status||'Active'}</span></td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(pharmaPage,data.total,PAGE_SIZE,'loadPharmacyPage')}`;
+}
+
+// ── Schedule ──
+async function loadSchedule() {
+  if(!_npi) return;
+  const today=new Date();
+  document.getElementById('schedule-date-label').textContent=today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const data=await api(`/pcp/schedule?npi=${_npi}`);
+  const el=document.getElementById('scheduleTable');
+  if(!data?.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No patients in panel</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>DOB</th><th>Phone</th><th>Language</th><th>Eligibility</th><th>Critical Labs</th></tr></thead>
+    <tbody>${data.map(p=>{
+      const name=p.korean_name?`${p.first_name} ${p.last_name} <span style="color:#3D5A75;font-size:11px;">${p.korean_name}</span>`:`${p.first_name} ${p.last_name}`;
+      const ec=p.elig_status==='Active'?'ok':p.elig_status==='Pending'?'pn':'cr';
+      return `<tr class="click" onclick="openPatient('${p.patient_id}')">
+        <td><div style="display:flex;align-items:center;gap:10px;"><div class="av" style="background:rgba(20,184,166,.12);color:#14B8A6;">${(p.first_name||'?')[0]}${(p.last_name||'?')[0]}</div>
+        <div><div class="pn">${name}</div><div class="ps">${p.patient_id}</div></div></div></td>
+        <td style="font-size:12px;">${p.dob||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${p.phone||'—'}</td>
+        <td style="font-size:12px;">${p.language||'English'}</td>
+        <td><span class="badge ${ec}">${p.elig_status||'—'}</span></td>
+        <td>${p.critical_lab_count>0?`<span class="badge cr">${p.critical_lab_count}</span>`:'<span style="color:#3D5A75;">—</span>'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+// ── Lab Results ──
+function filterLabs(el,val){_activateChip('#page-labs',el,val);loadLabs(val,1);}
+function loadLabsPage(p){loadLabs(undefined,p);}
+async function loadLabs(filter,page) {
+  if(!_npi) return;
+  if(filter!==undefined){labFilter=filter;labPage=1;}
+  if(page!==undefined) labPage=page;
+  const fp=labFilter?`&flag=${encodeURIComponent(labFilter)}`:'';
+  const data=await api(`/pcp/labs?npi=${_npi}&page=${labPage}&limit=${PAGE_SIZE}${fp}`);
+  const el=document.getElementById('labsTable');
+  if(!data) return;
+  document.getElementById('nav-labs-badge').textContent=data.labs?.filter(l=>l.flag==='Critical').length||0;
+  if(!data.labs?.length){el.innerHTML=`<div class="empty-state"><div class="empty-text">No lab results${labFilter?` — ${labFilter}`:''}</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Test</th><th>Result</th><th>Reference Range</th><th>Flag</th><th>Date</th></tr></thead>
+    <tbody>${data.labs.map(l=>{
+      const fc=l.flag==='Critical'?'cr':l.flag==='High'?'hi':l.flag==='Low'?'lo':'ok';
+      const name=l.korean_name?`${l.first_name} ${l.last_name} <span style="color:#3D5A75;font-size:11px;">${l.korean_name}</span>`:`${l.first_name} ${l.last_name}`;
+      return `<tr class="click" onclick="openPatient('${l.patient_id}')">
+        <td><div class="pn">${name}</div><div class="ps">${l.patient_id}</div></td>
+        <td style="font-size:13px;font-weight:500;">${l.test_name}</td>
+        <td style="font-size:13px;font-weight:600;">${l.result_value||'—'} <span style="font-size:11px;color:#7A9AB8;">${l.unit||''}</span></td>
+        <td style="font-size:12px;color:#7A9AB8;">${l.reference_range||'—'}</td>
+        <td><span class="badge ${fc}">${l.flag||'Normal'}</span></td>
+        <td style="font-size:12px;color:#7A9AB8;">${l.result_date||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(labPage,data.total,PAGE_SIZE,'loadLabsPage')}`;
+}
+
+// ── Medications ──
+function loadMedsPage(p){loadMedications(p);}
+async function loadMedications(page) {
+  if(!_npi) return;
+  if(page!==undefined) medsPage=page;
+  const data=await api(`/pcp/panel-meds?npi=${_npi}&page=${medsPage}&limit=${PAGE_SIZE}`);
+  const el=document.getElementById('medsTable');
+  if(!data) return;
+  if(!data.medications?.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="3"/><path d="m22 22-1.5-1.5"/></svg></div><div class="empty-text">No active medications</div></div>`;return;}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Prescriber</th><th>Date Prescribed</th><th>Status</th></tr></thead>
+    <tbody>${data.medications.map(m=>{
+      const name=m.korean_name?`${m.first_name} ${m.last_name} <span style="color:#3D5A75;font-size:11px;">${m.korean_name}</span>`:`${m.first_name} ${m.last_name}`;
+      return `<tr class="click" onclick="openPatient('${m.patient_id}')">
+        <td><div class="pn">${name}</div><div class="ps">${m.patient_id}</div></td>
+        <td style="font-size:13px;font-weight:500;">${m.medication_name||'—'}</td>
+        <td style="font-size:12px;">${m.dosage||'—'}</td>
+        <td style="font-size:12px;color:#7A9AB8;">${m.frequency||'—'}</td>
+        <td style="font-size:12px;">${m.prescriber_name||'—'}</td>
+        <td style="font-size:12px;">${m.prescribed_date||'—'}</td>
+        <td><span class="badge ok">Active</span></td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    ${renderPagination(medsPage,data.total,PAGE_SIZE,'loadMedsPage')}`;
+}
+
+// ── Appointment Requests (localStorage) ──
+function updatePortalBadges() {
+  const appts=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  const consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+  document.getElementById('nav-appt-badge').textContent=appts.filter(r=>r.status==='pending').length;
+  document.getElementById('nav-consent-badge').textContent=consents.filter(c=>c.status==='pending').length;
+}
+
+// ── Appointment Calendar ──
+var calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+var calSelectedDate=new Date().toISOString().split('T')[0];
+
+function loadApptCalendar(){
+  updatePortalBadges();
+  initDemoDataIfEmpty();
+  calYear=new Date().getFullYear(); calMonth=new Date().getMonth();
+  calSelectedDate=new Date().toISOString().split('T')[0];
+  renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+}
+function calPrevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+function renderCalendar(){
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var lbl=document.getElementById('cal-month-label'); if(lbl) lbl.textContent=MONTHS[calMonth]+' '+calYear;
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var dm={};
+  reqs.forEach(function(r){
+    var ds=(r.status==='rescheduled'&&r.newDate)?r.newDate:r.date; if(!ds) return;
+    if(!dm[ds]) dm[ds]={confirmed:0,pending:0,rescheduled:0};
+    if(r.status==='confirmed') dm[ds].confirmed++;
+    else if(r.status==='pending') dm[ds].pending++;
+    else if(r.status==='rescheduled') dm[ds].rescheduled++;
   });
-}
-
-// ── Greeting ──
-function dismissGreeting() {
-  document.getElementById('greeting').classList.add('dismiss');
-  loadTodayData();
-  loadPatientList();
-}
-
-// ── Tab switching ──
-function switchTab(name) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('content').scrollTop = 0;
-  if (name === 'patients') loadPatientList(currentSearch);
-  // Re-apply language to any static data-en/data-ko elements after tab switch
-  if (greetLang === 'ko') setGreetLang('ko');
-}
-
-// ── TODAY: live alerts + nudge cards ──
-function loadTodayData() {
-  const labs  = panelStats.criticalLabs || [];
-  const auths = panelStats.pendingAuths || [];
-
-  // Overnight alerts card
-  const alertCard = document.getElementById('today-alerts-card');
-  if (alertCard) {
-    if (labs.length === 0) {
-      alertCard.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">No critical alerts — panel looks clear ✓</div>`;
-    } else {
-      alertCard.innerHTML = labs.slice(0, 5).map(lab => {
-        const name = `${lab.first_name} ${lab.last_name}${lab.korean_name ? ' · ' + lab.korean_name : ''}`;
-        return `<div class="alert-row">
-          <div class="alert-dot" style="background:#DC2626;"></div>
-          <div class="alert-body">
-            <div class="alert-text">${name} — ${lab.test_name}: ${lab.result_value}${lab.unit ? ' ' + lab.unit : ''}</div>
-            <div class="alert-sub">Critical · ${lab.result_date || '—'} · ${lab.patient_id}</div>
-            <div class="alert-actions">
-              <button class="btn-sm btn-review" onclick="openPtDetail('${lab.patient_id}')">Review</button>
-              <button class="btn-sm btn-approve" onclick="this.closest('.alert-row').style.opacity='0.4';this.disabled=true;">Acknowledge</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-    }
+  var firstDay=new Date(calYear,calMonth,1).getDay();
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var today=new Date().toISOString().split('T')[0];
+  var grid=document.getElementById('cal-grid'); if(!grid) return;
+  var cells=[];
+  for(var i=0;i<firstDay;i++) cells.push('<div></div>');
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var isT=ds===today, isSel=ds===calSelectedDate, dmi=dm[ds]||{};
+    var dots='';
+    if(dmi.confirmed)   dots+='<div style="width:5px;height:5px;border-radius:50%;background:#10B981;flex-shrink:0;"></div>';
+    if(dmi.pending)     dots+='<div style="width:5px;height:5px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></div>';
+    if(dmi.rescheduled) dots+='<div style="width:5px;height:5px;border-radius:50%;background:#8B5CF6;flex-shrink:0;"></div>';
+    var bg=isSel?'#14B8A6':isT?'rgba(20,184,166,0.2)':'transparent';
+    var col=isSel?'#fff':isT?'#14B8A6':'#E2E8F0';
+    var brd=isSel?'1px solid #14B8A6':isT?'1px solid rgba(20,184,166,.4)':'1px solid transparent';
+    cells.push('<div onclick="calSelectDay(\''+ds+'\')" style="cursor:pointer;border-radius:6px;padding:4px 2px;background:'+bg+';border:'+brd+';display:flex;flex-direction:column;align-items:center;gap:2px;min-height:36px;transition:all 0.1s;"><div style="font-size:12px;font-weight:'+(isT||isSel?'700':'500')+';color:'+col+';line-height:1;">'+d+'</div><div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center;">'+dots+'</div></div>');
   }
-
-  // Nudge cards (pending auths)
-  const container = document.getElementById('nudge-approvals-container');
-  const hdr = document.getElementById('nudge-approvals-hdr');
-  if (hdr) hdr.textContent = `${auths.length} pending`;
-  if (container) {
-    if (auths.length === 0) {
-      container.innerHTML = `<div style="padding:14px;text-align:center;font-size:13px;color:var(--text-mute);">No pending authorizations</div>`;
-    } else {
-      container.innerHTML = auths.slice(0, 3).map(auth => {
-        const name = `${auth.first_name} ${auth.last_name}`;
-        const age  = auth.dob ? Math.floor((Date.now() - new Date(auth.dob)) / (365.25 * 86400000)) : '—';
-        return `<div class="nudge-card" data-auth-id="${auth.id}">
-          <div class="nudge-hdr">
-            <span class="nudge-title">${auth.auth_type || 'Authorization Request'}</span>
-            <span class="nudge-tag tag-amber">PENDING</span>
-          </div>
-          <div class="nudge-patient">${name} · ${age}${auth.gender || ''}</div>
-          <div class="nudge-body">${auth.service_type || auth.notes || 'Prior authorization awaiting physician review'}</div>
-          <div class="nudge-actions">
-            <button class="btn-approve-lg" onclick="approveNudge(this)">Approve</button>
-            <button class="btn-edit-lg" onclick="openPtDetail('${auth.patient_id}')">View Chart</button>
-            <button class="btn-decline-lg" onclick="declineNudge(this)">Skip</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-  }
+  grid.innerHTML=cells.join('');
 }
-
-// ── PATIENTS tab: live list ──
-let currentSearch = '';
-const PANEL_LIMIT = 25;
-
-async function loadPatientList(q = '') {
-  const list = document.getElementById('patient-list');
-  if (!list) return;
-  currentSearch = q;
-
-  if (!doctorNPI) {
-    // No NPI: keep existing hardcoded list, just filter locally
-    const ql = q.toLowerCase();
-    list.querySelectorAll('.pt-row').forEach(row => {
-      const name = (row.dataset.name || row.querySelector('.pt-name')?.textContent || '').toLowerCase();
-      row.style.display = (!ql || name.includes(ql)) ? '' : 'none';
-    });
-    return;
+function calSelectDay(ds){calSelectedDate=ds;renderCalendar();renderDayDetail(ds);}
+async function renderDayDetail(ds){
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var dayAppts=reqs.filter(function(r){return r.status==='rescheduled'?r.newDate===ds:r.date===ds;});
+  var uids=[]; dayAppts.forEach(function(r){if(r.patientId&&uids.indexOf(r.patientId)===-1)uids.push(r.patientId);});
+  await Promise.all(uids.map(async function(pid){
+    if(_apptNameMap[pid]) return;
+    try{var d=await api('/patients/'+encodeURIComponent(pid));
+      if(d&&d.patient){var p=d.patient;_apptNameMap[pid]={name:((p.first_name||'')+' '+(p.last_name||'')).trim()||pid,korean:p.korean_name||''};}
+      else _apptNameMap[pid]={name:pid,korean:''};
+    }catch(e){_apptNameMap[pid]={name:pid,korean:''};}
+  }));
+  var el=document.getElementById('cal-day-detail'); if(!el) return;
+  var dateLabel=new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  var confirmed=dayAppts.filter(function(r){return r.status==='confirmed';});
+  var pending=dayAppts.filter(function(r){return r.status==='pending';});
+  var rescheduled=dayAppts.filter(function(r){return r.status==='rescheduled';});
+  confirmed.sort(function(a,b){return(a.scheduledTime||'').localeCompare(b.scheduledTime||'');});
+  if(!dayAppts.length){el.innerHTML='<div style="text-align:center;padding:80px 20px;"><div style="font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:8px;">'+dateLabel+'</div><div style="font-size:12px;color:#3D5A75;">No appointments scheduled for this day</div></div>';return;}
+  var timeOpts=['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30'].map(function(t){return '<option value="'+t+'">'+calFmt12(t)+'</option>';}).join('');
+  var tl={morning:'Morning (8–12am)',afternoon:'Afternoon (12–4pm)',evening:'Evening (4–6pm)'};
+  var html='<div style="font-size:17px;font-weight:700;color:#E2E8F0;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #1C2F47;">'+dateLabel+' <span style="font-size:12px;font-weight:600;color:#3D5A75;background:#162032;border-radius:20px;padding:3px 10px;">'+dayAppts.length+' appt'+(dayAppts.length!==1?'s':'')+'</span></div>';
+  if(confirmed.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#10B981;text-transform:uppercase;margin-bottom:10px;">Confirmed · '+confirmed.length+'</div>';
+    html+=confirmed.map(function(r){
+      var ni=_apptNameMap[r.patientId]||{name:r.patientId||'—',korean:''};
+      var ks=ni.korean?' <span style="font-size:11px;color:#7A9AB8;">'+ni.korean+'</span>':'';
+      return '<div style="background:#162032;border:1px solid #1C2F47;border-left:3px solid #10B981;border-radius:8px;padding:14px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-size:14px;font-weight:600;color:#E2E8F0;">'+ni.name+ks+'</div><div style="font-size:13px;font-weight:700;color:#14B8A6;">'+calFmt12(r.scheduledTime||'')+'</div></div><div style="font-size:12px;color:#7A9AB8;margin-bottom:4px;">'+(r.reason||'—')+'</div><div style="font-size:11px;color:#3D5A75;">'+(r.patientId||'')+'</div></div>';
+    }).join('');
   }
-
-  list.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">Loading panel...</div>`;
-  const data = await api(`/pcp/panel?npi=${encodeURIComponent(doctorNPI)}&q=${encodeURIComponent(q)}&limit=${PANEL_LIMIT}`);
-  if (!data) { list.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-mute);font-size:13px;">Unable to load panel</div>`; return; }
-
-  const countEl = document.getElementById('panel-count-text');
-  if (countEl) countEl.textContent = `${data.total.toLocaleString()} total`;
-
-  if (data.patients.length === 0) {
-    list.innerHTML = `<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-mute);">No patients found</div>`;
-    return;
+  if(pending.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#F59E0B;text-transform:uppercase;margin-bottom:10px;'+(confirmed.length?'margin-top:18px;':'')+'">Pending Requests · '+pending.length+'</div>';
+    html+=pending.map(function(r){
+      var ni=_apptNameMap[r.patientId]||{name:r.patientId||'—',korean:''};
+      var ks=ni.korean?' <span style="font-size:11px;color:#7A9AB8;">'+ni.korean+'</span>':'';
+      return '<div style="background:#162032;border:1px solid #1C2F47;border-left:3px solid #F59E0B;border-radius:8px;padding:14px 16px;margin-bottom:10px;" id="appt-card-'+r.id+'"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-size:14px;font-weight:600;color:#E2E8F0;">'+ni.name+ks+'</div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid rgba(245,158,11,.3);">'+(tl[r.time]||r.time||'Flexible')+'</span></div><div style="font-size:12px;color:#7A9AB8;margin-bottom:10px;">'+(r.reason||'—')+'</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><select id="time-sel-'+r.id+'" style="font-size:11px;padding:4px 8px;background:#0D1421;border:1px solid #1C2F47;color:#E2E8F0;border-radius:5px;font-family:inherit;cursor:pointer;">'+timeOpts+'</select><button onclick="calConfirmAppt(\''+r.id+'\')" style="font-size:11px;padding:4px 12px;background:rgba(16,185,129,.15);color:#10B981;border:1px solid #10B981;border-radius:5px;cursor:pointer;font-family:inherit;">✓ Confirm</button><button onclick="calShowReschedule(\''+r.id+'\')" style="font-size:11px;padding:4px 12px;background:rgba(245,158,11,.12);color:#F59E0B;border:1px solid #F59E0B;border-radius:5px;cursor:pointer;font-family:inherit;">↺ Reschedule</button><button onclick="calCancelAppt(\''+r.id+'\')" style="font-size:11px;padding:4px 12px;background:rgba(239,68,68,.1);color:#EF4444;border:1px solid #EF4444;border-radius:5px;cursor:pointer;font-family:inherit;">✗ Cancel</button></div><div id="reschedule-form-'+r.id+'" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #1C2F47;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input type="date" id="new-date-'+r.id+'" style="font-size:11px;padding:4px 8px;background:#0D1421;border:1px solid #1C2F47;color:#E2E8F0;border-radius:5px;font-family:inherit;" /><select id="new-time-'+r.id+'" style="font-size:11px;padding:4px 8px;background:#0D1421;border:1px solid #1C2F47;color:#E2E8F0;border-radius:5px;font-family:inherit;cursor:pointer;">'+timeOpts+'</select><button onclick="calSaveReschedule(\''+r.id+'\')" style="font-size:11px;padding:4px 12px;background:rgba(139,92,246,.15);color:#8B5CF6;border:1px solid #8B5CF6;border-radius:5px;cursor:pointer;font-family:inherit;">Save</button><button onclick="document.getElementById(\'reschedule-form-'+r.id+'\').style.display=\'none\'" style="font-size:11px;padding:4px 8px;background:transparent;color:#3D5A75;border:1px solid #1C2F47;border-radius:5px;cursor:pointer;font-family:inherit;">Cancel</button></div></div></div>';
+    }).join('');
   }
-
-  list.innerHTML = data.patients.map(p => {
-    const age      = p.dob ? Math.floor((Date.now() - new Date(p.dob)) / (365.25 * 86400000)) : '—';
-    const initials = ((p.first_name||'').charAt(0) + (p.last_name||'').charAt(0)).toUpperCase();
-    const koSpan   = p.korean_name ? ` <span style="font-size:11px;color:var(--text-mute);font-weight:400;">· ${p.korean_name}</span>` : '';
-    const [tag, tagCls] = p.critical_lab_count > 0 ? ['CRIT','tag-red']
-                        : p.pending_auths > 0      ? ['AUTH','tag-amber']
-                        : p.elig_status === 'Active' ? ['OK','tag-green']
-                        : [p.elig_status || '—','tag-gray'];
-    const meta = [`${p.gender || ''}${age ? ', ' + age : ''}`];
-    if (p.member_id) meta.push(p.member_id);
-    return `<div class="pt-row" onclick="openPtDetail('${p.patient_id}')">
-      <div class="pt-avatar">${initials}</div>
-      <div class="pt-info">
-        <div class="pt-name">${p.first_name} ${p.last_name}${koSpan}</div>
-        <div class="pt-meta">${meta.join(' · ')}</div>
-      </div>
-      <div class="pt-right"><span class="pt-tag ${tagCls}">${tag}</span></div>
-    </div>`;
+  if(rescheduled.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#8B5CF6;text-transform:uppercase;margin-bottom:10px;'+(confirmed.length||pending.length?'margin-top:18px;':'')+'">Rescheduled · '+rescheduled.length+'</div>';
+    html+=rescheduled.map(function(r){
+      var ni=_apptNameMap[r.patientId]||{name:r.patientId||'—',korean:''};
+      var ks=ni.korean?' <span style="font-size:11px;color:#7A9AB8;">'+ni.korean+'</span>':'';
+      return '<div style="background:#162032;border:1px solid #1C2F47;border-left:3px solid #8B5CF6;border-radius:8px;padding:14px 16px;margin-bottom:10px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-size:14px;font-weight:600;color:#E2E8F0;">'+ni.name+ks+'</div><div style="font-size:13px;font-weight:700;color:#8B5CF6;">'+calFmt12(r.scheduledTime||'')+'</div></div><div style="font-size:12px;color:#7A9AB8;margin-bottom:4px;">'+(r.reason||'—')+'</div><div style="font-size:11px;color:#3D5A75;">Originally: '+(r.date||'')+' · '+(r.patientId||'')+'</div></div>';
+    }).join('');
+  }
+  el.innerHTML=html;
+}
+async function renderPendingList(){
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var pending=reqs.filter(function(r){return r.status==='pending';});
+  pending.sort(function(a,b){return(a.date||'').localeCompare(b.date||'');});
+  var cEl=document.getElementById('cal-pending-count'), lEl=document.getElementById('cal-pending-list');
+  if(!cEl||!lEl) return;
+  cEl.textContent='PENDING REQUESTS ('+pending.length+')';
+  if(!pending.length){lEl.innerHTML='<div style="font-size:12px;color:#3D5A75;text-align:center;padding:12px 0;">No pending requests</div>';return;}
+  var uids=[]; pending.forEach(function(r){if(r.patientId&&uids.indexOf(r.patientId)===-1)uids.push(r.patientId);});
+  await Promise.all(uids.map(async function(pid){
+    if(_apptNameMap[pid]) return;
+    try{var d=await api('/patients/'+encodeURIComponent(pid));
+      if(d&&d.patient){var p=d.patient;_apptNameMap[pid]={name:((p.first_name||'')+' '+(p.last_name||'')).trim()||pid,korean:p.korean_name||''};}
+      else _apptNameMap[pid]={name:pid,korean:''};
+    }catch(e){_apptNameMap[pid]={name:pid,korean:''};}
+  }));
+  lEl.innerHTML=pending.map(function(r){
+    var ni=_apptNameMap[r.patientId]||{name:r.patientId||'—',korean:''};
+    return '<div onclick="calSelectDay(\''+r.date+'\')" style="padding:9px 0;border-bottom:1px solid #1C2F47;cursor:pointer;" onmouseover="this.style.opacity=\'.7\'" onmouseout="this.style.opacity=\'1\'"><div style="font-size:12px;font-weight:600;color:#E2E8F0;">'+ni.name+(ni.korean?' <span style="font-size:10px;color:#7A9AB8;">'+ni.korean+'</span>':'')+'</div><div style="font-size:11px;color:#F59E0B;margin-top:2px;">'+(r.date||'')+'</div><div style="font-size:11px;color:#3D5A75;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(r.reason||'—')+'</div></div>';
   }).join('');
 }
-
-// ── Patient search ──
-let searchTimer;
-function filterPatients(query) {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => loadPatientList(query), 300);
+function calFmt12(t){
+  if(!t) return '—';
+  var parts=t.split(':'),h=parseInt(parts[0]),m=parts[1]||'00';
+  var ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+m+' '+ap;
+}
+function calConfirmAppt(id){
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
+  var sel=document.getElementById('time-sel-'+id);
+  r.status='confirmed'; r.scheduledTime=sel?sel.value:'09:00'; r.confirmedAt=new Date().toISOString();
+  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
+  toast('Appointment confirmed for '+calFmt12(r.scheduledTime),'success');
+  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+}
+function calShowReschedule(id){
+  var f=document.getElementById('reschedule-form-'+id); if(f) f.style.display=f.style.display==='none'?'block':'none';
+}
+function calSaveReschedule(id){
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
+  var nd=document.getElementById('new-date-'+id), nt=document.getElementById('new-time-'+id);
+  if(!nd||!nd.value){toast('Please select a new date','error');return;}
+  r.status='rescheduled'; r.newDate=nd.value; r.scheduledTime=nt?nt.value:'09:00'; r.rescheduledAt=new Date().toISOString();
+  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
+  toast('Appointment rescheduled to '+r.newDate,'info');
+  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+}
+function calCancelAppt(id){
+  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
+  r.status='cancelled'; r.cancelledAt=new Date().toISOString();
+  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
+  toast('Appointment cancelled','info');
+  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
 }
 
-// ── Patient detail overlay (live from API) ──
-async function openPtDetail(pid) {
-  document.getElementById('detailName').textContent = 'Loading...';
-  document.getElementById('detailMeta').textContent = '';
-  document.getElementById('detailBody').innerHTML = '';
-  document.getElementById('ptDetail').classList.add('open');
-
-  const data = await api(`/patients/${pid}`);
-  if (!data || !data.patient) { document.getElementById('detailName').textContent = 'Patient not found'; return; }
-
-  const p    = data.patient;
-  const age  = p.dob ? Math.floor((Date.now() - new Date(p.dob)) / (365.25 * 86400000)) : '—';
-  const elig = data.eligibility?.[0];
-
-  document.getElementById('detailName').innerHTML = p.korean_name
-    ? `${p.first_name} ${p.last_name} <span style="font-size:13px;font-weight:500;opacity:0.7;">${p.korean_name}</span>`
-    : `${p.first_name} ${p.last_name}`;
-
-  const metaParts = [`${p.gender || ''}, ${age}`];
-  if (elig?.member_id) metaParts.push(elig.member_id);
-  if (data.pcp?.provider_name) {
-    const pn = data.pcp.provider_name.split(', ');
-    metaParts.push(`PCP: ${pn.length > 1 ? 'Dr. ' + pn[0].replace('Dr. ','') : pn[0]}`);
-  }
-  document.getElementById('detailMeta').textContent = metaParts.join(' · ');
-
-  const rows = [];
-  rows.push({ k: 'Patient ID', v: p.patient_id });
-  rows.push({ k: 'Date of Birth', v: p.dob || '—' });
-  if (p.phone) rows.push({ k: 'Phone', v: p.phone });
-  rows.push({ k: 'Language', v: p.language || '—' });
-  if (p.korean_name) rows.push({ k: 'Korean Name', v: p.korean_name });
-  if (elig) {
-    rows.push({ k: 'Payer', v: elig.payer_name || '—' });
-    rows.push({ k: 'Member ID', v: elig.member_id || '—' });
-    const eligCls = elig.status === 'Active' ? 'tag-green' : 'tag-amber';
-    rows.push({ k: 'Elig Status', v: `<span class="chip ${eligCls}">${elig.status}</span>` });
-    if (elig.plan_name) rows.push({ k: 'Plan', v: elig.plan_name });
-  }
-  const critLabs = (data.labs || []).filter(l => l.flag === 'Critical');
-  if (critLabs.length > 0) {
-    rows.push({ k: 'Critical Labs', v: `<span class="chip tag-red">${critLabs.slice(0,2).map(l => `${l.test_name}: ${l.result_value}${l.unit ? ' ' + l.unit : ''}`).join(', ')}</span>` });
-  }
-  const recentLabs = (data.labs || []).slice(0, 4);
-  recentLabs.forEach(l => {
-    const cls = l.flag === 'Critical' ? 'tag-red' : (l.flag === 'High' || l.flag === 'Low') ? 'tag-amber' : 'tag-green';
-    rows.push({ k: l.test_name, v: `${l.result_value}${l.unit ? ' ' + l.unit : ''} · ${l.result_date || '—'} <span class="chip ${cls}">${l.flag}</span>` });
+// ── Caregiver Consents (localStorage) ──
+function loadConsents() {
+  updatePortalBadges();
+  var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+  var search=((document.getElementById('consent-search')||{}).value||'').toLowerCase().trim();
+  var filtered=consents.filter(function(c){
+    var mf=consentFilter==='all'||c.status===consentFilter;
+    var ms=!search||(c.patientName||'').toLowerCase().includes(search)||(c.caregiverName||'').toLowerCase().includes(search)||(c.patientId||'').toLowerCase().includes(search);
+    return mf&&ms;
   });
-  const rx = (data.pharmacy || []).slice(0, 3);
-  if (rx.length > 0) rows.push({ k: 'Pharmacy', v: rx.map(m => `${m.medication_name}${m.dosage ? ' ' + m.dosage : ''}`).join(', ') });
-  const pendAuths = (data.authorizations || []).filter(a => a.status === 'Pending');
-  if (pendAuths.length > 0) rows.push({ k: 'Pending Auths', v: `<span class="chip tag-amber">${pendAuths.length} pending auth${pendAuths.length > 1 ? 's' : ''}</span>` });
-  if (data.claims?.length) rows.push({ k: 'Latest Claim', v: `${data.claims[0].dos || '—'} · $${data.claims[0].billed_amount || 0} · ${data.claims[0].status}` });
-  if (data.pcp) {
-    if (data.pcp.practice_name)  rows.push({ k: 'Practice', v: data.pcp.practice_name });
-    if (data.pcp.practice_phone) rows.push({ k: 'Practice Ph.', v: data.pcp.practice_phone });
-  }
-
-  document.getElementById('detailBody').innerHTML = rows.map(r =>
-    `<div class="detail-row"><span class="detail-key">${r.k}</span><span class="detail-val">${r.v}</span></div>`
-  ).join('');
+  renderConsentsTable(filtered,consents.length);
+}
+function filterConsents(el,filter){
+  consentFilter=filter;
+  document.querySelectorAll('#consent-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); loadConsents();
+}
+function renderConsentsTable(rows,total){
+  var el=document.getElementById('consentsTable');
+  if(!rows.length){el.innerHTML='<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="empty-text">'+(total===0?'No consent records yet':'No matching records')+'</div><div class="empty-sub">'+(total===0?'Caregiver access requests from the Bridge app appear here':'Try a different filter')+'</div></div>';return;}
+  function pp(label,granted){return granted?'<span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;background:rgba(20,184,166,.15);color:#14B8A6;border:1px solid rgba(20,184,166,.3);">'+label+'</span>':'<span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;background:#1C2F47;color:#3D5A75;border:1px solid #1C2F47;">'+label+'</span>';}
+  el.innerHTML=`<table class="ptbl"><thead><tr><th>Patient</th><th>Caregiver</th><th>Relationship</th><th>Permissions</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${rows.map(function(c){
+      var sb=c.status==='approved'?'<span class="badge ok">Approved</span>':c.status==='declined'?'<span class="badge cr">Declined</span>':'<span class="badge pn">Pending</span>';
+      var perms=c.permissions||{};
+      var acts=c.status==='pending'
+        ?`<div style="display:flex;gap:4px;"><button onclick="updateConsent('${c.id}','approved')" style="font-size:10px;padding:4px 8px;background:rgba(16,185,129,.12);color:#10B981;border:1px solid #10B981;border-radius:4px;cursor:pointer;">✓ Approve</button><button onclick="updateConsent('${c.id}','declined')" style="font-size:10px;padding:4px 8px;background:rgba(239,68,68,.12);color:#EF4444;border:1px solid #EF4444;border-radius:4px;cursor:pointer;">✗</button></div>`
+        :'<span style="font-size:11px;color:#3D5A75;">'+(fmtDate(c.respondedAt)||'—')+'</span>';
+      return `<tr><td><div class="pn" onclick="openPatient('${c.patientId}')" style="cursor:pointer;">${c.patientName||c.patientId||'—'}</div><div class="ps">${c.patientId||''}</div></td>
+        <td><div style="font-size:13px;font-weight:600;">${c.caregiverName||'—'}</div><div class="ps">${c.caregiverPhone||''}</div></td>
+        <td style="font-size:12px;color:#7A9AB8;">${c.relationship||'—'}</td>
+        <td><div style="display:flex;flex-wrap:wrap;gap:4px;">${pp('Appts',!!perms.appointments)}${pp('Meds',!!perms.medications)}${pp('Labs',!!perms.labResults)}${pp('Notes',!!perms.visitNotes)}</div></td>
+        <td style="font-size:11px;color:#3D5A75;">${fmtDate(c.requestedAt)}</td>
+        <td>${sb}</td><td>${acts}</td></tr>`;
+    }).join('')}</tbody></table>
+    <div style="padding:10px 16px;font-size:11px;color:#3D5A75;">${rows.length} of ${total} records</div>`;
+}
+function updateConsent(id,status){
+  var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+  var c=consents.find(x=>x.id===id); if(!c) return;
+  c.status=status; c.respondedAt=new Date().toISOString();
+  localStorage.setItem('bridge_caregiver_consents',JSON.stringify(consents));
+  toast(status==='approved'?'Caregiver access approved':'Caregiver access declined',status==='approved'?'success':'error');
+  loadConsents(); updatePortalBadges();
 }
 
-function closePtDetail() {
-  document.getElementById('ptDetail').classList.remove('open');
+// ── Launch Bridge App ──
+async function searchForPortalLaunch(val) {
+  var el=document.getElementById('launch-results');
+  if(!val||val.length<2){el.innerHTML='';return;}
+  var data=await api('/pcp/panel?npi='+encodeURIComponent(_npi)+'&q='+encodeURIComponent(val)+'&limit=8');
+  if(!data||!data.patients||!data.patients.length){el.innerHTML='<div style="font-size:13px;color:#3D5A75;padding:8px 0;">No patients found in your panel</div>';return;}
+  el.innerHTML=data.patients.map(p=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1C2B3F;border:1px solid #243A52;border-radius:8px;">
+      <div><div style="font-size:13px;font-weight:600;">${p.first_name} ${p.last_name}${p.korean_name?' — '+p.korean_name:''}</div>
+      <div style="font-size:11px;color:#7A9AB8;">${p.patient_id}</div></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="window.open('bridge-members-v2.html?id=${p.patient_id}&role=patient','_blank')" style="padding:6px 14px;background:rgba(20,184,166,.12);color:#14B8A6;border:1px solid #14B8A6;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Patient View →</button>
+        <button onclick="window.open('bridge-members-v2.html?id=${p.patient_id}&role=caregiver','_blank')" style="padding:6px 14px;background:rgba(139,92,246,.12);color:#8B5CF6;border:1px solid #8B5CF6;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Caregiver View →</button>
+      </div>
+    </div>`).join('');
 }
 
-// ── Nudge actions ──
-async function approveNudge(btn) {
-  const card   = btn.closest('.nudge-card');
-  const authId = card.dataset.authId;
-  card.style.opacity = '0.5';
-  card.style.pointerEvents = 'none';
-  card.querySelector('.nudge-actions').innerHTML = '<span style="font-size:12px;color:var(--text-mute);">Saving…</span>';
-
-  if (authId) {
-    try {
-      await fetch(`${API}/mso/auths/${authId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Approved', approved_date: new Date().toISOString().split('T')[0] }),
-      });
-    } catch(_) {}
-  }
-
-  card.querySelector('.nudge-actions').innerHTML = '<span style="font-size:12px;color:var(--green);font-weight:600;">✓ Approved</span>';
-  setTimeout(() => card.remove(), 1600);
+// ── Patient Drawer ──
+async function openPatient(pid) {
+  const data=await api(`/patients/${encodeURIComponent(pid)}`);
+  if(!data||!data.patient) return;
+  const p=data.patient, elig0=data.eligibility?.[0]||{};
+  const eligStatus=elig0.status||'Unknown';
+  const ec=eligStatus==='Active'?'#10B981':eligStatus==='Pending'?'#F59E0B':'#EF4444';
+  document.getElementById('drawerName').textContent=`${p.first_name} ${p.last_name}${p.korean_name?' — '+p.korean_name:''}`;
+  document.getElementById('drawerSub').textContent=`${p.patient_id} · DOB ${p.dob||'—'} · ${p.gender||'—'}`;
+  document.getElementById('drawerOverview').innerHTML=`
+    <div><div class="il">Patient ID</div><div class="iv">${p.patient_id}</div></div>
+    <div><div class="il">Date of Birth</div><div class="iv">${p.dob||'—'}</div></div>
+    <div><div class="il">Gender</div><div class="iv">${p.gender||'—'}</div></div>
+    <div><div class="il">Language</div><div class="iv">${p.language||'English'}</div></div>
+    <div><div class="il">Phone</div><div class="iv">${p.phone||'—'}</div></div>
+    <div><div class="il">Email</div><div class="iv ${!p.email?'empty':''}">${p.email||'Not on file'}</div></div>
+    <div style="grid-column:1/-1;border-top:1px solid #1C2F47;padding-top:12px;margin-top:4px;"><div class="il" style="color:#14B8A6;letter-spacing:.8px;">INSURANCE</div></div>
+    <div><div class="il">Member ID</div><div class="iv" style="font-weight:700;">${elig0.member_id||'—'}</div></div>
+    <div><div class="il">Eligibility</div><div class="iv" style="color:${ec};font-weight:700;">${eligStatus}</div></div>
+    <div><div class="il">Payer</div><div class="iv">${elig0.payer_name||'—'}</div></div>
+    <div><div class="il">Plan</div><div class="iv">${elig0.plan_name||'—'}</div></div>
+    <div><div class="il">Effective</div><div class="iv">${elig0.effective_date||'—'}</div></div>
+    <div><div class="il">Term Date</div><div class="iv">${elig0.term_date||'—'}</div></div>`;
+  document.getElementById('drawerLabs').innerHTML=data.labs?.length?data.labs.map(l=>{
+    const fc=l.flag==='Critical'?'cr':l.flag==='High'?'hi':l.flag==='Low'?'lo':'ok';
+    return `<div class="dr"><div class="drh"><div class="drt">${l.test_name}</div><span class="badge ${fc}">${l.flag||'Normal'}</span></div>
+      <div class="drs">${l.result_value||'—'} ${l.unit||''} · Range: ${l.reference_range||'—'}</div>
+      <div class="drm">Date: ${l.result_date||'—'} · Lab: ${l.lab_name||'—'} · By: ${l.ordered_by||'—'}</div></div>`;
+  }).join(''):`<div class="empty-state"><div class="empty-text">No lab results on file</div></div>`;
+  document.getElementById('drawerAuths').innerHTML=data.authorizations?.length?data.authorizations.map(a=>{
+    const sc=a.status==='Approved'?'ok':a.status==='Denied'?'cr':a.status==='Pending'?'pn':'hi';
+    return `<div class="dr"><div class="drh"><div class="drt">${a.service_type||'Authorization'}</div><span class="badge ${sc}">${a.status}</span></div>
+      <div class="drs">${a.payer_name||'—'} · Auth #: ${a.auth_number||'—'}</div>
+      <div class="drm">Requested: ${a.requested_date||'—'} · Decision: ${a.decision_date||'—'}</div></div>`;
+  }).join(''):`<div class="empty-state"><div class="empty-text">No authorizations on file</div></div>`;
+  const meds=await api(`/pcp/medications/${encodeURIComponent(pid)}`);
+  document.getElementById('drawerMeds').innerHTML=meds?.length?meds.map(m=>`
+    <div class="dr"><div class="drh"><div class="drt">${m.medication_name}</div><span class="badge ${m.status==='Active'?'ok':'hi'}">${m.status}</span></div>
+    <div class="drs">${m.dosage||'—'} · ${m.frequency||'—'}</div>
+    <div class="drm">Prescribed: ${m.prescribed_date||'—'} · By: ${m.prescriber_name||'—'}</div></div>`).join(''):`<div class="empty-state"><div class="empty-text">No medications on file</div></div>`;
+  document.getElementById('drawerClaims').innerHTML=data.claims?.length?data.claims.map(c=>{
+    const sc=c.status==='Paid'||c.status==='Approved'?'ok':c.status==='Denied'?'cr':'pn';
+    return `<div class="dr"><div class="drh"><div class="drt">${c.cpt_code||c.icd_codes||'Claim'} — ${c.claim_number||'No #'}</div><span class="badge ${sc}">${c.status}</span></div>
+      <div class="drs">${c.provider_name||'—'} · DOS: ${c.dos||'—'}</div>
+      <div class="drm">Billed: $${(c.billed_amount||0).toFixed(2)} · Paid: $${(c.paid_amount||0).toFixed(2)}</div></div>`;
+  }).join(''):`<div class="empty-state"><div class="empty-text">No claims on file</div></div>`;
+  document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.d-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.d-tab[onclick*="overview"]').classList.add('active');
+  document.getElementById('dpane-overview').classList.add('active');
+  document.getElementById('patientDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
 }
-function declineNudge(btn) {
-  const card = btn.closest('.nudge-card');
-  card.style.opacity = '0.4';
-  card.style.pointerEvents = 'none';
-  setTimeout(() => card.remove(), 600);
+function closeDrawer(){document.getElementById('patientDrawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');}
+function switchDTab(el,pane){document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.d-pane').forEach(p=>p.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('dpane-'+pane)?.classList.add('active');}
+
+// ── Pagination ──
+function renderPagination(page,total,limit,fn){
+  const tp=Math.max(1,Math.ceil(total/limit));
+  if(tp<=1) return '';
+  const from=(page-1)*limit+1, to=Math.min(page*limit,total);
+  const pages=[];const win=2;
+  for(let i=1;i<=tp;i++){if(i===1||i===tp||(i>=page-win&&i<=page+win)){if(pages.length&&pages[pages.length-1]!==i-1)pages.push('…');pages.push(i);}}
+  return `<div class="pag-row"><span>${from}–${to} of ${total.toLocaleString()}</span><div class="pag-btns">
+    <button onclick="${fn}(${page-1})" ${page<=1?'disabled':''} class="pag-page">‹</button>
+    ${pages.map(p=>p==='…'?`<span class="pag-page" style="cursor:default;">…</span>`:`<button onclick="${fn}(${p})" class="pag-page ${p===page?'active':''}">${p}</button>`).join('')}
+    <button onclick="${fn}(${page+1})" ${page>=tp?'disabled':''} class="pag-page">›</button>
+  </div></div>`;
 }
 
-// ── Revenue tab — load real claims data ──
-function fmtMoney(n) {
-  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
-  if (n >= 1000)    return '$' + Math.round(n / 1000) + 'K';
-  return '$' + Math.round(n).toLocaleString();
+// ── Demo Data ──
+function initDemoDataIfEmpty(){
+  var existing=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
+  var hasConfirmed=existing.some(function(r){return r.status==='confirmed'&&r.scheduledTime;});
+  if(!existing.length||!hasConfirmed) seedDemoData();
+}
+function seedDemoData(){
+  function dOff(days){var dt=new Date();dt.setDate(dt.getDate()+days);return dt.toISOString().split('T')[0];}
+  var now=new Date(),d1=new Date(now-86400000),d2=new Date(now-172800000),d3=new Date(now-259200000);
+  var reqs=[
+    // Confirmed — past 3 days
+    {id:'appt_c1', patientId:'SMG-0001234',date:dOff(-3),scheduledTime:'09:00',reason:'Annual wellness exam',                              status:'confirmed', confirmedAt:d3.toISOString(), submittedAt:new Date(now-345600000).toISOString()},
+    {id:'appt_c2', patientId:'SMG-0003456',date:dOff(-3),scheduledTime:'10:30',reason:'Diabetes management — A1C results review',          status:'confirmed', confirmedAt:d3.toISOString(), submittedAt:new Date(now-432000000).toISOString()},
+    {id:'appt_c3', patientId:'SMG-0007890',date:dOff(-2),scheduledTime:'09:00',reason:'Blood pressure medication follow-up',                status:'confirmed', confirmedAt:d2.toISOString(), submittedAt:new Date(now-259200000).toISOString()},
+    {id:'appt_c4', patientId:'SMG-0008901',date:dOff(-2),scheduledTime:'14:00',reason:'Post-surgery check-in',                             status:'confirmed', confirmedAt:d2.toISOString(), submittedAt:new Date(now-345600000).toISOString()},
+    {id:'appt_c5', patientId:'SMG-0002345',date:dOff(-1),scheduledTime:'09:30',reason:'Knee pain evaluation',                              status:'confirmed', confirmedAt:d1.toISOString(), submittedAt:new Date(now-172800000).toISOString()},
+    {id:'appt_c6', patientId:'SMG-0004567',date:dOff(-1),scheduledTime:'11:00',reason:'Prescription refill — Metformin 500mg',             status:'confirmed', confirmedAt:d1.toISOString(), submittedAt:new Date(now-259200000).toISOString()},
+    // Confirmed — today
+    {id:'appt_c7', patientId:'SMG-0009012',date:dOff(0), scheduledTime:'09:00',reason:'Routine checkup and immunization',                  status:'confirmed', confirmedAt:d1.toISOString(), submittedAt:d2.toISOString()},
+    {id:'appt_c8', patientId:'SMG-0010123',date:dOff(0), scheduledTime:'10:30',reason:'Chest pain — non-emergency evaluation',             status:'confirmed', confirmedAt:d1.toISOString(), submittedAt:d2.toISOString()},
+    {id:'appt_c9', patientId:'SMG-0011234',date:dOff(0), scheduledTime:'14:00',reason:'Annual wellness exam follow-up',                    status:'confirmed', confirmedAt:now.toISOString(),submittedAt:d1.toISOString()},
+    // Confirmed — tomorrow
+    {id:'appt_c10',patientId:'SMG-0005678',date:dOff(1), scheduledTime:'09:00',reason:'Follow-up after hospitalization',                   status:'confirmed', confirmedAt:now.toISOString(),submittedAt:d1.toISOString()},
+    {id:'appt_c11',patientId:'SMG-0012345',date:dOff(1), scheduledTime:'11:30',reason:'Hypertension management review',                    status:'confirmed', confirmedAt:now.toISOString(),submittedAt:d1.toISOString()},
+    // Rescheduled
+    {id:'appt_r1', patientId:'SMG-0017890',date:dOff(-1),newDate:dOff(3), scheduledTime:'10:00',reason:'Physical therapy referral — knee',  status:'rescheduled',rescheduledAt:d1.toISOString(), submittedAt:d2.toISOString()},
+    {id:'appt_r2', patientId:'SMG-0018901',date:dOff(1), newDate:dOff(5), scheduledTime:'13:00',reason:'Diabetes check-up',                  status:'rescheduled',rescheduledAt:now.toISOString(),submittedAt:d1.toISOString()},
+    // Pending — upcoming
+    {id:'appt_p1', patientId:'SMG-0001234',date:dOff(2), time:'morning',  reason:'Annual checkup and blood pressure follow-up',             status:'pending',   submittedAt:now.toISOString()},
+    {id:'appt_p2', patientId:'SMG-0013456',date:dOff(2), time:'afternoon',reason:'Persistent headaches — neurological assessment',          status:'pending',   submittedAt:d1.toISOString()},
+    {id:'appt_p3', patientId:'SMG-0014567',date:dOff(3), time:'morning',  reason:'새 환자 - 전반적인 건강 검진 (New patient general exam)',       status:'pending',   submittedAt:now.toISOString()},
+    {id:'appt_p4', patientId:'SMG-0006789',date:dOff(4), time:'morning',  reason:'새 환자 - 전반적인 건강 검진 (New patient general exam)',       status:'pending',   submittedAt:d1.toISOString()},
+    {id:'appt_p5', patientId:'SMG-0015678',date:dOff(5), time:'afternoon',reason:'Thyroid function review — medication adjustment',          status:'pending',   submittedAt:now.toISOString()},
+    {id:'appt_p6', patientId:'SMG-0016789',date:dOff(6), time:'evening',  reason:'Physical therapy referral — lower back pain',              status:'pending',   submittedAt:d1.toISOString()},
+  ];
+  var consents=[
+    {id:'consent_d1',patientId:'SMG-0001234',patientName:'박순자 (Sonja Park)',  caregiverName:'박민준 (Min Park)',      caregiverPhone:'(213) 555-0142',relationship:'Son',            permissions:{appointments:true,medications:true, labResults:true, visitNotes:false},status:'pending', requestedAt:now.toISOString()},
+    {id:'consent_d2',patientId:'SMG-0002345',patientName:'김영희 (Young Kim)',   caregiverName:'김지수 (Jisoo Kim)',     caregiverPhone:'(310) 555-0287',relationship:'Daughter',       permissions:{appointments:true,medications:false,labResults:false,visitNotes:false},status:'pending', requestedAt:d1.toISOString()},
+    {id:'consent_d3',patientId:'SMG-0003456',patientName:'이철수 (Chul Lee)',    caregiverName:'이서연 (Seoyeon Lee)',  caregiverPhone:'(714) 555-0391',relationship:'Daughter-in-law',permissions:{appointments:true,medications:true, labResults:true, visitNotes:true}, status:'approved',respondedAt:d1.toISOString(),requestedAt:d2.toISOString()},
+    {id:'consent_d4',patientId:'SMG-0004567',patientName:'최명자 (Myungja Choi)',caregiverName:'최동현 (Donghyun Choi)',caregiverPhone:'(626) 555-0489',relationship:'Son',            permissions:{appointments:true,medications:true, labResults:false,visitNotes:false},status:'declined',respondedAt:d2.toISOString(),requestedAt:d3.toISOString()},
+    {id:'consent_d5',patientId:'SMG-0005678',patientName:'정혜숙 (Hyesuk Jung)', caregiverName:'정수아 (Sua Jung)',     caregiverPhone:'(909) 555-0531',relationship:'Granddaughter', permissions:{appointments:true,medications:true, labResults:true, visitNotes:false},status:'pending', requestedAt:now.toISOString()},
+  ];
+  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
+  localStorage.setItem('bridge_caregiver_consents',JSON.stringify(consents));
+  updatePortalBadges();
+  if(typeof loadConsents==='function') loadConsents();
 }
 
-async function loadRevenueTab(panelCount, pendingClaims) {
-  const el = id => document.getElementById(id);
-
-  // Update panel sub-label
-  if (panelCount && el('rev-panel-sub'))
-    el('rev-panel-sub').textContent = `Estimated this quarter · ${panelCount.toLocaleString()}-pt panel`;
-  if (el('rev-hcc-count')) el('rev-hcc-count').textContent = pendingClaims || '—';
-
-  // AWV estimates derived from panel count (no AWV-specific endpoint)
-  if (panelCount) {
-    const awvPct       = 58; // conservative estimate until AWV-specific data available
-    const awvCompleted = Math.round(panelCount * awvPct / 100);
-    const awvRemaining = panelCount - awvCompleted;
-    if (el('rev-awv-pct'))       el('rev-awv-pct').textContent       = awvPct + '%';
-    if (el('rev-awv-bar'))       el('rev-awv-bar').style.width        = awvPct + '%';
-    if (el('rev-awv-completed')) el('rev-awv-completed').textContent  = awvCompleted.toLocaleString();
-    if (el('rev-awv-remaining')) el('rev-awv-remaining').textContent  = awvRemaining.toLocaleString();
-  }
-
-  // Fetch claims for real billing stats
-  const claimsData = await api('/mso/claims/summary?limit=500');
-  if (!claimsData) return;
-  const claims = claimsData.claims || [];
-
-  const totalBilled  = claims.reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
-  const totalPaid    = claims.reduce((s, c) => s + (parseFloat(c.paid_amount)   || 0), 0);
-  const totalPending = claims.filter(c => c.status === 'Pending')
-                             .reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
-  const avgBilled    = claims.length > 0 ? totalBilled / claims.length : 0;
-
-  // Uncaptured = pending billed amounts
-  const uncaptured = totalPending || (pendingClaims || 0) * 600;
-  if (el('rev-uncaptured')) el('rev-uncaptured').textContent = fmtMoney(uncaptured);
-
-  // AWV captured/at-risk from paid vs pending
-  if (el('rev-awv-captured')) el('rev-awv-captured').textContent = fmtMoney(totalPaid);
-  if (el('rev-awv-atrisk'))   el('rev-awv-atrisk').textContent   = fmtMoney(Math.max(totalBilled - totalPaid, 0));
-
-  // Monthly trend
-  const currentMonth = new Date().toISOString().slice(0, 7);
-  const monthClaims  = claims.filter(c => c.dos && c.dos.startsWith(currentMonth));
-  const monthBilled  = monthClaims.reduce((s, c) => s + (parseFloat(c.billed_amount) || 0), 0);
-  const pendingCount = claims.filter(c => c.status === 'Pending').length;
-
-  if (el('rev-billed-month'))  el('rev-billed-month').textContent  = monthClaims.length ? fmtMoney(monthBilled) : fmtMoney(totalBilled);
-  if (el('rev-billed-delta'))  el('rev-billed-delta').textContent  = monthClaims.length ? monthClaims.length + ' claims this month' : claimsData.total + ' total claims';
-  if (el('rev-total-paid'))    el('rev-total-paid').textContent    = fmtMoney(totalPaid);
-  if (el('rev-claim-count'))   el('rev-claim-count').textContent   = (claimsData.total || claims.length).toLocaleString();
-  if (el('rev-pending-delta')) el('rev-pending-delta').textContent = pendingCount + ' pending';
-  if (el('rev-avg-billed'))    el('rev-avg-billed').textContent    = avgBilled >= 1 ? '$' + Math.round(avgBilled).toLocaleString() : '—';
-
-  // HCC list — show top pending claims by billed amount
-  const hccContainer = el('rev-hcc-list');
-  const hccLbl = el('rev-hcc-lbl');
-  if (hccContainer) {
-    const pendingList = claims
-      .filter(c => c.status === 'Pending' && c.billed_amount)
-      .sort((a, b) => (parseFloat(b.billed_amount) || 0) - (parseFloat(a.billed_amount) || 0))
-      .slice(0, 8);
-    if (hccLbl) hccLbl.textContent = pendingList.length + ' open';
-    if (!pendingList.length) {
-      hccContainer.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:var(--text-mute);">No pending claims found</div>';
-    } else {
-      hccContainer.innerHTML = pendingList.map(c => `
-        <div class="hcc-row">
-          <div class="hcc-info">
-            <div class="hcc-name">${c.last_name || ''}, ${c.first_name || ''} ${c.cpt_code ? '— CPT ' + c.cpt_code : ''}</div>
-            <div class="hcc-code">${c.icd_codes || '—'} · DOS: ${c.dos || '—'}</div>
-          </div>
-          <div class="hcc-dollar">+${fmtMoney(parseFloat(c.billed_amount) || 0)}</div>
-        </div>`).join('');
-    }
-  }
+// ── Helpers ──
+function fmtDate(iso){if(!iso) return '—';try{return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch{return iso;}}
+function toast(msg,type='info'){
+  const c=document.getElementById('toast-container'),el=document.createElement('div');
+  const col=type==='success'?'#10B981':type==='error'?'#EF4444':'#14B8A6';
+  el.className='animate-slide-in pointer-events-auto';
+  el.style.cssText=`background:#1C2B3F;border:1px solid ${col};border-radius:10px;padding:10px 16px;font-size:13px;color:#E2E8F0;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.3);`;
+  el.textContent=msg; c.appendChild(el); setTimeout(()=>el.remove(),4000);
 }
 </script>
 </body>

@@ -58,13 +58,14 @@ router.post('/claims', (req, res) => {
 
 // ── GET /api/mso/eligibility  — paginated list of all eligibility records
 router.get('/eligibility', (req, res) => {
-  const { status = '', page = 1, limit = 100 } = req.query;
+  const { status = '', npi = '', page = 1, limit = 100 } = req.query;
   const offset    = (parseInt(page) - 1) * parseInt(limit);
   const scope     = patientIdScope(req.user);
   const conditions = [];
   const params     = [];
   if (status)                     { conditions.push('e.status = ?');         params.push(status); }
-  if (scope.conditions.length)    { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'e.patient_id'))); params.push(...scope.params); }
+  if (npi)                        { conditions.push(`e.patient_id IN (SELECT patient_id FROM pcp_providers WHERE provider_npi = ? AND status = 'Active')`); params.push(npi); }
+  else if (scope.conditions.length) { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'e.patient_id'))); params.push(...scope.params); }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const total = db.prepare(`SELECT COUNT(*) as c FROM eligibility e ${where}`).get(...params).c;
@@ -112,13 +113,14 @@ router.put('/eligibility/:id', (req, res) => {
 
 // ── GET /api/mso/claims/summary  — all claims with filters (MUST be before /claims/:pid)
 router.get('/claims/summary', (req, res) => {
-  const { status, page = 1, limit = 100 } = req.query;
+  const { status, npi = '', page = 1, limit = 100 } = req.query;
   const offset     = (parseInt(page) - 1) * parseInt(limit);
   const scope      = patientIdScope(req.user);
   const conditions = [];
   const params     = [];
   if (status)                  { conditions.push('c.status = ?'); params.push(status); }
-  if (scope.conditions.length) { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'c.patient_id'))); params.push(...scope.params); }
+  if (npi)                     { conditions.push(`c.patient_id IN (SELECT patient_id FROM pcp_providers WHERE provider_npi = ? AND status = 'Active')`); params.push(npi); }
+  else if (scope.conditions.length) { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'c.patient_id'))); params.push(...scope.params); }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const total = db.prepare(`SELECT COUNT(*) as c FROM claims c ${where}`).get(...params).c;

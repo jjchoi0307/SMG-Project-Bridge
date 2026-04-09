@@ -63,6 +63,20 @@ router.get('/panel/stats', (req, res) => {
     WHERE pp.provider_npi = ? AND pr.refill_due_date <= date('now', '+7 days') AND pr.status = 'Active'
   `).get(npi).c;
 
+  const eligSummary = db.prepare(`
+    SELECT e.status, COUNT(*) as count FROM eligibility e
+    JOIN pcp_providers pp ON e.patient_id = pp.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active'
+    GROUP BY e.status
+  `).all(npi);
+
+  const claimsSummary = db.prepare(`
+    SELECT c.status, COUNT(*) as count FROM claims c
+    JOIN pcp_providers pp ON c.patient_id = pp.patient_id
+    WHERE pp.provider_npi = ?
+    GROUP BY c.status
+  `).all(npi);
+
   res.json({
     providerName: providerInfo.provider_name,
     practiceName: providerInfo.practice_name,
@@ -71,6 +85,8 @@ router.get('/panel/stats', (req, res) => {
     pendingAuths,
     pendingClaimsCount,
     refillsDue,
+    eligSummary,
+    claimsSummary,
   });
 });
 
@@ -113,13 +129,14 @@ router.get('/panel', (req, res) => {
 
 // ── GET /api/pcp/labs  — paginated list of all lab results (MUST be before /:pid)
 router.get('/labs', (req, res) => {
-  const { flag = '', page = 1, limit = 100 } = req.query;
+  const { flag = '', npi = '', page = 1, limit = 100 } = req.query;
   const offset     = (parseInt(page) - 1) * parseInt(limit);
   const scope      = patientIdScope(req.user);
   const conditions = [];
   const params     = [];
-  if (flag)                    { conditions.push('lr.flag = ?');  params.push(flag); }
-  if (scope.conditions.length) { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'lr.patient_id'))); params.push(...scope.params); }
+  if (flag) { conditions.push('lr.flag = ?'); params.push(flag); }
+  if (npi)  { conditions.push(`lr.patient_id IN (SELECT patient_id FROM pcp_providers WHERE provider_npi = ? AND status = 'Active')`); params.push(npi); }
+  else if (scope.conditions.length) { conditions.push(...scope.conditions.map(c => c.replace('patient_id', 'lr.patient_id'))); params.push(...scope.params); }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const total = db.prepare(`SELECT COUNT(*) as c FROM lab_results lr ${where}`).get(...params).c;
@@ -202,6 +219,44 @@ router.put('/medications/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// ── GET /api/pcp/auths  — NPI-scoped authorizations (MUST be before /:pid)
+router.get('/auths', (req, res) => {
+  const { npi, status = '', page = 1, limit = 100 } = req.query;
+  if (!npi) return res.status(400).json({ error: 'npi required' });
+  const offset = (parseInt(page) - 1) * parseInt(limit);
+  const conditions = [`a.patient_id IN (SELECT patient_id FROM pcp_providers WHERE provider_npi = ? AND status = 'Active')`];
+  const params = [npi];
+  if (status) { conditions.push('a.status = ?'); params.push(status); }
+  const where = `WHERE ${conditions.join(' AND ')}`;
+  const total = db.prepare(`SELECT COUNT(*) as c FROM authorizations a ${where}`).get(...params).c;
+  const rows  = db.prepare(`
+    SELECT a.*, p.first_name, p.last_name, p.dob, p.gender
+    FROM authorizations a
+    JOIN patients p ON a.patient_id = p.patient_id
+    ${where}
+    ORDER BY a.requested_date DESC
+    LIMIT ? OFFSET ?
+  `).all(...params, parseInt(limit), offset);
+  res.json({ total, page: parseInt(page), limit: parseInt(limit), auths: rows });
+});
+
+// ── GET /api/pcp/schedule  — today's schedule for an NPI (MUST be before /:pid)
+router.get('/schedule', (req, res) => {
+  const { npi } = req.query;
+  if (!npi) return res.status(400).json({ error: 'npi required' });
+  const rows = db.prepare(`
+    SELECT p.*,
+      (SELECT status FROM eligibility WHERE patient_id = p.patient_id ORDER BY updated_at DESC LIMIT 1) AS elig_status,
+      (SELECT COUNT(*) FROM lab_results WHERE patient_id = p.patient_id AND flag = 'Critical') AS critical_lab_count
+    FROM pcp_providers pp
+    JOIN patients p ON pp.patient_id = p.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active'
+    ORDER BY p.last_name ASC
+    LIMIT 50
+  `).all(npi);
+  res.json(rows);
+});
+
 // ── GET /api/pcp/dashboard  — PCP-wide clinical alerts (cached 60s)
 router.get('/dashboard', (req, res) => {
   const data = cached('pcp:dashboard', 60_000, () => {
@@ -229,6 +284,56 @@ router.get('/dashboard', (req, res) => {
     return { criticalLabs, abnormalLabs, activeMeds, topConditions };
   });
   res.json(data);
+});
+
+// ── GET /api/pcp/pharmacy  — NPI-scoped pharmacy records (MUST be before /:pid)
+router.get('/pharmacy', (req, res) => {
+  const { npi, page = 1, limit = 100 } = req.query;
+  if (!npi) return res.status(400).json({ error: 'npi required' });
+  const offset = (parseInt(page) - 1) * parseInt(limit);
+
+  const total = db.prepare(`
+    SELECT COUNT(*) as c FROM pharmacy_records pr
+    JOIN pcp_providers pp ON pr.patient_id = pp.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active'
+  `).get(npi).c;
+
+  const rows = db.prepare(`
+    SELECT pr.*, p.first_name, p.last_name, p.phone, p.korean_name
+    FROM pharmacy_records pr
+    JOIN pcp_providers pp ON pr.patient_id = pp.patient_id
+    JOIN patients p ON pr.patient_id = p.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active'
+    ORDER BY pr.refill_due_date ASC
+    LIMIT ? OFFSET ?
+  `).all(npi, parseInt(limit), offset);
+
+  res.json({ total, page: parseInt(page), limit: parseInt(limit), pharmacy: rows });
+});
+
+// ── GET /api/pcp/panel-meds  — NPI-scoped panel-wide active medications (MUST be before /:pid)
+router.get('/panel-meds', (req, res) => {
+  const { npi, page = 1, limit = 100 } = req.query;
+  if (!npi) return res.status(400).json({ error: 'npi required' });
+  const offset = (parseInt(page) - 1) * parseInt(limit);
+
+  const total = db.prepare(`
+    SELECT COUNT(*) as c FROM medication_requests mr
+    JOIN pcp_providers pp ON mr.patient_id = pp.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active' AND mr.status = 'Active'
+  `).get(npi).c;
+
+  const rows = db.prepare(`
+    SELECT mr.*, p.first_name, p.last_name, p.korean_name
+    FROM medication_requests mr
+    JOIN pcp_providers pp ON mr.patient_id = pp.patient_id
+    JOIN patients p ON mr.patient_id = p.patient_id
+    WHERE pp.provider_npi = ? AND pp.status = 'Active' AND mr.status = 'Active'
+    ORDER BY mr.prescribed_date DESC
+    LIMIT ? OFFSET ?
+  `).all(npi, parseInt(limit), offset);
+
+  res.json({ total, page: parseInt(page), limit: parseInt(limit), medications: rows });
 });
 
 // ── GET /api/pcp/:pid  — patient's PCP and clinical data (MUST be last — catches all /:pid)
