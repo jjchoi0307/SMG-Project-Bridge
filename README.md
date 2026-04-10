@@ -38,6 +38,60 @@ SMG Bridge solves a core problem in managed care: patient data lives in three se
 
 ## Quick Start
 
+### First-Time Setup (No Technical Experience Required)
+
+**Step 1 — Install Node.js**
+
+Go to [nodejs.org](https://nodejs.org) → click the green **LTS** button → download and install. Click through the installer defaults.
+
+Verify it worked: open Terminal (Mac) or Command Prompt (Windows) and type `node -v`. You should see `v22` or higher.
+
+**Step 2 — Download the project**
+
+Go to [github.com/jjchoi0307/SMG-Project-Bridge](https://github.com/jjchoi0307/SMG-Project-Bridge) → click the green **`<> Code`** button → click **Download ZIP** → extract the folder.
+
+**Step 3 — Open Terminal in that folder**
+
+- **Mac:** Right-click the extracted folder → "New Terminal at Folder"
+- **Windows:** Hold Shift + right-click the folder → "Open PowerShell window here"
+
+**Step 4 — Run these commands** (copy-paste each line, press Enter after each)
+
+```bash
+npm install
+npm run seed
+node server/seed-visit-notes.js
+npm run dev
+```
+
+Wait for the terminal to say **`SMG Bridge running on http://localhost:3000`**
+
+**Step 5 — Open the app**
+
+Open Chrome or Safari and go to: **http://localhost:3000**
+
+The Admin Portal opens automatically — no login required.
+
+**To stop the server:** Press `Ctrl + C` in the Terminal window.
+
+---
+
+### Portal URLs
+
+| Portal | URL |
+|---|---|
+| Admin | http://localhost:3000 |
+| Doctor | http://localhost:3000/bridge-doctor.html |
+| Patient App | http://localhost:3000/bridge-members-v2.html |
+
+**Doctor login sample NPIs:** `4455667788` · `5544332211` · `0987654321`
+
+**Patient App sample IDs:** `SMG-2047` · `SMG-2217` · `SMG-3868`
+
+---
+
+### Developer Quick Start
+
 ```bash
 git clone https://github.com/jjchoi0307/SMG-Project-Bridge.git
 cd "SMG - Project Bridge"
