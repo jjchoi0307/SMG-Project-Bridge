@@ -202,13 +202,15 @@ Accessed by entering an SMG Member ID (`SMG-XXXXXXX`) or insurance member ID —
 - **Action Needed** — dynamic alerts per patient (annual wellness overdue, pending/approved authorizations)
 - **Upcoming Visits** — confirmed appointment requests appear here as date-boxed cards (month, day, confirmed time, "Confirmed ✓" badge) alongside the static PCP and specialist referral cards. Confirmation flows directly from the admin or doctor portal — no manual step required.
 - **Awaiting Confirmation** — pending requests the patient has submitted show with amber styling and "Your care team will confirm soon." Once a doctor confirms and sets a time, the card moves up to Upcoming Visits automatically.
-- **Approvals & Authorizations** — real-time status from the admin portal
+- **Approvals & Authorizations** — three states only: **Approved** (shows provider + expiration date), **In Progress** (care team working on it), **Error** (denied/carved out/voided — never shown as raw denial; patient is directed to call PCP office)
 - **Transport** — tap to call PCP office or SMG at (562) 766-2000
 
 **Records tab**
-- Lab Results — most recent results with Normal / High / Low / Critical flags
-- Prescriptions — active medications with prescriber and refill info
-- After Visit Summaries — expandable doctor notes with reason for visit, diagnoses, next steps, and provider signature. Seeded with 2–3 notes per patient across all 10,000+ patients.
+- **Vitals** — blood pressure, BMI, weight from most recent doctor-confirmed visit
+- **Lab Results** — most recent signed results with last-3-visit comparison panel and neutral contextual message. No alarming Critical/High/Low flags shown to patients — raw flags are for clinical use only.
+- **Prescriptions** — active medications with prescriber and refill info
+
+> **Note:** After Visit Summaries are not shown to patients or caregivers. Doctor notes contain billing/coding shorthand that is not appropriate for patient-facing display (compliance requirement from Dr. Chang's office, April 2026).
 
 ### Caregiver View
 
@@ -222,6 +224,16 @@ Caregivers connect to a family member's account using the member's SMG ID.
   - Score < 60: *She'd love to hear from you today 💛*
 - "Remind Mom" button sends an in-app nudge
 - Quiet state shown when patient is fully checked in
+
+**Caregiver data access — compliance boundaries**
+
+Caregivers can be granted access to: appointments, medications, and lab results (with patient consent). The following are never accessible to caregivers regardless of consent:
+
+- Insurance benefits, benefit usage counts, grocery/dental/financial allowances — exploitation risk, especially for dementia patients (~10–15% of SMG panel)
+- After Visit Summaries and doctor notes
+- Insurance plan details and member ID
+
+The caregiver Account tab shows only the patient's PCP name and practice, plus referral/authorization status using the same Approved / In Progress / Error display as the patient view.
 
 ---
 
