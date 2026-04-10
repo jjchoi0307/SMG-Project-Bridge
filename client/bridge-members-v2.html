@@ -468,10 +468,6 @@
           <div class="su-toggle-info"><div class="su-toggle-name">Share lab results</div><div class="su-toggle-desc">Caregiver sees signed lab reports</div></div>
           <label class="su-toggle"><input type="checkbox" id="perm-labs"><div class="su-toggle-track"></div><div class="su-toggle-thumb"></div></label>
         </div>
-        <div class="su-toggle-row">
-          <div class="su-toggle-info"><div class="su-toggle-name">Share visit notes</div><div class="su-toggle-desc">Caregiver sees after-visit summaries</div></div>
-          <label class="su-toggle"><input type="checkbox" id="perm-visitnotes"><div class="su-toggle-track"></div><div class="su-toggle-thumb"></div></label>
-        </div>
       </div>
       <div style="flex:1;"></div>
       <button class="su-cta fu3" onclick="openPtGreeting()">Get Started →</button>
@@ -703,15 +699,10 @@
           <div style="text-align:center;color:#6B7280;font-size:13px;padding:8px 0;">Loading...</div>
         </div>
 
-        <!-- After Visit Summaries (MyChart-style) -->
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:4px;margin-bottom:4px;">
-          <div class="section-head" style="margin:0;" data-en="After Visit Summaries" data-ko="진료 후 요약">After Visit Summaries</div>
-        </div>
-        <div style="font-size:11px;color:#6B7280;margin-bottom:12px;line-height:1.5;" data-en="What your doctor shared after each visit." data-ko="진료 후 담당의가 공유한 내용입니다.">What your doctor shared after each visit.</div>
-
-        <!-- AVS Cards — dynamic per patient -->
-        <div id="pt-visit-notes-list">
-          <div style="text-align:center;color:#6B7280;font-size:13px;padding:16px 0;">Loading visit summaries...</div>
+        <!-- Vitals — doctor-confirmed readings only -->
+        <div class="section-head" style="margin-top:4px;" data-en="Vitals" data-ko="활력 징후">Vitals</div>
+        <div class="card" id="pt-vitals-card" style="margin-bottom:10px;padding:14px 16px;">
+          <div style="text-align:center;color:#6B7280;font-size:13px;padding:8px 0;">Loading vitals...</div>
         </div>
 
         <!-- Hospital Visits -->
@@ -1025,99 +1016,15 @@
 
       <!-- ACCOUNT -->
       <div class="tab-panel" id="cg-account">
-        <div class="section-head" id="cg-acct-section-head" data-en="Susan's Insurance" data-ko="수잔의 보험">Susan's Insurance</div>
-        <div class="card" style="display:flex;gap:14px;align-items:center;">
-          <div class="ben-icon-box blue" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="13" r="2.5"/><path d="M14 11h4M14 15h3"/></svg></div>
+        <div class="section-head" id="cg-acct-section-head" data-en="Care Team" data-ko="진료팀">Care Team</div>
+        <div class="card" style="display:flex;gap:14px;align-items:center;margin-bottom:10px;">
+          <div class="ben-icon-box blue" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
           <div>
-            <div id="cg-acct-ins-name" style="font-size:15px;font-weight:700;color:#111827;">Empire BlueCross</div>
-            <div id="cg-acct-member-id" style="font-size:12px;color:#6B7280;" data-en="Member ID: EMP-29401823" data-ko="회원 번호: EMP-29401823">Member ID: EMP-29401823</div>
-            <div style="font-size:12px;color:#6B7280;" data-en="Group: SMG Senior Plan · 2026" data-ko="그룹: SMG 시니어 플랜 · 2026">Group: SMG Senior Plan · 2026</div>
+            <div id="cg-acct-pcp-name" style="font-size:15px;font-weight:700;color:#111827;">Primary Care Physician</div>
+            <div id="cg-acct-pcp-practice" style="font-size:12px;color:#6B7280;">SMG Medical Group</div>
           </div>
         </div>
-        <div class="section-head" style="margin-top:8px;" data-en="Benefits Usage" data-ko="혜택 사용 현황">Benefits Usage</div>
-        <div style="font-size:12px;color:#6B7280;margin-bottom:12px;line-height:1.5;" data-en="Tap any benefit to see Susan's visit history." data-ko="각 항목을 탭하면 수잔 씨의 진료 내역을 볼 수 있습니다.">Tap any benefit to see Susan's visit history.</div>
-        <div class="benefit-card expand-trigger" onclick="toggleExpand('cg-ben-pc-exp')">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-              <div class="benefit-title" data-en="Primary Care Visits" data-ko="일차 진료">Primary Care Visits</div>
-            </div>
-            <div class="expand-chevron" id="cg-ben-pc-exp-chev">›</div>
-          </div>
-          <div class="benefit-bar-wrap"><div class="benefit-bar" style="width:60%;"></div></div>
-          <div class="benefit-labels"><span data-en="2 visits remaining" data-ko="2회 남음">2 visits remaining</span><span data-en="before Dec 31" data-ko="12월 31일 이전">before Dec 31</span></div>
-          <div class="expand-body" id="cg-ben-pc-exp">
-            <div class="exp-visit-item"><div class="exp-visit-dot"></div><span class="exp-visit-date">Jan 12</span><span class="exp-visit-lbl">Dr. Park – Annual Wellness</span></div>
-            <div class="exp-visit-item"><div class="exp-visit-dot"></div><span class="exp-visit-date">Feb 8</span><span class="exp-visit-lbl">Dr. Park – Follow-up visit</span></div>
-            <div class="exp-visit-item"><div class="exp-visit-dot"></div><span class="exp-visit-date">Mar 3</span><span class="exp-visit-lbl">Dr. Park – Blood pressure check</span></div>
-          </div>
-        </div>
-        <div class="benefit-card expand-trigger" onclick="toggleExpand('cg-ben-lab-exp')">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6l-4 10a1 1 0 0 0 .9 1.4h12.2a1 1 0 0 0 .9-1.4L15 8V2"/><line x1="9" y1="2" x2="15" y2="2"/></svg></div>
-              <div class="benefit-title" data-en="Lab Work" data-ko="혈액 검사">Lab Work</div>
-            </div>
-            <div class="expand-chevron" id="cg-ben-lab-exp-chev">›</div>
-          </div>
-          <div class="benefit-bar-wrap"><div class="benefit-bar" style="width:40%;"></div></div>
-          <div class="benefit-labels"><span data-en="3 visits remaining" data-ko="3회 남음">3 visits remaining</span><span data-en="before Dec 31" data-ko="12월 31일 이전">before Dec 31</span></div>
-          <div class="expand-body" id="cg-ben-lab-exp">
-            <div class="exp-visit-item"><div class="exp-visit-dot"></div><span class="exp-visit-date">Jan 14</span><span class="exp-visit-lbl">Complete Blood Count (CBC)</span></div>
-            <div class="exp-visit-item"><div class="exp-visit-dot"></div><span class="exp-visit-date">Feb 10</span><span class="exp-visit-lbl">HbA1c – Blood sugar level test</span></div>
-          </div>
-        </div>
-        <div class="benefit-card expand-trigger" onclick="toggleExpand('cg-ben-sp-exp')">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M3 11l9-9 9 9"/><line x1="12" y1="11" x2="12" y2="21"/><line x1="8" y1="16" x2="16" y2="16"/></svg></div>
-              <div class="benefit-title" data-en="Specialist Visits" data-ko="전문의 진료">Specialist Visits</div>
-            </div>
-            <div class="expand-chevron" id="cg-ben-sp-exp-chev">›</div>
-          </div>
-          <div class="benefit-bar-wrap"><div class="benefit-bar" style="width:25%;background:#D97706;"></div></div>
-          <div class="benefit-labels"><span data-en="3 visits remaining" data-ko="3회 남음">3 visits remaining</span><span data-en="before Dec 31" data-ko="12월 31일 이전">before Dec 31</span></div>
-          <div class="expand-body" id="cg-ben-sp-exp">
-            <div class="exp-visit-item"><div class="exp-visit-dot" style="background:#D97706;"></div><span class="exp-visit-date">Mar 18</span><span class="exp-visit-lbl">Dr. Cho – GI Consultation</span></div>
-          </div>
-        </div>
-        <!-- Dental Benefits -->
-        <div class="benefit-card">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C9 2 6 4.5 6 8c0 4 3 7 3 11h6c0-4 3-7 3-11 0-3.5-3-6-6-6z"/></svg></div>
-              <div class="benefit-title" data-en="Dental Benefits" data-ko="치과 혜택">Dental Benefits</div>
-            </div>
-            <span style="font-size:11px;font-weight:700;color:#3B82F6;background:#EFF6FF;padding:3px 9px;border-radius:20px;" data-en="Covered" data-ko="적용됨">Covered</span>
-          </div>
-        </div>
-        <!-- Grocery Benefit -->
-        <div class="benefit-card">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box" style="background:#ECFDF5;"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-              <div>
-                <div class="benefit-title" data-en="Grocery Benefit" data-ko="식료품 혜택">Grocery Benefit</div>
-                <div style="font-size:11px;color:#6B7280;margin-top:1px;" data-en="Healthy foods allowance" data-ko="건강식품 지원">Healthy foods allowance</div>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:13px;font-weight:800;color:#10B981;">$50</div>
-              <div style="font-size:10px;color:#6B7280;" data-en="/ month" data-ko="/ 월">/ month</div>
-            </div>
-          </div>
-        </div>
-        <!-- Other Benefits -->
-        <div class="benefit-card" style="opacity:0.65;">
-          <div class="benefit-row">
-            <div class="benefit-row-left">
-              <div class="ben-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-              <div class="benefit-title" data-en="Other Benefits" data-ko="기타 혜택">Other Benefits</div>
-            </div>
-            <span style="font-size:11px;font-weight:600;color:#6B7280;" data-en="Ask Ji-Young" data-ko="지영 씨에게 문의">Ask Ji-Young</span>
-          </div>
-        </div>
-        <div class="section-head" style="margin-top:8px;" data-en="Pending Authorization" data-ko="승인 대기 중">Pending Authorization</div>
+        <div class="section-head" style="margin-top:4px;" data-en="Referrals &amp; Authorizations" data-ko="의뢰 및 승인">Referrals &amp; Authorizations</div>
         <div id="cg-auths-list">
         <div class="card expand-trigger" style="display:flex;align-items:center;gap:12px;" onclick="toggleExpand('cg-mri-exp')">
           <div class="ben-icon-box amber" style="border-radius:10px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M3 11l9-9 9 9"/><line x1="12" y1="11" x2="12" y2="21"/><line x1="8" y1="16" x2="16" y2="16"/></svg></div>
@@ -1184,13 +1091,9 @@
           </div>
         </div>
 
-        <!-- After Visit Summaries -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;margin-bottom:6px;">
-          <div class="section-head" style="margin:0;" data-en="After Visit Summaries" data-ko="진료 후 요약">After Visit Summaries</div>
-        </div>
-        <div style="font-size:11px;color:#6B7280;margin-bottom:12px;line-height:1.5;" data-en="What the doctor shared after each visit." data-ko="진료 후 담당의가 공유한 내용입니다.">What the doctor shared after each visit.</div>
-
-        <!-- AVS Card 1: Follow-up Mar 3 -->
+        <!-- Hospital Visits -->
+        <div class="PLACEHOLDER_SKIP" style="display:none;">
+        <!-- AVS Card 1 removed — doctor notes not accessible to caregivers per compliance policy -->
         <div class="card expand-trigger" style="margin-bottom:10px;padding:0;overflow:hidden;" onclick="toggleExpand('cg-avs-mar-exp')">
           <div style="padding:14px 16px 12px;border-bottom:1px solid #E5E7EB;">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
@@ -1349,6 +1252,7 @@
             </div>
           </div>
         </div>
+        </div><!-- /PLACEHOLDER_SKIP -->
 
         <!-- Hospital Visits -->
         <div class="section-head" style="margin-top:4px;" data-en="Hospital Visits" data-ko="병원 입원">Hospital Visits</div>
@@ -1940,13 +1844,13 @@ async function openCgGreeting() {
     var cgQuiet = document.getElementById('cg-quiet');
     if (cgQuiet) cgQuiet.innerHTML = '💚 ' + ptFirst + ' is doing well today.';
 
-    // Caregiver account tab — insurance
+    // Caregiver account tab — care team only (no insurance/benefits per compliance)
     var cgAcctHdr = document.getElementById('cg-acct-section-head');
-    if (cgAcctHdr) { var ah = ptFirst + "'s Insurance"; var ahKo = ptFirst + ' 씨의 보험'; cgAcctHdr.textContent = ah; cgAcctHdr.setAttribute('data-en', ah); cgAcctHdr.setAttribute('data-ko', ahKo); }
-    var cgIns = document.getElementById('cg-acct-ins-name');
-    var cgMem = document.getElementById('cg-acct-member-id');
-    if (cgIns) cgIns.textContent = payer;
-    if (cgMem) { var mv = 'Member ID: ' + memberId; var mvKo = '회원 번호: ' + memberId; cgMem.textContent = mv; cgMem.setAttribute('data-en', mv); cgMem.setAttribute('data-ko', mvKo); }
+    if (cgAcctHdr) { var ah = ptFirst + "'s Care Team"; var ahKo = ptFirst + ' 씨의 진료팀'; cgAcctHdr.textContent = ah; cgAcctHdr.setAttribute('data-en', ah); cgAcctHdr.setAttribute('data-ko', ahKo); }
+    var cgPcpName = document.getElementById('cg-acct-pcp-name');
+    var cgPcpPrac = document.getElementById('cg-acct-pcp-practice');
+    if (cgPcpName) cgPcpName.textContent = pcp ? (pcp.provider_name || 'Primary Care Physician') : 'Primary Care Physician';
+    if (cgPcpPrac) cgPcpPrac.textContent = pcp ? (pcp.practice_name || 'SMG Medical Group') : 'SMG Medical Group';
 
     var cgAuths = document.getElementById('cg-auths-list');
     if (cgAuths) cgAuths.innerHTML = buildCgAuthCards(auths);
@@ -2573,17 +2477,13 @@ async function autoLaunchFromAdmin(pid, role) {
     var cgQuiet = document.getElementById('cg-quiet');
     if (cgQuiet) cgQuiet.innerHTML = '💚 ' + ptFirst + ' is doing well today.';
 
-    // Caregiver account — insurance section header
+    // Caregiver account — care team section header and PCP name (no insurance/benefits shown)
     var cgAcctHdr = document.getElementById('cg-acct-section-head');
-    if (cgAcctHdr) { var ah = ptFirst + "'s Insurance"; var ahKo = ptFirst + ' 씨의 보험'; cgAcctHdr.textContent = ah; cgAcctHdr.setAttribute('data-en', ah); cgAcctHdr.setAttribute('data-ko', ahKo); }
-
-    // Caregiver account — insurance name & member ID
-    var cgIns = document.getElementById('cg-acct-ins-name');
-    var cgMem = document.getElementById('cg-acct-member-id');
-    var payerName = elig ? (elig.plan_name || elig.payer_name || 'Your Plan') : 'Your Plan';
-    var memberId  = elig ? (elig.member_id || '—') : '—';
-    if (cgIns) cgIns.textContent = payerName;
-    if (cgMem) { var mv = 'Member ID: ' + memberId; var mvKo = '회원 번호: ' + memberId; cgMem.textContent = mv; cgMem.setAttribute('data-en', mv); cgMem.setAttribute('data-ko', mvKo); }
+    if (cgAcctHdr) { var ah = ptFirst + "'s Care Team"; var ahKo = ptFirst + ' 씨의 진료팀'; cgAcctHdr.textContent = ah; cgAcctHdr.setAttribute('data-en', ah); cgAcctHdr.setAttribute('data-ko', ahKo); }
+    var cgPcpName = document.getElementById('cg-acct-pcp-name');
+    var cgPcpPrac = document.getElementById('cg-acct-pcp-practice');
+    if (cgPcpName) cgPcpName.textContent = pcp ? (pcp.provider_name || 'Primary Care Physician') : 'Primary Care Physician';
+    if (cgPcpPrac) cgPcpPrac.textContent = pcp ? (pcp.practice_name || 'SMG Medical Group') : 'SMG Medical Group';
 
     // Caregiver pending auth list
     var cgAuths = document.getElementById('cg-auths-list');
@@ -2680,9 +2580,9 @@ function populatePatientPhones(p, elig, pcp, meds, auths, labs, pharmacy, visitN
   var ptRxCard = document.getElementById('pt-rx-card');
   if (ptRxCard) ptRxCard.innerHTML = buildRxRows(pharmacy, meds, pcpName);
 
-  // Records tab — After Visit Summaries
-  var ptVnList = document.getElementById('pt-visit-notes-list');
-  if (ptVnList) ptVnList.innerHTML = buildVisitNotes(visitNotes, pcp);
+  // Records tab — Vitals (weight, BMI, blood pressure from most recent visit note)
+  var ptVitalsCard = document.getElementById('pt-vitals-card');
+  if (ptVitalsCard) ptVitalsCard.innerHTML = buildVitals(visitNotes);
 
   // Visit tab — Action Needed (dynamic alerts based on auths + visit notes)
   var ptAction = document.getElementById('pt-action-needed');
@@ -2726,46 +2626,84 @@ function buildLabRows(labs) {
   if (!labs || labs.length === 0) {
     return '<div style="text-align:center;color:#6B7280;font-size:13px;padding:8px 0;">No lab results on file.</div>';
   }
-  return labs.slice(0,6).map(function(lab, i) {
-    // Only show to patient if signed off (has result_date and a flag value)
-    var isSigned = !!(lab.result_date && lab.flag);
-    var border   = i < labs.slice(0,6).length - 1 ? 'border-bottom:1px solid #E5E7EB;' : '';
 
-    if (!isSigned) {
-      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;' + border + '">' +
-        '<span style="font-size:15px;opacity:0.4;">🔒</span>' +
-        '<div style="flex:1;">' +
-          '<div style="font-size:13px;font-weight:600;color:#9CA3AF;">' + (lab.test_name || 'Lab Test') + '</div>' +
-          '<div style="font-size:11px;color:#D1D5DB;margin-top:1px;">Awaiting doctor sign-off</div>' +
-        '</div>' +
-        '<span style="font-size:11px;font-weight:700;color:#D97706;background:#FEF3C7;padding:3px 9px;border-radius:20px;">Pending</span>' +
+  // Group by test name to compute last-3 trend
+  var byTest = {};
+  labs.forEach(function(l) {
+    var k = (l.test_name || 'Lab Test').trim();
+    if (!byTest[k]) byTest[k] = [];
+    byTest[k].push(l);
+  });
+  // Sort each group by date descending
+  Object.keys(byTest).forEach(function(k) {
+    byTest[k].sort(function(a,b){ return (b.result_date||'') > (a.result_date||'') ? 1 : -1; });
+  });
+
+  var signed = labs.filter(function(l){ return !!(l.result_date && l.flag); }).slice(0, 6);
+  var unsigned = labs.filter(function(l){ return !(l.result_date && l.flag); }).slice(0, 2);
+
+  var rows = '';
+
+  // Pending (unsigned) — show locked
+  unsigned.forEach(function(lab, i) {
+    var border = 'border-bottom:1px solid #E5E7EB;';
+    rows += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;' + border + '">' +
+      '<span style="font-size:15px;opacity:0.4;">🔒</span>' +
+      '<div style="flex:1;">' +
+        '<div style="font-size:13px;font-weight:600;color:#9CA3AF;">' + (lab.test_name || 'Lab Test') + '</div>' +
+        '<div style="font-size:11px;color:#D1D5DB;margin-top:1px;" data-en="Awaiting doctor review" data-ko="의사 검토 대기 중">Awaiting doctor review</div>' +
+      '</div>' +
+      '<span style="font-size:11px;font-weight:700;color:#D97706;background:#FEF3C7;padding:3px 9px;border-radius:20px;" data-en="Pending" data-ko="검토 중">Pending</span>' +
+    '</div>';
+  });
+
+  // Signed — show value + last-3 comparison, no alarming flag
+  signed.forEach(function(lab, i) {
+    var border = i < signed.length - 1 ? 'border-bottom:1px solid #E5E7EB;' : '';
+    var date = lab.result_date.split('T')[0];
+    var who  = lab.ordered_by ? ' · Dr. ' + lab.ordered_by : (lab.lab_name ? ' · ' + lab.lab_name : '');
+    var expId = 'lab-exp-' + i;
+
+    // Build trend from last 3 values of the same test
+    var prev = (byTest[lab.test_name] || []).filter(function(x){ return x !== lab && x.result_value; }).slice(0, 2);
+    var trendHtml = '';
+    if (prev.length > 0) {
+      var prevItems = prev.map(function(p) {
+        return '<span style="font-size:11px;color:#9CA3AF;">' + (p.result_date||'').split('T')[0] + ': <b style="color:#6B7280;">' + p.result_value + (p.unit ? ' ' + p.unit : '') + '</b></span>';
+      }).join('<span style="color:#D1D5DB;margin:0 4px;">·</span>');
+      trendHtml = '<div style="margin-top:8px;padding:8px 10px;background:#F3F4F6;border-radius:8px;">' +
+        '<div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.5px;margin-bottom:4px;" data-en="PREVIOUS RESULTS" data-ko="이전 결과">PREVIOUS RESULTS</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + prevItems + '</div>' +
       '</div>';
     }
 
-    var flag  = lab.flag || 'Normal';
-    var color = flag === 'Critical' ? '#DC2626' : (flag === 'High' || flag === 'Low' || flag === 'Abnormal') ? '#D97706' : '#1A6B5F';
-    var bg    = flag === 'Critical' ? '#FEE2E2' : (flag === 'High' || flag === 'Low' || flag === 'Abnormal') ? '#FEF3C7' : '#E8F4F2';
-    var date  = lab.result_date.split('T')[0];
-    var who   = lab.ordered_by ? ' · Dr. ' + lab.ordered_by : (lab.lab_name ? ' · ' + lab.lab_name : '');
-    var expId = 'lab-exp-' + i;
-    return '<div style="' + border + '">' +
+    // Neutral context message — avoids alarming language
+    var contextMsg = '';
+    if (lab.reference_range) {
+      contextMsg = '<div style="font-size:11px;color:#6B7280;margin-top:6px;" data-en="Your doctor will follow up if further action is needed." data-ko="추가 조치가 필요한 경우 담당의가 연락드립니다.">Your doctor will follow up if further action is needed.</div>';
+    }
+
+    rows += '<div style="' + border + '">' +
       '<div class="expand-trigger" onclick="toggleExpand(\'' + expId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer;">' +
         '<div>' +
           '<div style="font-size:13px;font-weight:700;color:#111827;">' + (lab.test_name || 'Lab Result') + '</div>' +
           '<div style="font-size:11px;color:#6B7280;margin-top:1px;">' + date + who + '</div>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
-          '<span style="font-size:11px;font-weight:700;color:' + color + ';background:' + bg + ';padding:3px 9px;border-radius:20px;white-space:nowrap;">' + flag + '</span>' +
+          '<span style="font-size:11px;font-weight:700;color:#1A6B5F;background:#E8F4F2;padding:3px 9px;border-radius:20px;white-space:nowrap;" data-en="Reviewed" data-ko="검토 완료">Reviewed</span>' +
           '<span class="expand-chevron" id="' + expId + '-chev" style="font-size:16px;">›</span>' +
         '</div>' +
       '</div>' +
       '<div class="expand-body" id="' + expId + '" style="background:#F9FAFB;border-radius:10px;padding:12px 14px;margin-bottom:8px;">' +
-        (lab.result_value ? '<div style="font-size:13px;color:#374151;margin-bottom:6px;"><strong>Result:</strong> ' + lab.result_value + (lab.unit ? ' ' + lab.unit : '') + '</div>' : '') +
-        (lab.reference_range ? '<div style="font-size:12px;color:#6B7280;margin-bottom:8px;">Reference range: ' + lab.reference_range + '</div>' : '') +
-        '<a href="#" onclick="showToast(\'Full lab report will be available here once connected to Elation.\');return false;" style="font-size:12px;font-weight:700;color:#1A6B5F;text-decoration:none;">📄 View Full Report (PDF)</a>' +
+        (lab.result_value ? '<div style="font-size:13px;color:#374151;margin-bottom:4px;"><strong data-en="Result" data-ko="결과">Result:</strong> ' + lab.result_value + (lab.unit ? ' ' + lab.unit : '') + '</div>' : '') +
+        contextMsg +
+        trendHtml +
+        '<div style="margin-top:10px;"><a href="#" onclick="showToast(\'Full lab report will be available here once connected to Elation.\');return false;" style="font-size:12px;font-weight:700;color:#1A6B5F;text-decoration:none;">📄 View Full Report (PDF)</a></div>' +
       '</div>' +
     '</div>';
-  }).join('');
+  });
+
+  return rows || '<div style="text-align:center;color:#6B7280;font-size:13px;padding:8px 0;">No lab results on file.</div>';
 }
 
 // ── Prescription rows for Records tab
@@ -2794,36 +2732,51 @@ function buildRxRows(pharmacy, meds, pcpName) {
   }).join('');
 }
 
-// ── Auth cards for home tab
+// ── Auth/referral status classifier
+// Three states for patients:
+//   approved  — show provider info + expiration date
+//   pending   — "In Progress" — care team is working on it
+//   error     — anything denied/carved out/voided → "Error" + contact PCP message
 function referralStatusStyle(status) {
   var s = (status || '').toLowerCase();
   if (s === 'approved' || s === 'authorized' || s === 'confirmed' || s === 'completed') {
     return { color: '#1A6B5F', bg: '#E8F4F2', border: '#1A6B5F', label: 'Approved', state: 'approved' };
   }
-  if (s === 'pending' || s === 'in review' || s === 'submitted' || s === 'in progress') {
+  if (s === 'pending' || s === 'in review' || s === 'submitted' || s === 'in progress' || s === 'requested') {
     return { color: '#D97706', bg: '#FEF3C7', border: '#D97706', label: 'In Progress', state: 'pending' };
   }
-  return { color: '#6B7280', bg: '#F3F4F6', border: '#9CA3AF', label: 'Contact Office', state: 'other' };
+  // Denied, Carved out, Voided, Terminated, Rejected → Error (never show raw term to patient)
+  return { color: '#DC2626', bg: '#FEE2E2', border: '#DC2626', label: 'Error', state: 'error' };
 }
 
 function buildAuthsHome(auths) {
   if (!auths || auths.length === 0) {
-    return '<div style="font-size:13px;color:#6B7280;padding:4px 0;">No referrals or authorizations on file.</div>';
+    return '<div style="font-size:13px;color:#6B7280;padding:4px 0;" data-en="No referrals or authorizations on file." data-ko="등록된 의뢰 또는 승인 내역이 없습니다.">No referrals or authorizations on file.</div>';
   }
   return auths.slice(0,3).map(function(auth) {
-    var style = referralStatusStyle(auth.status);
-    var svc   = auth.service_type || auth.auth_type || 'Referral';
-    var ref   = auth.referring_provider ? 'Referred by ' + auth.referring_provider : '';
-    var subMsg = style.state === 'approved' ? 'Submitted & approved'
-               : style.state === 'pending'  ? 'Your care team is working on it'
-               : 'Please contact your doctor\'s office';
+    var style  = referralStatusStyle(auth.status);
+    var svc    = auth.service_type || auth.auth_type || 'Referral';
+    var subLine = '';
+    if (style.state === 'approved') {
+      var parts = [];
+      if (auth.approved_provider || auth.referring_provider) parts.push(auth.approved_provider || auth.referring_provider);
+      if (auth.expiration_date || auth.approved_date) {
+        var expDate = auth.expiration_date || auth.approved_date;
+        parts.push('Valid through ' + expDate.split('T')[0]);
+      }
+      subLine = parts.join(' · ') || 'Approved by your care team';
+    } else if (style.state === 'pending') {
+      subLine = 'Your care team is working on this';
+    } else {
+      subLine = 'Please contact your PCP\'s office for more details';
+    }
     return '<div class="card" style="margin-bottom:8px;padding:14px 16px;border-left:3px solid ' + style.border + ';">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-        '<div>' +
+        '<div style="flex:1;margin-right:10px;">' +
           '<div style="font-size:14px;font-weight:700;color:#111827;">' + svc + '</div>' +
-          '<div style="font-size:12px;color:#6B7280;margin-top:2px;">' + (ref || subMsg) + '</div>' +
+          '<div style="font-size:12px;color:#6B7280;margin-top:2px;">' + subLine + '</div>' +
         '</div>' +
-        '<span style="font-size:11px;font-weight:700;color:' + style.color + ';background:' + style.bg + ';padding:3px 9px;border-radius:20px;">' + style.label + '</span>' +
+        '<span style="font-size:11px;font-weight:700;color:' + style.color + ';background:' + style.bg + ';padding:3px 9px;border-radius:20px;white-space:nowrap;">' + style.label + '</span>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -2873,7 +2826,47 @@ function buildApptCards(pcp, auths) {
   return cards;
 }
 
-// ── After Visit Summaries for Records tab
+// ── Vitals for Records tab (blood pressure, weight, BMI from most recent visit note)
+function buildVitals(visitNotes) {
+  // Extract vitals from the most recent visit note that has them
+  var vit = null;
+  if (visitNotes && visitNotes.length > 0) {
+    vit = visitNotes.find(function(n) { return n.vitals || n.blood_pressure || n.weight || n.bmi; });
+  }
+
+  var rows = [];
+  if (vit) {
+    var bp  = vit.blood_pressure || (vit.vitals && vit.vitals.blood_pressure) || null;
+    var wt  = vit.weight         || (vit.vitals && vit.vitals.weight)         || null;
+    var bmi = vit.bmi            || (vit.vitals && vit.vitals.bmi)            || null;
+    var ht  = vit.height         || (vit.vitals && vit.vitals.height)         || null;
+    var dt  = vit.visit_date ? vit.visit_date.split('T')[0] : '';
+    var src = 'As of ' + dt;
+
+    if (bp)  rows.push({ icon: '❤️', label: 'Blood Pressure', value: bp,      sub: src });
+    if (wt)  rows.push({ icon: '⚖️', label: 'Weight',         value: wt,      sub: src });
+    if (bmi) rows.push({ icon: '📊', label: 'BMI',            value: bmi,     sub: src });
+    if (ht)  rows.push({ icon: '📏', label: 'Height',         value: ht,      sub: src });
+  }
+
+  if (rows.length === 0) {
+    return '<div style="font-size:13px;color:#6B7280;padding:8px 0;text-align:center;" data-en="Vitals will appear here after your next visit." data-ko="다음 진료 후 활력 징후가 표시됩니다.">Vitals will appear here after your next visit.</div>';
+  }
+
+  return rows.map(function(r, i) {
+    var border = i < rows.length - 1 ? 'border-bottom:1px solid #E5E7EB;' : '';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;' + border + '">' +
+      '<span style="font-size:18px;width:28px;text-align:center;">' + r.icon + '</span>' +
+      '<div style="flex:1;">' +
+        '<div style="font-size:13px;font-weight:700;color:#111827;">' + r.label + '</div>' +
+        '<div style="font-size:11px;color:#9CA3AF;margin-top:1px;">' + r.sub + '</div>' +
+      '</div>' +
+      '<div style="font-size:14px;font-weight:700;color:#1A6B5F;">' + r.value + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── After Visit Summaries for Records tab (internal/admin only — not exposed to patients)
 function buildVisitNotes(notes, pcp) {
   if (!notes || notes.length === 0) {
     return '<div style="text-align:center;color:#6B7280;font-size:13px;padding:16px 0;">No visit summaries on file.</div>';
@@ -3064,23 +3057,30 @@ function buildMedCards(meds, pcpName, pharmacy) {
 }
 
 // Patient plan tab auth cards (expandable)
+// Approved → show provider + expiration. Error (denied/carved out/etc.) → "Error" + contact PCP.
 function buildPatientAuthCards(auths) {
   if (!auths || auths.length === 0) {
-    return '<div style="font-size:13px;color:#6B7280;padding:8px 0 4px;">No referrals or authorizations on file.</div>';
+    return '<div style="font-size:13px;color:#6B7280;padding:8px 0 4px;" data-en="No referrals or authorizations on file." data-ko="등록된 의뢰 내역이 없습니다.">No referrals or authorizations on file.</div>';
   }
   return auths.slice(0,4).map(function(auth) {
     var style = referralStatusStyle(auth.status);
     var svc   = auth.service_type || auth.auth_type || 'Referral';
     var sub   = auth.requested_date ? 'Requested ' + auth.requested_date.split('T')[0] : '';
-    if (auth.referring_provider) sub += (sub ? ' · ' : '') + 'Dr. ' + auth.referring_provider;
     var msg, btn = '';
     if (style.state === 'approved') {
-      msg = '✓ Referral submitted & approved. Contact your doctor\'s office for next steps.';
+      var providerLine = auth.approved_provider || auth.referring_provider || '';
+      var expLine = auth.expiration_date ? 'Valid through ' + auth.expiration_date.split('T')[0]
+                 : auth.approved_date    ? 'Approved ' + auth.approved_date.split('T')[0] : '';
+      if (providerLine) sub = providerLine + (expLine ? ' · ' + expLine : '');
+      else if (expLine) sub = expLine;
+      msg = 'Your referral has been approved. Contact your doctor\'s office to schedule your appointment.';
     } else if (style.state === 'pending') {
       msg = 'Your care team is working on this. You can request a status update below.';
-      btn = '<button onclick="requestReferralUpdate(\'' + svc.replace(/'/g,"\\'") + '\')" style="margin-top:10px;background:#D97706;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;">' + tx('requestUpdateBtn') + '</button>';
+      btn = '<button onclick="requestReferralUpdate(\'' + svc.replace(/'/g,"\\'") + '\')" style="margin-top:10px;background:#D97706;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;" data-en="Request Update" data-ko="현황 확인 요청">Request Update</button>';
     } else {
-      msg = 'Please contact your doctor\'s office for information about this referral.';
+      // Error state — never show raw denial reason (Denied, Carved Out, etc.)
+      msg = 'There was an issue with this request. Please contact your PCP\'s office for more details: (562) 766-2000';
+      sub = '';
     }
     return '<div class="card" style="margin-bottom:10px;border-left:3px solid ' + style.border + ';padding:16px;">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
@@ -3228,25 +3228,36 @@ function requestReferralUpdate(svcName) {
 // Caregiver account pending auth cards (compact with expand)
 function buildCgAuthCards(auths) {
   if (!auths || auths.length === 0) {
-    return '<div style="font-size:13px;color:#6B7280;padding:8px 0 4px;">No pending authorizations.</div>';
+    return '<div style="font-size:13px;color:#6B7280;padding:8px 0 4px;" data-en="No referrals or authorizations on file." data-ko="등록된 의뢰 내역이 없습니다.">No referrals or authorizations on file.</div>';
   }
   return auths.slice(0,3).map(function(auth, i) {
-    var isPending = auth.status === 'Pending';
-    var svc = auth.service_type || auth.auth_type || 'Authorization';
-    var expId = 'cg-auth-dyn-' + i + '-exp';
-    return '<div class="card expand-trigger" style="display:flex;align-items:center;gap:12px;margin-bottom:8px;" onclick="toggleExpand(\'' + expId + '\')">' +
-      '<div class="ben-icon-box ' + (isPending ? 'amber' : '') + '" style="border-radius:10px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M3 11l9-9 9 9"/><line x1="12" y1="11" x2="12" y2="21"/><line x1="8" y1="16" x2="16" y2="16"/></svg></div>' +
+    var style  = referralStatusStyle(auth.status);
+    var svc    = auth.service_type || auth.auth_type || 'Authorization';
+    var expId  = 'cg-auth-dyn-' + i + '-exp';
+    var subLine = '';
+    if (style.state === 'approved') {
+      var parts = [];
+      if (auth.approved_provider || auth.referring_provider) parts.push(auth.approved_provider || auth.referring_provider);
+      if (auth.expiration_date || auth.approved_date) parts.push('Valid through ' + (auth.expiration_date || auth.approved_date).split('T')[0]);
+      subLine = parts.join(' · ') || 'Approved by care team';
+    } else if (style.state === 'pending') {
+      subLine = 'In review by care team';
+    } else {
+      subLine = 'Please contact PCP office for more details';
+    }
+    return '<div class="card expand-trigger" style="display:flex;align-items:center;gap:12px;margin-bottom:8px;border-left:3px solid ' + style.border + ';" onclick="toggleExpand(\'' + expId + '\')">' +
+      '<div class="ben-icon-box" style="border-radius:10px;flex-shrink:0;background:' + style.bg + ';"><svg viewBox="0 0 24 24" fill="none" stroke="' + style.color + '" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M3 11l9-9 9 9"/><line x1="12" y1="11" x2="12" y2="21"/><line x1="8" y1="16" x2="16" y2="16"/></svg></div>' +
       '<div style="flex:1;">' +
         '<div style="font-size:14px;font-weight:700;color:#111827;">' + svc + '</div>' +
-        '<div style="font-size:12px;color:#6B7280;">' + (isPending ? 'Authorization in review' : 'Authorization ' + auth.status) + '</div>' +
+        '<div style="font-size:12px;color:#6B7280;">' + subLine + '</div>' +
       '</div>' +
-      '<div style="font-size:11px;font-weight:700;color:' + (isPending ? '#D97706' : '#1A6B5F') + ';background:' + (isPending ? '#FEF3C7' : '#E8F4F2') + ';padding:4px 10px;border-radius:20px;">' + auth.status + '</div>' +
+      '<div style="font-size:11px;font-weight:700;color:' + style.color + ';background:' + style.bg + ';padding:4px 10px;border-radius:20px;white-space:nowrap;">' + style.label + '</div>' +
       '<div class="expand-chevron" id="' + expId + '-chev">›</div>' +
     '</div>' +
     '<div class="expand-body" id="' + expId + '" style="background:#fff;border-radius:12px;padding:12px 16px;margin-top:-4px;margin-bottom:12px;">' +
-      (auth.referring_provider ? '<div class="exp-row"><span class="exp-label">Ordered by</span><span class="exp-val">' + auth.referring_provider + '</span></div>' : '') +
+      (style.state === 'error' ? '<div class="exp-row"><span class="exp-label">Next step</span><span class="exp-val">Contact your PCP\'s office at (562) 766-2000 for more details.</span></div>'
+       : (auth.referring_provider ? '<div class="exp-row"><span class="exp-label">Provider</span><span class="exp-val">' + auth.referring_provider + '</span></div>' : '')) +
       (auth.requested_date ? '<div class="exp-row"><span class="exp-label">Requested</span><span class="exp-val">' + auth.requested_date.split('T')[0] + '</span></div>' : '') +
-      '<div class="exp-row"><span class="exp-label">Status</span><span class="exp-val">' + auth.status + '</span></div>' +
     '</div>';
   }).join('');
 }
@@ -3329,8 +3340,7 @@ function onConsentApproved(consent) {
       '<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.7px;margin-bottom:10px;" data-en="ACCESS GRANTED FOR" data-ko="공유 항목">ACCESS GRANTED FOR</div>'
       + pill('cgPermAppts', !!p.appointments)
       + pill('cgPermMeds',  !!p.medications)
-      + pill('cgPermLabs',  !!p.labResults)
-      + '<div style="border:none;">' + pill('cgPermNotes', !!p.visitNotes).replace('border-bottom:1px solid rgba(255,255,255,0.08);', '') + '</div>';
+      + '<div style="border:none;">' + pill('cgPermLabs',  !!p.labResults).replace('border-bottom:1px solid rgba(255,255,255,0.08);', '') + '</div>';
   }
 
   // Store permissions globally and navigate to app after a brief moment
