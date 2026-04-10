@@ -174,8 +174,9 @@ router.get('/:pid', (req, res) => {
   const pharmacy       = db.prepare('SELECT * FROM pharmacy_records WHERE patient_id = ? ORDER BY refill_due_date ASC').all(pid);
   const pcp            = db.prepare('SELECT * FROM pcp_providers WHERE patient_id = ? LIMIT 1').get(pid);
   const phRequests     = db.prepare('SELECT * FROM pharmacy_requests WHERE patient_id = ? ORDER BY requested_at DESC LIMIT 20').all(pid);
+  const visitNotes     = db.prepare('SELECT * FROM visit_notes WHERE patient_id = ? ORDER BY visit_date DESC').all(pid);
 
-  res.json({ patient, eligibility, claims, authorizations, labs, medications, pharmacy, pcp, pharmacyRequests: phRequests });
+  res.json({ patient, eligibility, claims, authorizations, labs, medications, pharmacy, pcp, pharmacyRequests: phRequests, visitNotes });
 });
 
 // ── PUT /api/patients/:pid  — update patient fields

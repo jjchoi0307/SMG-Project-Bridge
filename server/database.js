@@ -206,6 +206,40 @@ function initDb() {
       updated_at       TEXT DEFAULT (datetime('now'))
     );
 
+    -- Appointment requests (from patient portal)
+    CREATE TABLE IF NOT EXISTS appointment_requests (
+      id              TEXT PRIMARY KEY,
+      patient_id      TEXT,
+      patient_name    TEXT,
+      preferred_date  TEXT,
+      preferred_time  TEXT DEFAULT 'morning',
+      reason          TEXT,
+      status          TEXT DEFAULT 'pending',
+      scheduled_time  TEXT,
+      new_date        TEXT,
+      submitted_at    TEXT DEFAULT (datetime('now')),
+      confirmed_at    TEXT,
+      rescheduled_at  TEXT,
+      cancelled_at    TEXT,
+      confirmed_by    TEXT
+    );
+
+    -- Caregiver consent requests (from patient portal)
+    CREATE TABLE IF NOT EXISTS caregiver_consents (
+      id                 TEXT PRIMARY KEY,
+      patient_id         TEXT,
+      patient_name       TEXT,
+      caregiver_name     TEXT,
+      caregiver_phone    TEXT,
+      relationship       TEXT,
+      perms_appointments INTEGER DEFAULT 0,
+      perms_medications  INTEGER DEFAULT 0,
+      perms_lab_results  INTEGER DEFAULT 0,
+      status             TEXT DEFAULT 'pending',
+      submitted_at       TEXT DEFAULT (datetime('now')),
+      responded_at       TEXT
+    );
+
     -- Doctor/PCP visit notes (After Visit Summaries)
     CREATE TABLE IF NOT EXISTS visit_notes (
       id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -277,7 +311,12 @@ function initDb() {
     CREATE INDEX IF NOT EXISTS idx_pharmacy_refill    ON pharmacy_records(refill_due_date, status);
     CREATE INDEX IF NOT EXISTS idx_claims_status      ON claims(status);
     CREATE INDEX IF NOT EXISTS idx_auths_status       ON authorizations(status);
-    CREATE INDEX IF NOT EXISTS idx_patients_name      ON patients(last_name, first_name);
+    CREATE INDEX IF NOT EXISTS idx_patients_name        ON patients(last_name, first_name);
+    CREATE INDEX IF NOT EXISTS idx_appt_patient         ON appointment_requests(patient_id);
+    CREATE INDEX IF NOT EXISTS idx_appt_status          ON appointment_requests(status);
+    CREATE INDEX IF NOT EXISTS idx_appt_date            ON appointment_requests(preferred_date);
+    CREATE INDEX IF NOT EXISTS idx_consent_patient      ON caregiver_consents(patient_id);
+    CREATE INDEX IF NOT EXISTS idx_consent_status       ON caregiver_consents(status);
   `);
 
   // Migrations: add columns that may not exist in older DB files
@@ -308,7 +347,71 @@ function initDb() {
   console.log('[DB] Schema initialized');
 }
 
-module.exports = { db, initDb };
+// Seed demo appointment and consent data if tables are empty
+function seedDemoPortalData() {
+  const apptCount = db.prepare('SELECT COUNT(*) as cnt FROM appointment_requests').get().cnt;
+  if (apptCount > 0) return; // already seeded
+
+  function dOff(days) {
+    const dt = new Date(); dt.setDate(dt.getDate() + days);
+    return dt.toISOString().split('T')[0];
+  }
+  const now = new Date();
+  const d1 = new Date(now - 86400000), d2 = new Date(now - 172800000), d3 = new Date(now - 259200000);
+
+  const insertAppt = db.prepare(`
+    INSERT OR IGNORE INTO appointment_requests
+      (id, patient_id, patient_name, preferred_date, preferred_time, reason, status, scheduled_time, new_date, submitted_at, confirmed_at, rescheduled_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+  `);
+
+  const appts = [
+    ['appt_c1','SMG-0001234','','',          dOff(-3),'morning','Annual wellness exam',                        'confirmed','09:00',null,new Date(now-345600000).toISOString(),d3.toISOString(),null],
+    ['appt_c2','SMG-0003456','',             dOff(-3),'morning','Diabetes management — A1C results review',    'confirmed','10:30',null,new Date(now-432000000).toISOString(),d3.toISOString(),null],
+    ['appt_c3','SMG-0007890','',             dOff(-2),'morning','Blood pressure medication follow-up',         'confirmed','09:00',null,new Date(now-259200000).toISOString(),d2.toISOString(),null],
+    ['appt_c7','SMG-0009012','',             dOff(0), 'morning','Routine checkup and immunization',            'confirmed','09:00',null,d2.toISOString(),                   d1.toISOString(),null],
+    ['appt_c8','SMG-0010123','',             dOff(0), 'morning','Chest pain — non-emergency evaluation',       'confirmed','10:30',null,d2.toISOString(),                   d1.toISOString(),null],
+    ['appt_c10','SMG-0005678','',            dOff(1), 'morning','Follow-up after hospitalization',             'confirmed','09:00',null,d1.toISOString(),                   now.toISOString(),null],
+    ['appt_c11','SMG-0012345','',            dOff(1), 'morning','Hypertension management review',              'confirmed','11:30',null,d1.toISOString(),                   now.toISOString(),null],
+    ['appt_r1','SMG-0017890','',             dOff(-1),'morning','Physical therapy referral — knee',            'rescheduled','10:00',dOff(3),d2.toISOString(),null,d1.toISOString()],
+    ['appt_r2','SMG-0018901','',             dOff(1), 'morning','Diabetes check-up',                          'rescheduled','13:00',dOff(5),d1.toISOString(),null,now.toISOString()],
+    ['appt_p1','SMG-0001234','',             dOff(2), 'morning','Annual checkup and blood pressure follow-up', 'pending',null,null,now.toISOString(),null,null],
+    ['appt_p2','SMG-0013456','',             dOff(2), 'afternoon','Persistent headaches — neurological assessment','pending',null,null,d1.toISOString(),null,null],
+    ['appt_p3','SMG-0014567','',             dOff(3), 'morning','New patient general exam',                   'pending',null,null,now.toISOString(),null,null],
+    ['appt_p4','SMG-0006789','',             dOff(4), 'morning','새 환자 - 전반적인 건강 검진 (New patient general exam)','pending',null,null,d1.toISOString(),null,null],
+    ['appt_p5','SMG-0015678','',             dOff(5), 'afternoon','Thyroid function review — medication adjustment','pending',null,null,now.toISOString(),null,null],
+    ['appt_p6','SMG-0016789','',             dOff(6), 'evening','Physical therapy referral — lower back pain', 'pending',null,null,d1.toISOString(),null,null],
+  ];
+
+  for (const a of appts) {
+    try { insertAppt.run(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11]); } catch(_) {}
+  }
+
+  const consentCount = db.prepare('SELECT COUNT(*) as cnt FROM caregiver_consents').get().cnt;
+  if (consentCount > 0) return;
+
+  const insertConsent = db.prepare(`
+    INSERT OR IGNORE INTO caregiver_consents
+      (id, patient_id, patient_name, caregiver_name, caregiver_phone, relationship, perms_appointments, perms_medications, perms_lab_results, status, submitted_at, responded_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+  `);
+
+  const consents = [
+    ['consent_d1','SMG-0001234','박순자 (Sonja Park)',  '박민준 (Min Park)',      '(213) 555-0142','Son',           1,1,1,'pending', now.toISOString(),null],
+    ['consent_d2','SMG-0002345','김영희 (Young Kim)',   '김지수 (Jisoo Kim)',     '(310) 555-0287','Daughter',      1,0,0,'pending', d1.toISOString(), null],
+    ['consent_d3','SMG-0003456','이철수 (Chul Lee)',    '이서연 (Seoyeon Lee)',   '(714) 555-0391','Daughter-in-law',1,1,1,'approved',d2.toISOString(),d1.toISOString()],
+    ['consent_d4','SMG-0004567','최명자 (Myungja Choi)','최동현 (Donghyun Choi)','(626) 555-0489','Son',           1,1,0,'declined',d3.toISOString(),d2.toISOString()],
+    ['consent_d5','SMG-0005678','정혜숙 (Hyesuk Jung)', '정수아 (Sua Jung)',      '(909) 555-0531','Granddaughter', 1,1,1,'pending', now.toISOString(),null],
+  ];
+
+  for (const c of consents) {
+    try { insertConsent.run(...c); } catch(_) {}
+  }
+
+  console.log('[DB] Portal demo data seeded (appointments + caregiver consents)');
+}
+
+module.exports = { db, initDb, seedDemoPortalData };
 
 // Re-export seedUsers lazily to avoid circular dependency (auth.js imports db)
 function getSeedUsers() { return require('./utils/auth').seedUsers; }

@@ -1883,26 +1883,36 @@ async function openCgGreeting() {
     document.getElementById('cg-greeting-success').style.display = 'block';
     document.getElementById('cg-greeting-cta').style.display     = 'inline-block';
 
-    // Save consent request to localStorage and route to pending screen
-    var cgConsentKey = 'bridge_caregiver_consents';
-    var cgConsents   = JSON.parse(localStorage.getItem(cgConsentKey) || '[]');
+    // Submit consent request to server (with localStorage fallback)
     var cgPhone = (document.getElementById('cg-phone') || {}).value || '';
     var cgRel   = (document.getElementById('cg-rel')   || {}).value || '';
-    var newConsentId = 'consent-' + Date.now();
-    window._pendingConsentId = newConsentId;  // store for polling
-    cgConsents.push({
-      id: newConsentId,
-      caregiverName: fname,
-      caregiverPhone: cgPhone,
-      relationship: cgRel,
-      patientId: p.id || p.member_id || p.patient_id || mid,
-      patientName: ptFirst + ' ' + ptLast,
-      status: 'pending',
-      permissions: { appointments: true, medications: true, labResults: false, visitNotes: false },
-      requestedAt: new Date().toISOString(),
-      respondedAt: null
-    });
-    localStorage.setItem(cgConsentKey, JSON.stringify(cgConsents));
+    var consentPatientId = p.id || p.member_id || p.patient_id || mid;
+    window._pendingConsentId = null;
+    try {
+      var consentResp = await fetch(BRIDGE_API + '/patient-portal/consents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId: consentPatientId, patientName: ptFirst + ' ' + ptLast,
+          caregiverName: fname, caregiverPhone: cgPhone, relationship: cgRel,
+          permissions: { appointments: true, medications: true, labResults: false }
+        })
+      });
+      if (consentResp.ok) {
+        var consentData = await consentResp.json();
+        window._pendingConsentId = consentData.id;
+      } else { throw new Error('server error'); }
+    } catch(e) {
+      // Fallback: localStorage
+      var cgConsents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
+      var newConsentId = 'consent-' + Date.now();
+      window._pendingConsentId = newConsentId;
+      cgConsents.push({ id: newConsentId, caregiverName: fname, caregiverPhone: cgPhone, relationship: cgRel,
+        patientId: consentPatientId, patientName: ptFirst + ' ' + ptLast, status: 'pending',
+        permissions: { appointments: true, medications: true, labResults: false, visitNotes: false },
+        requestedAt: new Date().toISOString(), respondedAt: null });
+      localStorage.setItem('bridge_caregiver_consents', JSON.stringify(cgConsents));
+    }
 
     // Route to verification-pending screen, then begin live approval polling
     setTimeout(function() {
@@ -2528,7 +2538,8 @@ async function autoLaunchFromAdmin(pid, role) {
 function populatePatientPhones(p, elig, pcp, meds, auths, labs, pharmacy, visitNotes) {
   visitNotes = visitNotes || [];
   window._bridgePcp = pcp || null;  // stored globally for call helper buttons
-  window._bridgePatientId = p.id || p.member_id || p.patient_id || null;  // stored for appointment requests
+  window._bridgePatientId   = p.id || p.member_id || p.patient_id || null;  // stored for appointment requests
+  window._bridgePatientName = ((p.first_name || '') + ' ' + (p.last_name || '')).trim() || '';
   var first    = p.first_name || 'Member';
   var pcpName  = (pcp && pcp.provider_name) || 'Your Doctor';
   var pcpPrac  = (pcp && pcp.practice_name) || 'SMG';
@@ -3099,24 +3110,26 @@ function toggleApptRequestForm() {
   if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
-function submitApptRequest() {
+async function submitApptRequest() {
   var date   = (document.getElementById('appt-req-date')   || {}).value || '';
   var time   = (document.getElementById('appt-req-time')   || {}).value || 'morning';
   var reason = (document.getElementById('appt-req-reason') || {}).value || '';
   if (!date) { showToast('Please select a preferred date.'); return; }
-  var key      = 'bridge_appt_requests';
-  var existing = JSON.parse(localStorage.getItem(key) || '[]');
-  existing.push({
-    id: 'req-' + Date.now(),
-    patientId: window._bridgePatientId || 'unknown',
-    date: date,
-    time: time,
-    reason: reason || 'General visit',
-    status: 'pending',
-    submittedAt: new Date().toISOString()
-  });
-  localStorage.setItem(key, JSON.stringify(existing));
-  // Reset + hide form
+  var patId  = window._bridgePatientId  || 'unknown';
+  var patName = window._bridgePatientName || '';
+  try {
+    var r = await fetch(BRIDGE_API + '/patient-portal/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patientId: patId, patientName: patName, date: date, time: time, reason: reason || 'General visit' })
+    });
+    if (!r.ok) throw new Error('server error');
+  } catch(e) {
+    // Fallback: store locally if server unreachable
+    var existing = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    existing.push({ id: 'req-' + Date.now(), patientId: patId, date: date, time: time, reason: reason || 'General visit', status: 'pending', submittedAt: new Date().toISOString() });
+    localStorage.setItem('bridge_appt_requests', JSON.stringify(existing));
+  }
   if (document.getElementById('appt-req-date'))   document.getElementById('appt-req-date').value   = '';
   if (document.getElementById('appt-req-reason')) document.getElementById('appt-req-reason').value = '';
   var form = document.getElementById('pt-appt-request-form');
@@ -3133,14 +3146,26 @@ function fmtTime12Pt(t) {
   return h + ':' + m + ' ' + ap;
 }
 
-function loadPendingApptRequests() {
+async function loadPendingApptRequests() {
   var pendingEl = document.getElementById('pt-pending-appt-requests');
   var apptsEl   = document.getElementById('pt-appts-list');
   if (!pendingEl) return;
 
-  var reqs  = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
   var patId = window._bridgePatientId || 'unknown';
-  var mine  = reqs.filter(function(r) { return r.patientId === patId; });
+  var mine  = [];
+  try {
+    var r = await fetch(BRIDGE_API + '/patient-portal/appointments?patientId=' + encodeURIComponent(patId));
+    if (r.ok) {
+      var data = await r.json();
+      mine = (data.appointments || []).map(function(a) {
+        return { id: a.id, patientId: a.patient_id, date: a.preferred_date, time: a.preferred_time,
+                 reason: a.reason, status: a.status, scheduledTime: a.scheduled_time, newDate: a.new_date, submittedAt: a.submitted_at };
+      });
+    } else { throw new Error('fallback'); }
+  } catch(e) {
+    var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    mine = reqs.filter(function(x) { return x.patientId === patId; });
+  }
 
   // Confirmed/rescheduled with a scheduled time → real appointment cards
   var confirmed = mine.filter(function(r) {
@@ -3272,15 +3297,24 @@ var _apptPollTimer = null;
 function startApptRequestPolling() {
   stopApptRequestPolling();
   var attempts = 0;
-  _apptPollTimer = setInterval(function() {
+  _apptPollTimer = setInterval(async function() {
     attempts++;
-    loadPendingApptRequests();
-    // Stop once no pending requests remain, or after 10 minutes (120 × 5s)
-    var reqs  = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    await loadPendingApptRequests();
+    // Check if any are still pending (fetch from API result is now in rendered DOM state)
     var patId = window._bridgePatientId || 'unknown';
-    var mine  = reqs.filter(function(r) { return r.patientId === patId; });
-    var anyPending = mine.some(function(r) { return r.status === 'pending'; });
-    if (!anyPending || attempts > 120) stopApptRequestPolling();
+    try {
+      var r = await fetch(BRIDGE_API + '/patient-portal/appointments?patientId=' + encodeURIComponent(patId));
+      if (r.ok) {
+        var data = await r.json();
+        var anyPending = (data.appointments || []).some(function(a) { return a.status === 'pending'; });
+        if (!anyPending || attempts > 120) stopApptRequestPolling();
+      } else if (attempts > 120) stopApptRequestPolling();
+    } catch(e) {
+      // Fallback check
+      var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+      var mine = reqs.filter(function(x) { return x.patientId === patId; });
+      if (!mine.some(function(x) { return x.status === 'pending'; }) || attempts > 120) stopApptRequestPolling();
+    }
   }, 5000);
 }
 
@@ -3298,18 +3332,23 @@ var _consentPollTimer = null;
 
 function startConsentPolling() {
   stopConsentPolling();
-  _consentPollTimer = setInterval(function() {
+  _consentPollTimer = setInterval(async function() {
     if (!window._pendingConsentId) return;
+    try {
+      var r = await fetch(BRIDGE_API + '/patient-portal/consents/' + encodeURIComponent(window._pendingConsentId));
+      if (r.ok) {
+        var c = await r.json();
+        if (c.status === 'approved') { stopConsentPolling(); onConsentApproved(c); }
+        else if (c.status === 'declined') { stopConsentPolling(); onConsentDeclined(); }
+        return;
+      }
+    } catch(e) {}
+    // Fallback to localStorage if API unavailable
     var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
     var c = consents.find(function(x) { return x.id === window._pendingConsentId; });
     if (!c) return;
-    if (c.status === 'approved') {
-      stopConsentPolling();
-      onConsentApproved(c);
-    } else if (c.status === 'declined') {
-      stopConsentPolling();
-      onConsentDeclined();
-    }
+    if (c.status === 'approved') { stopConsentPolling(); onConsentApproved(c); }
+    else if (c.status === 'declined') { stopConsentPolling(); onConsentDeclined(); }
   }, 3000);
 }
 

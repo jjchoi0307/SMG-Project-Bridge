@@ -996,24 +996,31 @@ async function loadDashboard() {
   document.getElementById('nav-claims-badge').textContent = stats.pendingClaims;
   document.getElementById('nav-auths-badge').textContent = stats.pendingAuths;
 
-  // Patient Portal Activity (localStorage-based — no API needed)
-  const apptReqs       = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
-  const pendingAppts   = apptReqs.filter(r => r.status === 'pending').length;
+  // Patient Portal Activity — load from API
+  const [aData, cData] = await Promise.all([
+    api('/appointments').catch(() => null),
+    api('/consents').catch(() => null)
+  ]);
+  const apptReqs       = aData ? aData.appointments : JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+  const pendingAppts   = (aData ? aData.pendingCount : apptReqs.filter(r => r.status === 'pending').length);
   const confirmedAppts = apptReqs.filter(r => r.status === 'confirmed').length;
   const elPA = document.getElementById('ds-portal-appts');
   const elPAd = document.getElementById('ds-portal-appts-d');
   if (elPA) elPA.textContent = pendingAppts;
   if (elPAd) elPAd.textContent = confirmedAppts + ' confirmed · ' + apptReqs.length + ' total';
 
-  const consents        = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
-  const pendingConsents = consents.filter(c => c.status === 'pending').length;
+  const consents        = cData ? cData.consents : JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
+  const pendingConsents = cData ? cData.pendingCount : consents.filter(c => c.status === 'pending').length;
   const approvedConsents= consents.filter(c => c.status === 'approved').length;
   const elPC = document.getElementById('ds-portal-consents');
   const elPCd = document.getElementById('ds-portal-consents-d');
   if (elPC) elPC.textContent = pendingConsents;
   if (elPCd) elPCd.textContent = approvedConsents + ' approved · ' + consents.length + ' total';
 
-  updatePortalBadges();
+  // Sync caches with fresh API data
+  if (aData) localStorage.setItem('bridge_appt_requests', JSON.stringify(aData.appointments));
+  if (cData) localStorage.setItem('bridge_caregiver_consents', JSON.stringify(cData.consents));
+  updatePortalBadgesLocal();
 
   // Recent files
   const files = await api('/upload/files');
@@ -1721,17 +1728,35 @@ async function loadPharmacy() {
 //  Patient Portal — Schedule, Appt Queue, Consents
 // ══════════════════════════════════════════════════════════════
 
-function updatePortalBadges() {
+// ── Sync server data into localStorage cache ──────────────────
+async function syncPortalCaches() {
+  try {
+    var [aData, cData] = await Promise.all([api('/appointments'), api('/consents')]);
+    if (aData && aData.appointments) {
+      localStorage.setItem('bridge_appt_requests', JSON.stringify(aData.appointments));
+    }
+    if (cData && cData.consents) {
+      localStorage.setItem('bridge_caregiver_consents', JSON.stringify(cData.consents));
+    }
+  } catch(e) {}
+  updatePortalBadgesLocal();
+}
+
+function updatePortalBadgesLocal() {
   var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
   var pendingAppts = reqs.filter(function(r) { return r.status === 'pending'; }).length;
   var navAppt = document.getElementById('nav-appt-badge');
   if (navAppt) { navAppt.textContent = pendingAppts || ''; navAppt.style.display = pendingAppts ? 'inline-flex' : 'none'; }
-
   var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
   var pendingConsents = consents.filter(function(c) { return c.status === 'pending'; }).length;
   var navConsent = document.getElementById('nav-consent-badge');
   if (navConsent) { navConsent.textContent = pendingConsents || ''; navConsent.style.display = pendingConsents ? 'inline-flex' : 'none'; }
 }
+
+async function updatePortalBadges() { await syncPortalCaches(); }
+
+// Auto-refresh badges every 30 seconds
+setInterval(function() { updatePortalBadgesLocal(); }, 30000);
 
 // — Today's Schedule —
 var scheduleProviderFilter = '';
@@ -1835,9 +1860,8 @@ var calYear = new Date().getFullYear();
 var calMonth = new Date().getMonth();
 var calSelectedDate = new Date().toISOString().split('T')[0];
 
-function loadApptCalendar() {
-  updatePortalBadges();
-  initDemoDataIfEmpty();
+async function loadApptCalendar() {
+  await syncPortalCaches();
   calYear = new Date().getFullYear();
   calMonth = new Date().getMonth();
   calSelectedDate = new Date().toISOString().split('T')[0];
@@ -1999,17 +2023,20 @@ function calFmt12(t) {
   return h + ':' + m + ' ' + ampm;
 }
 
-function calConfirmAppt(id) {
-  var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
-  var r = reqs.find(function(x) { return x.id === id; });
-  if (!r) return;
+async function calConfirmAppt(id) {
   var sel = document.getElementById('time-sel-' + id);
-  r.status = 'confirmed';
-  r.scheduledTime = sel ? sel.value : '09:00';
-  r.confirmedAt = new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
-  toast('Appointment confirmed for ' + calFmt12(r.scheduledTime), 'success');
-  updatePortalBadges();
+  var time = sel ? sel.value : '09:00';
+  try {
+    await api('/appointments/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify({ status: 'confirmed', scheduledTime: time }) });
+  } catch(e) {
+    // Fallback: update localStorage directly
+    var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    var r = reqs.find(function(x) { return x.id === id; });
+    if (r) { r.status = 'confirmed'; r.scheduledTime = time; r.confirmedAt = new Date().toISOString(); }
+    localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
+  }
+  toast('Appointment confirmed for ' + calFmt12(time), 'success');
+  await syncPortalCaches();
   renderCalendar();
   renderDayDetail(calSelectedDate);
   renderPendingList();
@@ -2020,34 +2047,37 @@ function calShowReschedule(id) {
   if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
-function calSaveReschedule(id) {
-  var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
-  var r = reqs.find(function(x) { return x.id === id; });
-  if (!r) return;
+async function calSaveReschedule(id) {
   var newDate = document.getElementById('new-date-' + id);
   var newTime = document.getElementById('new-time-' + id);
   if (!newDate || !newDate.value) { toast('Please select a new date', 'error'); return; }
-  r.status = 'rescheduled';
-  r.newDate = newDate.value;
-  r.scheduledTime = newTime ? newTime.value : '09:00';
-  r.rescheduledAt = new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
-  toast('Appointment rescheduled to ' + r.newDate, 'info');
-  updatePortalBadges();
+  var nd = newDate.value, nt = newTime ? newTime.value : '09:00';
+  try {
+    await api('/appointments/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify({ status: 'rescheduled', newDate: nd, scheduledTime: nt }) });
+  } catch(e) {
+    var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    var r = reqs.find(function(x) { return x.id === id; });
+    if (r) { r.status = 'rescheduled'; r.newDate = nd; r.scheduledTime = nt; r.rescheduledAt = new Date().toISOString(); }
+    localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
+  }
+  toast('Appointment rescheduled to ' + nd, 'info');
+  await syncPortalCaches();
   renderCalendar();
   renderDayDetail(calSelectedDate);
   renderPendingList();
 }
 
-function calCancelAppt(id) {
-  var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
-  var r = reqs.find(function(x) { return x.id === id; });
-  if (!r) return;
-  r.status = 'cancelled';
-  r.cancelledAt = new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
+async function calCancelAppt(id) {
+  try {
+    await api('/appointments/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify({ status: 'cancelled' }) });
+  } catch(e) {
+    var reqs = JSON.parse(localStorage.getItem('bridge_appt_requests') || '[]');
+    var r = reqs.find(function(x) { return x.id === id; });
+    if (r) { r.status = 'cancelled'; r.cancelledAt = new Date().toISOString(); }
+    localStorage.setItem('bridge_appt_requests', JSON.stringify(reqs));
+  }
   toast('Appointment cancelled', 'info');
-  updatePortalBadges();
+  await syncPortalCaches();
   renderCalendar();
   renderDayDetail(calSelectedDate);
   renderPendingList();
@@ -2056,19 +2086,28 @@ function calCancelAppt(id) {
 // — Caregiver Consents —
 var consentFilter = 'all';
 
-function loadConsents() {
-  updatePortalBadges();
-  var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
+async function loadConsents() {
   var search = ((document.getElementById('consent-search') || {}).value || '').toLowerCase().trim();
+  var params = consentFilter !== 'all' ? '?status=' + encodeURIComponent(consentFilter) : '';
+  if (search) params += (params ? '&' : '?') + 'search=' + encodeURIComponent(search);
+  try {
+    var data = await api('/consents' + params);
+    if (data) {
+      // Keep localStorage in sync
+      if (!search && consentFilter === 'all') localStorage.setItem('bridge_caregiver_consents', JSON.stringify(data.consents));
+      renderConsentsTable(data.consents, data.total);
+      updatePortalBadgesLocal();
+      return;
+    }
+  } catch(e) {}
+  // Fallback to localStorage
+  var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
   var filtered = consents.filter(function(c) {
-    var matchFilter = consentFilter === 'all' || c.status === consentFilter;
-    var matchSearch = !search
-      || (c.patientName || '').toLowerCase().includes(search)
-      || (c.caregiverName || '').toLowerCase().includes(search)
-      || (c.patientId || '').toLowerCase().includes(search);
-    return matchFilter && matchSearch;
+    return (consentFilter === 'all' || c.status === consentFilter) &&
+      (!search || (c.patientName||'').toLowerCase().includes(search) || (c.caregiverName||'').toLowerCase().includes(search) || (c.patientId||'').toLowerCase().includes(search));
   });
   renderConsentsTable(filtered, consents.length);
+  updatePortalBadgesLocal();
 }
 
 function filterConsents(el, filter) {
@@ -2124,15 +2163,17 @@ function renderConsentsTable(rows, total) {
   `;
 }
 
-function updateConsent(id, status) {
-  var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
-  var c = consents.find(function(x) { return x.id === id; });
-  if (!c) return;
-  c.status = status; c.respondedAt = new Date().toISOString();
-  localStorage.setItem('bridge_caregiver_consents', JSON.stringify(consents));
+async function updateConsent(id, status) {
+  try {
+    await api('/consents/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify({ status }) });
+  } catch(e) {
+    var consents = JSON.parse(localStorage.getItem('bridge_caregiver_consents') || '[]');
+    var c = consents.find(function(x) { return x.id === id; });
+    if (c) { c.status = status; c.respondedAt = new Date().toISOString(); }
+    localStorage.setItem('bridge_caregiver_consents', JSON.stringify(consents));
+  }
   toast(status === 'approved' ? 'Caregiver access approved' : 'Caregiver access declined', status === 'approved' ? 'success' : 'error');
-  loadConsents();
-  updatePortalBadges();
+  await loadConsents();
 }
 
 // — Referral Coordinator Checkoff —

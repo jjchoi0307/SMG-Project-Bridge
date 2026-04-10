@@ -15,7 +15,9 @@ SMG Bridge solves a core problem in managed care: patient data lives in three se
 - Audit trail on all write operations
 - CSV exports for all data types
 - Prior auth, claims, lab result, and pharmacy refill tracking
-- Appointment calendar — 2-panel month view connecting confirmed appointments with pending requests; doctors and admins can confirm, reschedule, or cancel inline
+- Appointment calendar — 2-panel month view connecting confirmed appointments with pending requests; doctors and admins can confirm, reschedule, or cancel inline; backed by server-side SQLite for cross-device consistency
+- Server-persisted caregiver consent requests — patients submit from the mobile app; doctors and admins approve or decline from their portals; changes reflect immediately across all sessions
+- Care Gaps tab in the doctor patient drawer — auto-computed per patient from pending/denied authorizations, critical/elevated labs, annual wellness visit history, and expired authorizations
 - Patient-facing mobile app with caregiver view, dynamic after-visit summaries, and live appointment confirmation feedback
 
 ---
@@ -151,7 +153,11 @@ The appointment calendar replaces the old flat request queue. It provides a 2-pa
 - **Left panel** — mini monthly grid with color-coded dot indicators per day (green = confirmed, amber = pending, purple = rescheduled) and a scrollable list of all pending requests sorted by date
 - **Right panel** — day detail showing time-sorted confirmed appointments, pending request cards with inline time-selector and confirm / reschedule / cancel actions, and rescheduled entries with their original date
 
-Appointment data is shared with the doctor portal and patient app through `localStorage` (`bridge_appt_requests`). When a request is confirmed with a scheduled time, it flows back to the patient's "Upcoming Visits" view automatically.
+Appointment requests are stored server-side in the `appointment_requests` table. Patients submit requests from the mobile app via `POST /api/patient-portal/appointments`; admin and doctor portals confirm/reschedule/cancel via `PUT /api/appointments/:id`. localStorage acts as a client-side cache synced from the server — all portals share the same live data regardless of device or browser.
+
+### Caregiver Consents
+
+Patients grant caregivers access from the mobile app consent flow. Consent requests land in the `caregiver_consents` table (`POST /api/patient-portal/consents`) and appear in both the admin and doctor portals for review. Approve or decline inline; the patient app polls for the decision and unlocks the caregiver account when approved. Permissions are granular: appointments, medications, and lab results can be toggled independently. Visit notes and benefits details are never accessible to caregivers regardless of consent state.
 
 ---
 
@@ -168,7 +174,20 @@ Appointment data is shared with the doctor portal and patient app through `local
 | Clinical | Lab Results, Today's Schedule |
 | Patient Portal | **Appointment Calendar**, Caregiver Consents, Launch Bridge App |
 
-All data queries are scoped to the doctor's NPI via `pcp_providers` JOINs. The appointment calendar and caregiver consent sections share the same `localStorage` keys as the admin portal, so confirmations made in either portal are visible in both.
+All data queries are scoped to the doctor's NPI via `pcp_providers` JOINs. Appointment and consent data is server-persisted and synced in real time — changes made in the doctor portal are immediately visible in the admin portal and patient app.
+
+### Care Gaps
+
+The patient drawer in the doctor portal includes a **Care Gaps** tab. When a patient record is opened, the tab is auto-populated by analyzing:
+
+- **Pending authorizations** — any auth with status `Pending` or `In Review`, with a note to follow up if >5 business days
+- **Denied authorizations** — flags for appeal or alternative plan
+- **Critical lab results** — flag = `Critical`, requires immediate attention
+- **Elevated lab results** — flag = `High`, above reference range
+- **Annual wellness visit** — checks `visit_notes` for a visit of type `Annual Wellness`; flags if missing or >12 months ago
+- **Expired authorizations** — auth status `Expired`, may need re-authorization
+
+Each gap is color-coded: red border for critical severity, amber for high. If no gaps are found, the tab shows a green confirmation message.
 
 **Demo NPIs:**
 
@@ -248,7 +267,8 @@ SMG - Project Bridge/
 │   ├── seed-visit-notes.js       # Seeds visit notes for all patients (run once)
 │   ├── routes/
 │   │   ├── auth.js               # Login, logout, session management
-│   │   ├── patientPortal.js      # Public patient lookup — no auth required
+│   │   ├── patientPortal.js      # Public patient lookup + appointment/consent submission (no auth)
+│   │   ├── portalAdmin.js        # Protected CRUD for appointments and caregiver consents
 │   │   ├── patients.js           # Patient CRUD, search, KPIs, population intel
 │   │   ├── mso.js                # Eligibility, claims, prior authorizations
 │   │   ├── pcp.js                # Provider panels, labs, medications, pharmacy, panel-meds
@@ -283,8 +303,9 @@ Authentication is **disabled by default**. All endpoints are open in demo mode. 
 | Module | Base path | Key endpoints |
 |---|---|---|
 | Auth | `/api/auth` | `POST /login`, `POST /logout`, `GET /me` |
-| Patient Portal | `/api/patient-portal` | `GET /lookup/:id` — public, no auth |
-| Patients | `/api/patients` | list, get, update, `/stats`, `/intel` |
+| Patient Portal | `/api/patient-portal` | `GET /lookup/:id`, `POST /appointments`, `GET /appointments?patientId=`, `POST /consents`, `GET /consents/:id` — all public, no auth |
+| Portal Admin | `/api/appointments`, `/api/consents` | `GET /appointments`, `PUT /appointments/:id`, `GET /consents`, `PUT /consents/:id` — protected |
+| Patients | `/api/patients` | list, get (includes `visitNotes`), update, `/stats`, `/intel` |
 | MSO | `/api/mso` | eligibility (`?npi=`), claims (`?npi=`), prior auths, payer summary |
 | PCP | `/api/pcp` | panel (`?npi=`), panel/stats, labs, medications, pharmacy (`?npi=`), panel-meds (`?npi=`) |
 | Pharmacy | `/api/pharmacy` | refills due, requests, real-time broadcast |
@@ -304,22 +325,25 @@ GET /api/pcp/pharmacy?npi=4455667788
 GET /api/pcp/panel-meds?npi=4455667788
 ```
 
-### Public Patient Lookup
+### Public Patient Endpoints
+
+All `/api/patient-portal/*` routes are public — no auth token required.
 
 ```
-GET /api/patient-portal/lookup/:id
+GET  /api/patient-portal/lookup/:id           # patient demographics, eligibility, meds, labs, auths, visit notes
+POST /api/patient-portal/appointments         # patient submits appointment request
+GET  /api/patient-portal/appointments?patientId=  # patient polls their request list
+POST /api/patient-portal/consents             # caregiver submits consent request
+GET  /api/patient-portal/consents/:id         # caregiver polls consent decision
 ```
 
-Accepts an SMG patient ID (`SMG-XXXXXXX`) or an insurance member ID. Returns:
-- Patient demographics
-- Eligibility / insurance plan
-- PCP provider
-- Active medications + pharmacy records
-- Authorizations
-- Lab results
-- Visit notes (after visit summaries)
+`GET /lookup/:id` accepts an SMG patient ID (`SMG-XXXXXXX`) or an insurance member ID.
 
-No authentication token required.
+`POST /appointments` body: `{ patientId, patientName, preferredDate, preferredTime, reason }`
+
+`POST /consents` body: `{ patientId, patientName, caregiverName, caregiverPhone, relationship, permsAppointments, permsMedications, permsLabResults }`
+
+`GET /consents/:id` returns `{ id, status, permissions: { appointments, medications, labResults, visitNotes } }` — the patient app polls this until `status` changes from `pending`.
 
 ---
 
@@ -390,7 +414,7 @@ The seed process loads ~10,000 synthetic patients from `dummy-data/*.xlsx`. `see
 - **No build step** for the frontend — edit `.html` files in `client/` directly
 - **Schema auto-migrates** on every server startup — `server/database.js` handles missing columns from older versions, including the `visit_notes` table
 - **Drop-and-import** — drop any `.xlsx` file into `/uploads/` and Chokidar picks it up automatically
-- **Appointment data** — shared between portals via `localStorage` keys `bridge_appt_requests` and `bridge_caregiver_consents`. No server persistence required for demo; a real deployment would store these server-side.
+- **Appointment and consent data** — persisted server-side in `appointment_requests` and `caregiver_consents` SQLite tables. localStorage serves as a read-through cache (`syncPortalCaches()` hydrates it from the API on every calendar/consent load). All portals write through the API so data is consistent across devices and browsers.
 - **SSE streams:**
   - `/api/upload/events` — real-time upload progress and completion events
   - Pharmacy route broadcasts refill request status updates

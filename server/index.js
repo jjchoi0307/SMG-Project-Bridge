@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { initDb, seedUsers } = require('./database');
+const { initDb, seedUsers, seedDemoPortalData } = require('./database');
 const { startWatcher } = require('./utils/watcher');
 const { auditMiddleware } = require('./utils/audit');
 const { requireAuth } = require('./middleware/requireAuth');
@@ -35,6 +35,7 @@ app.use('/api/mso',      require('./routes/mso'));
 app.use('/api/pharmacy', require('./routes/pharmacy'));
 app.use('/api/pcp',      require('./routes/pcp'));
 app.use('/api/export',   require('./routes/export'));
+app.use('/api',          require('./routes/portalAdmin'));
 
 // ── Health check
 app.get('/api/health', (req, res) => {
@@ -49,6 +50,7 @@ app.get('*', (req, res) => {
 // ── Boot
 initDb();
 seedUsers();
+seedDemoPortalData();
 startWatcher(UPLOADS_DIR);
 
 app.listen(PORT, () => {

@@ -452,6 +452,7 @@
   <div style="padding:0 24px;border-bottom:1px solid #1C2F47;">
     <div class="flex gap-1 flex-wrap">
       <div class="d-tab active px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'overview')">Overview</div>
+      <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'caregaps')" style="color:#F59E0B;" id="caregaps-tab">Care Gaps</div>
       <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'labs')">Lab Results</div>
       <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'auths')">Authorizations</div>
       <div class="d-tab px-3.5 py-2 text-[12px] font-semibold cursor-pointer text-smg-text-sec border-b-2 border-transparent transition-all whitespace-nowrap" onclick="switchDTab(this,'medications')">Medications</div>
@@ -460,6 +461,7 @@
   </div>
   <div class="flex-1 p-6">
     <div class="d-pane active" id="dpane-overview"><div class="grid grid-cols-2 gap-x-8 gap-y-5" id="drawerOverview"></div></div>
+    <div class="d-pane" id="dpane-caregaps"><div id="drawerCareGaps"><div class="empty-state"><div class="empty-text">Loading care gaps…</div></div></div></div>
     <div class="d-pane" id="dpane-labs"><div id="drawerLabs"><div class="empty-state"><div class="empty-text">No labs on record</div></div></div></div>
     <div class="d-pane" id="dpane-auths"><div id="drawerAuths"><div class="empty-state"><div class="empty-text">No authorizations on record</div></div></div></div>
     <div class="d-pane" id="dpane-medications"><div id="drawerMeds"><div class="empty-state"><div class="empty-text">No medications on record</div></div></div></div>
@@ -487,8 +489,13 @@ const PAGE_TITLES={
   apptQueue:'Appointment Calendar', consents:'Caregiver Consents', launch:'Launch Bridge App',
 };
 
-async function api(path) {
-  try { const r=await fetch(API+path); if(!r.ok) return null; return await r.json(); } catch{ return null; }
+async function api(path, opts={}) {
+  try {
+    const token=localStorage.getItem('bridge_token');
+    const headers={'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})};
+    const r=await fetch(API+path,{headers,...opts});
+    if(!r.ok) return null; return await r.json();
+  } catch{ return null; }
 }
 
 // ── Login / Logout ──
@@ -827,20 +834,31 @@ async function loadMedications(page) {
 }
 
 // ── Appointment Requests (localStorage) ──
-function updatePortalBadges() {
+async function syncPortalCaches() {
+  try {
+    const [aData,cData]=await Promise.all([api('/appointments'),api('/consents')]);
+    if(aData&&aData.appointments) localStorage.setItem('bridge_appt_requests',JSON.stringify(aData.appointments));
+    if(cData&&cData.consents) localStorage.setItem('bridge_caregiver_consents',JSON.stringify(cData.consents));
+  } catch(e){}
+  updatePortalBadgesLocal();
+}
+function updatePortalBadgesLocal() {
   const appts=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
   const consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
-  document.getElementById('nav-appt-badge').textContent=appts.filter(r=>r.status==='pending').length;
-  document.getElementById('nav-consent-badge').textContent=consents.filter(c=>c.status==='pending').length;
+  const ab=document.getElementById('nav-appt-badge'),cb=document.getElementById('nav-consent-badge');
+  const pa=appts.filter(r=>r.status==='pending').length, pc=consents.filter(c=>c.status==='pending').length;
+  if(ab){ab.textContent=pa||'';ab.style.display=pa?'inline-flex':'none';}
+  if(cb){cb.textContent=pc||'';cb.style.display=pc?'inline-flex':'none';}
 }
+async function updatePortalBadges(){await syncPortalCaches();}
+setInterval(updatePortalBadgesLocal,30000);
 
 // ── Appointment Calendar ──
 var calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 var calSelectedDate=new Date().toISOString().split('T')[0];
 
-function loadApptCalendar(){
-  updatePortalBadges();
-  initDemoDataIfEmpty();
+async function loadApptCalendar(){
+  await syncPortalCaches();
   calYear=new Date().getFullYear(); calMonth=new Date().getMonth();
   calSelectedDate=new Date().toISOString().split('T')[0];
   renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
@@ -953,48 +971,44 @@ function calFmt12(t){
   var parts=t.split(':'),h=parseInt(parts[0]),m=parts[1]||'00';
   var ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+m+' '+ap;
 }
-function calConfirmAppt(id){
-  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
-  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
-  var sel=document.getElementById('time-sel-'+id);
-  r.status='confirmed'; r.scheduledTime=sel?sel.value:'09:00'; r.confirmedAt=new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
-  toast('Appointment confirmed for '+calFmt12(r.scheduledTime),'success');
-  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+async function calConfirmAppt(id){
+  var sel=document.getElementById('time-sel-'+id), time=sel?sel.value:'09:00';
+  try{ await api('/appointments/'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify({status:'confirmed',scheduledTime:time})}); }
+  catch(e){ var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]'); var r=reqs.find(x=>x.id===id); if(r){r.status='confirmed';r.scheduledTime=time;r.confirmedAt=new Date().toISOString();} localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs)); }
+  toast('Appointment confirmed for '+calFmt12(time),'success');
+  await syncPortalCaches(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
 }
 function calShowReschedule(id){
   var f=document.getElementById('reschedule-form-'+id); if(f) f.style.display=f.style.display==='none'?'block':'none';
 }
-function calSaveReschedule(id){
-  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
-  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
+async function calSaveReschedule(id){
   var nd=document.getElementById('new-date-'+id), nt=document.getElementById('new-time-'+id);
   if(!nd||!nd.value){toast('Please select a new date','error');return;}
-  r.status='rescheduled'; r.newDate=nd.value; r.scheduledTime=nt?nt.value:'09:00'; r.rescheduledAt=new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
-  toast('Appointment rescheduled to '+r.newDate,'info');
-  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+  var newD=nd.value, newT=nt?nt.value:'09:00';
+  try{ await api('/appointments/'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify({status:'rescheduled',newDate:newD,scheduledTime:newT})}); }
+  catch(e){ var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]'); var r=reqs.find(x=>x.id===id); if(r){r.status='rescheduled';r.newDate=newD;r.scheduledTime=newT;r.rescheduledAt=new Date().toISOString();} localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs)); }
+  toast('Appointment rescheduled to '+newD,'info');
+  await syncPortalCaches(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
 }
-function calCancelAppt(id){
-  var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]');
-  var r=reqs.find(function(x){return x.id===id;}); if(!r) return;
-  r.status='cancelled'; r.cancelledAt=new Date().toISOString();
-  localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs));
+async function calCancelAppt(id){
+  try{ await api('/appointments/'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify({status:'cancelled'})}); }
+  catch(e){ var reqs=JSON.parse(localStorage.getItem('bridge_appt_requests')||'[]'); var r=reqs.find(x=>x.id===id); if(r){r.status='cancelled';r.cancelledAt=new Date().toISOString();} localStorage.setItem('bridge_appt_requests',JSON.stringify(reqs)); }
   toast('Appointment cancelled','info');
-  updatePortalBadges(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
+  await syncPortalCaches(); renderCalendar(); renderDayDetail(calSelectedDate); renderPendingList();
 }
 
 // ── Caregiver Consents (localStorage) ──
-function loadConsents() {
-  updatePortalBadges();
-  var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+async function loadConsents() {
   var search=((document.getElementById('consent-search')||{}).value||'').toLowerCase().trim();
-  var filtered=consents.filter(function(c){
-    var mf=consentFilter==='all'||c.status===consentFilter;
-    var ms=!search||(c.patientName||'').toLowerCase().includes(search)||(c.caregiverName||'').toLowerCase().includes(search)||(c.patientId||'').toLowerCase().includes(search);
-    return mf&&ms;
-  });
-  renderConsentsTable(filtered,consents.length);
+  var params=consentFilter!=='all'?'?status='+encodeURIComponent(consentFilter):'';
+  if(search) params+=(params?'&':'?')+'search='+encodeURIComponent(search);
+  try{
+    var data=await api('/consents'+params);
+    if(data){ if(!search&&consentFilter==='all') localStorage.setItem('bridge_caregiver_consents',JSON.stringify(data.consents)); renderConsentsTable(data.consents,data.total); updatePortalBadgesLocal(); return; }
+  }catch(e){}
+  var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
+  var filtered=consents.filter(function(c){ return(consentFilter==='all'||c.status===consentFilter)&&(!search||(c.patientName||'').toLowerCase().includes(search)||(c.caregiverName||'').toLowerCase().includes(search)||(c.patientId||'').toLowerCase().includes(search)); });
+  renderConsentsTable(filtered,consents.length); updatePortalBadgesLocal();
 }
 function filterConsents(el,filter){
   consentFilter=filter;
@@ -1021,13 +1035,11 @@ function renderConsentsTable(rows,total){
     }).join('')}</tbody></table>
     <div style="padding:10px 16px;font-size:11px;color:#3D5A75;">${rows.length} of ${total} records</div>`;
 }
-function updateConsent(id,status){
-  var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]');
-  var c=consents.find(x=>x.id===id); if(!c) return;
-  c.status=status; c.respondedAt=new Date().toISOString();
-  localStorage.setItem('bridge_caregiver_consents',JSON.stringify(consents));
+async function updateConsent(id,status){
+  try{ await api('/consents/'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify({status})}); }
+  catch(e){ var consents=JSON.parse(localStorage.getItem('bridge_caregiver_consents')||'[]'); var c=consents.find(x=>x.id===id); if(c){c.status=status;c.respondedAt=new Date().toISOString();} localStorage.setItem('bridge_caregiver_consents',JSON.stringify(consents)); }
   toast(status==='approved'?'Caregiver access approved':'Caregiver access declined',status==='approved'?'success':'error');
-  loadConsents(); updatePortalBadges();
+  await loadConsents();
 }
 
 // ── Launch Bridge App ──
@@ -1093,6 +1105,7 @@ async function openPatient(pid) {
       <div class="drs">${c.provider_name||'—'} · DOS: ${c.dos||'—'}</div>
       <div class="drm">Billed: $${(c.billed_amount||0).toFixed(2)} · Paid: $${(c.paid_amount||0).toFixed(2)}</div></div>`;
   }).join(''):`<div class="empty-state"><div class="empty-text">No claims on file</div></div>`;
+  document.getElementById('drawerCareGaps').innerHTML=buildCareGaps(data);
   document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.d-pane').forEach(p=>p.classList.remove('active'));
   document.querySelector('.d-tab[onclick*="overview"]').classList.add('active');
@@ -1102,6 +1115,67 @@ async function openPatient(pid) {
 }
 function closeDrawer(){document.getElementById('patientDrawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');}
 function switchDTab(el,pane){document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.d-pane').forEach(p=>p.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('dpane-'+pane)?.classList.add('active');}
+
+function buildCareGaps(data) {
+  const p=data.patient||{}, labs=data.labs||[], auths=data.authorizations||[], meds=[], today=new Date().toISOString().split('T')[0];
+  const gaps=[];
+
+  // 1. Pending authorizations / referrals
+  const pendingAuths=auths.filter(a=>a.status==='Pending'||a.status==='In Review');
+  pendingAuths.forEach(a=>{
+    gaps.push({severity:'hi',icon:'📋',title:'Pending Authorization',detail:(a.service_type||a.auth_type||'Auth')+' — submitted '+fmtDate(a.requested_date)+'. Follow up with payer if >5 business days.',action:null});
+  });
+
+  // 2. Denied authorizations
+  auths.filter(a=>a.status==='Denied').forEach(a=>{
+    gaps.push({severity:'cr',icon:'⚠️',title:'Denied Authorization',detail:(a.service_type||'Authorization')+' denied. Patient needs alternative plan — consider appeal or alternative service.',action:null});
+  });
+
+  // 3. Critical lab results
+  labs.filter(l=>l.flag==='Critical').forEach(l=>{
+    gaps.push({severity:'cr',icon:'🔴',title:'Critical Lab Result',detail:l.test_name+': '+l.result_value+' '+(l.unit||'')+' (Result date: '+fmtDate(l.result_date)+'). Requires immediate clinical attention.',action:null});
+  });
+
+  // 4. High lab results
+  labs.filter(l=>l.flag==='High').forEach(l=>{
+    gaps.push({severity:'hi',icon:'🟡',title:'Elevated Lab Result',detail:l.test_name+': '+l.result_value+' '+(l.unit||'')+'. Above reference range '+( l.reference_range||'')+'.',action:null});
+  });
+
+  // 5. Annual wellness check — check if visit notes have a recent annual wellness
+  const visitNotes=data.visitNotes||[];
+  const lastAnnual=visitNotes.find(n=>(n.visit_type||'').toLowerCase().includes('annual'));
+  if(!lastAnnual){
+    gaps.push({severity:'hi',icon:'📅',title:'Annual Wellness Visit Overdue',detail:'No annual wellness visit on record. Patient may be missing preventive screenings and HEDIS measures.',action:null});
+  } else {
+    const anDate=new Date(lastAnnual.visit_date||lastAnnual.created_at||'');
+    const monthsAgo=isNaN(anDate)?99:(new Date()-anDate)/(1000*60*60*24*30);
+    if(monthsAgo>12){
+      gaps.push({severity:'hi',icon:'📅',title:'Annual Wellness Overdue',detail:'Last annual wellness: '+fmtDate(lastAnnual.visit_date)+' ('+Math.round(monthsAgo)+' months ago). Schedule before year end.',action:null});
+    }
+  }
+
+  // 6. Expired authorizations still in use
+  auths.filter(a=>a.status==='Expired').forEach(a=>{
+    gaps.push({severity:'hi',icon:'⏰',title:'Expired Authorization',detail:(a.service_type||'Authorization')+' expired. Patient may need re-authorization to continue care.',action:null});
+  });
+
+  if(!gaps.length) return `<div style="display:flex;flex-direction:column;align-items:center;padding:48px 24px;text-align:center;"><div style="font-size:32px;margin-bottom:12px;">✅</div><div style="font-size:14px;font-weight:700;color:#10B981;margin-bottom:4px;">No Care Gaps Identified</div><div style="font-size:12px;color:#3D5A75;">All authorizations, lab results, and wellness visits are current.</div></div>`;
+
+  const sevStyle={cr:{bg:'rgba(239,68,68,0.08)',border:'#EF4444',badge:'cr'},hi:{bg:'rgba(245,158,11,0.08)',border:'#F59E0B',badge:'hi'}};
+  return `<div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#F59E0B;text-transform:uppercase;margin-bottom:12px;">${gaps.length} CARE GAP${gaps.length!==1?'S':''} IDENTIFIED</div>`
+    + gaps.map(g=>{
+      const s=sevStyle[g.severity]||sevStyle.hi;
+      return `<div style="background:${s.bg};border:1px solid ${s.border};border-left:3px solid ${s.border};border-radius:8px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="font-size:18px;flex-shrink:0;margin-top:1px;">${g.icon}</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:#E2E8F0;margin-bottom:4px;">${g.title}</div>
+            <div style="font-size:12px;color:#7A9AB8;line-height:1.5;">${g.detail}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+}
 
 // ── Pagination ──
 function renderPagination(page,total,limit,fn){
