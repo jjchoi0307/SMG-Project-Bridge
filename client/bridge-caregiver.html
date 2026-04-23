@@ -5,39 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bridge — Caregiver</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap');
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css');
 
   :root {
-    --bg: #F5F5F2;
+    --bg: #FAF6EF;
     --card: #FFFFFF;
-    --primary: #1A6B5F;
-    --primary-soft: #E8F4F2;
-    --primary-dark: #0F4D43;
-    --accent: #E07B39;
-    --accent-soft: #FDF1E8;
-    --text: #111827;
-    --text-sec: #6B7280;
-    --text-mute: #9CA3AF;
-    --border: #E5E7EB;
-    --border-soft: #F3F4F6;
-    --green: #059669;
-    --green-soft: #ECFDF5;
-    --amber: #D97706;
-    --amber-soft: #FFFBEB;
-    --red: #DC2626;
-    --red-soft: #FEF2F2;
-    --blue: #2563EB;
-    --blue-soft: #EFF6FF;
-    --purple: #7C3AED;
-    --purple-soft: #F5F3FF;
+    --primary: #1C5430;
+    --state-color: #1C5430;
+    --state-soft: #E6EFD8;
+    --primary-soft: #E6EFD8;
+    --primary-dark: #146837;
+    --accent: #E8A87C;
+    --accent-soft: #F7E3D1;
+    --text: #1A1814;
+    --text-sec: #6B675C;
+    --text-mute: #A29D90;
+    --border: #E5DFD0;
+    --border-soft: #EDE8DC;
+    --green: #2B7A48;
+    --green-soft: #E6EFD8;
+    --amber: #C68A3D;
+    --amber-soft: #F5E6C8;
+    --red: #A13525;
+    --red-soft: #F2DCD5;
+    --blue: #1B3E7A;
+    --blue-soft: #DDE5F2;
+    --purple: #7B3B5C;
+    --purple-soft: #F5E8EF;
+    /* Direction B official token aliases */
+    --b-paper: #FAF6EF;
+    --b-paper-deep: #F2ECE0;
+    --b-emerald: #1F8A4C;
+    --b-emerald-deep: #1C5430;
+    --b-emerald-soft: #E6EFD8;
+    --b-peach: #E8A87C;
+    --b-amber: #C68A3D;
+    --b-amber-soft: #F5E6C8;
+    --b-danger: #A13525;
+    --b-danger-soft: #F2DCD5;
+    --b-ink: #1A1814;
+    --b-ink-2: #3B3830;
+    --b-ink-3: #6B675C;
+    --b-ink-4: #A29D90;
+    --b-rule: #E5DFD0;
+    --font-sans-b: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+    --font-serif-b: 'Fraunces', Georgia, serif;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
   body {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background: #C8C8C4;
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+    background: #B4AFA6;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -62,7 +85,7 @@
   .greeting {
     position: absolute;
     inset: 0;
-    background: linear-gradient(160deg, #0A3D35 0%, #1A6B5F 55%, #2A8C7E 100%);
+    background: linear-gradient(160deg, #0D2B1C 0%, #1C5430 55%, #2B7A48 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -111,7 +134,7 @@
     padding: 14px 32px;
     border-radius: 99px;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
     backdrop-filter: blur(8px);
     transition: background 0.2s;
   }
@@ -120,7 +143,7 @@
   /* ── Sign-up screen ── */
   .signup-screen {
     position: absolute; inset: 0;
-    background: linear-gradient(160deg, #0A3D35 0%, #1A6B5F 55%, #2A8C7E 100%);
+    background: linear-gradient(160deg, #0D2B1C 0%, #1C5430 55%, #2B7A48 100%);
     display: flex; flex-direction: column;
     z-index: 600; overflow-y: auto; padding: 44px 28px 36px;
     transition: opacity 0.5s ease, transform 0.5s ease;
@@ -129,12 +152,12 @@
   .su-logo { margin-bottom: 24px; text-align: center; }
   .su-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
   .su-subtitle { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
-  .su-section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 12px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; font-family: 'Inter', -apple-system, sans-serif; }
+  .su-section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 12px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
   .su-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
   .su-input {
     width: 100%; padding: 13px 15px; border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
-    color: #fff; font-size: 15px; font-family: inherit; font-weight: 500;
+    color: #fff; font-size: 15px; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; font-weight: 500;
     outline: none; transition: border 0.15s, background 0.15s; margin-bottom: 14px;
   }
   .su-input::placeholder { color: rgba(255,255,255,0.28); }
@@ -144,17 +167,17 @@
   .su-field { display: flex; flex-direction: column; }
   .su-btn {
     width: 100%; padding: 16px; border-radius: 99px; border: none;
-    background: rgba(255,255,255,0.95); color: #0A3D35;
-    font-size: 16px; font-weight: 700; font-family: inherit;
+    background: rgba(255,255,255,0.95); color: #1C5430;
+    font-size: 16px; font-weight: 700; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
     cursor: pointer; margin-top: 8px; transition: background 0.2s;
   }
   .su-btn:hover { background: #fff; }
   .su-lang-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.18); flex-shrink: 0; }
-  .su-lang-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; background: transparent; color: rgba(255,255,255,0.5); cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .su-lang-btn.active { background: rgba(255,255,255,0.92); color: #0A3D35; }
+  .su-lang-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; background: transparent; color: rgba(255,255,255,0.5); cursor: pointer; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; transition: all 0.15s; }
+  .su-lang-btn.active { background: rgba(255,255,255,0.92); color: #1C5430; }
   .su-name-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-  .su-name-btn { padding: 4px 10px; font-size: 11px; font-weight: 600; border: none; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .su-name-btn.active { background: rgba(255,255,255,0.88); color: #0A3D35; }
+  .su-name-btn { padding: 4px 10px; font-size: 11px; font-weight: 600; border: none; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); cursor: pointer; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; transition: all 0.15s; }
+  .su-name-btn.active { background: rgba(255,255,255,0.88); color: #1C5430; }
 
   /* ── Status bar ── */
   .status-bar {
@@ -169,9 +192,9 @@
   .status-icons { display: flex; align-items: center; gap: 6px; color: var(--text); }
 
   /* Language toggle */
-  .lang-toggle { display: flex; background: #E8EDEB; border-radius: 8px; overflow: hidden; border: 1px solid #C8D4D1; }
-  .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 600; border: none; background: transparent; color: var(--text-sec); cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .lang-btn.active { background: var(--primary); color: #fff; }
+  .lang-toggle { display: flex; background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid var(--border); }
+  .lang-btn { padding: 4px 10px; font-size: 11px; font-weight: 600; border: none; background: transparent; color: var(--text-sec); cursor: pointer; font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; transition: all 0.15s; }
+  .lang-btn.active { background: var(--primary); color: #fff; border-radius: 16px; }
 
   /* ── Content & tabs ── */
   .content { flex:1; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; }
@@ -181,16 +204,18 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 8px 0 4px;
+    padding: 8px 16px 28px;
     border-top: 1px solid var(--border);
-    background: rgba(255,255,255,0.94);
-    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
     flex-shrink: 0;
   }
-  .tab-btn { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px; padding:4px 12px; cursor:pointer; position:relative; }
-  .tab-icon { font-size:20px; line-height:1; }
-  .tab-label { font-size:10px; font-weight:500; color:var(--text-mute); }
-  .tab-btn.active .tab-label { color:var(--primary); font-weight:700; }
+  .tab-btn { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 4px; cursor:pointer; position:relative; color:var(--text-mute); }
+  .tab-icon { font-size:18px; line-height:1; }
+  .tab-label { font-size:13px; font-weight:500; color:inherit; font-family:'Pretendard Variable',Pretendard,sans-serif; }
+  .tab-label-en { font-size:9px; font-family:'IBM Plex Mono',ui-monospace,monospace; letter-spacing:0.1em; opacity:0.8; color:inherit; }
+  .tab-btn.active { color:var(--state-color); }
+  .tab-btn.active .tab-label { font-weight:600; }
   .tab-btn .dot { position:absolute; top:1px; right:9px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1.5px solid white; }
 
   .home-bar { display:flex; justify-content:center; padding:6px 0 10px; flex-shrink:0; }
@@ -198,14 +223,14 @@
 
   .tab-pane { display:none; }
   .tab-pane.active { display:block; }
-  #tab-messages.active { display:flex; flex-direction:column; flex:1; overflow:hidden; }
-  .msg-body { flex:1; overflow-y:auto; }
-  .msg-body::-webkit-scrollbar { display:none; }
+
+  /* ── Design tokens ── */
+  .tt-label { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:10px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; }
 
   /* ── Cards ── */
   .card {
     background: var(--card);
-    border-radius: 14px;
+    border-radius: 20px;
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
   }
@@ -487,12 +512,12 @@
         <!-- Greeting line -->
         <div style="padding:8px 20px 14px;" class="fu">
           <div style="font-size:12px;color:var(--text-mute);font-weight:500;letter-spacing:0.2px;" data-en="MON, MARCH 16" data-ko="2026년 3월 16일 월요일">MON, MARCH 16</div>
-          <h1 style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.5px;margin-top:2px;" data-en="Good morning, Chloe." data-ko="안녕하세요, Chloe.">Good morning, Chloe.</h1>
+          <h1 style="font-size:24px;font-weight:600;font-family:'Fraunces',Georgia,serif;color:var(--text);letter-spacing:-0.02em;margin-top:2px;" data-en="Good morning, Chloe." data-ko="안녕하세요, Chloe.">Good morning, Chloe.</h1>
         </div>
 
         <!-- Connection attribution banner -->
         <div style="margin:0 20px 10px;" class="fu1">
-          <div style="background:var(--primary-soft);border:1px solid rgba(26,107,95,0.2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+          <div style="background:var(--green-soft);border:1px solid rgba(28,84,48,0.18);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             </div>
@@ -504,29 +529,125 @@
           </div>
         </div>
 
-        <!-- Hero: Mom status -->
-        <div style="margin:0 20px 12px;" class="fu2">
-          <div style="background:linear-gradient(140deg,#0F4D43 0%,#1A6B5F 50%,#2A8C7E 100%);border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;">
-            <div style="position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;">
-              <div>
-                <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px;">
-                  <div style="position:relative;width:9px;height:9px;">
-                    <div style="width:9px;height:9px;border-radius:50%;background:#4ADE80;"></div>
-                    <div style="position:absolute;top:0;left:0;width:9px;height:9px;border-radius:50%;background:#4ADE80;animation:liveDot 2s ease-out infinite;"></div>
-                  </div>
-                  <span style="font-size:11px;opacity:0.65;font-weight:500;letter-spacing:0.3px;" data-en="KOREATOWN, LA" data-ko="코리아타운, LA">KOREATOWN, LA</span>
-                </div>
-                <div style="font-size:22px;font-weight:800;letter-spacing:-0.4px;" data-en="Susan Kim" data-ko="김순자">Susan Kim</div>
-                <div style="font-size:13px;opacity:0.6;margin-top:2px;" data-en="76 · Type 2 Diabetes · Hypertension" data-ko="76세 · 당뇨 · 고혈압">76 · Type 2 Diabetes · Hypertension</div>
-                <div style="font-size:15px;font-weight:600;margin-top:10px;opacity:0.92;" data-en="Doing well today ✓" data-ko="오늘 잘 지내고 계세요 ✓">Doing well today ✓</div>
-                <div style="font-size:11px;opacity:0.5;margin-top:3px;" data-en="Jiyeon checked in · 10:30 AM" data-ko="지연 확인 · 오전 10:30">Jiyeon checked in · 10:30 AM</div>
+        <!-- Hero: Wellness Ring (C1 pattern) -->
+        <div style="margin:0 20px 12px;position:relative;" class="fu2">
+          <!-- soft gradient flourish -->
+          <div id="cg-gradient-flourish" style="position:absolute;top:-80px;left:-20px;right:-20px;height:240px;background:linear-gradient(170deg,var(--green-soft) 0%,var(--bg) 100%);pointer-events:none;border-radius:20px;opacity:0.7;"></div>
+
+          <!-- MomHeader -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;position:relative;">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--green-soft);color:var(--primary);display:grid;place-items:center;font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;border:1px solid var(--border);flex-shrink:0;">박</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:500;letter-spacing:-0.01em;color:var(--text);">
+                어머니 박수잔 <span style="font-size:13px;color:var(--text-sec);font-weight:400;font-style:italic;" data-en="Mom · Susan" data-ko="">Mom · Susan</span>
               </div>
-              <!-- Status indicator (no score) -->
-              <div style="background:rgba(255,255,255,0.14);border-radius:12px;padding:10px 12px;text-align:center;flex-shrink:0;">
-                <div style="font-size:22px;margin-bottom:3px;">✓</div>
-                <div style="font-size:8px;opacity:0.6;font-weight:700;letter-spacing:0.3px;" data-en="WELL TODAY" data-ko="건강해요">WELL TODAY</div>
+              <div style="font-size:11px;color:var(--text-mute);font-family:'IBM Plex Mono',ui-monospace,monospace;margin-top:2px;" id="cg-updated-time">업데이트 · updated 4분 전</div>
+            </div>
+            <!-- SharesChip -->
+            <div style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 10px 5px 8px;background:rgba(255,255,255,0.8);border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-sec);">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+              <span style="font-weight:500;color:var(--text);">어머니 공유</span>
+              <span style="color:var(--text-mute);">· Mom shares</span>
+              <span>: 약 · 진료 · 검사</span>
+            </div>
+          </div>
+
+          <!-- Wellness Ring -->
+          <div style="display:flex;align-items:center;gap:18px;position:relative;">
+            <div style="position:relative;width:124px;height:124px;flex-shrink:0;cursor:pointer;" onclick="cycleState()" title="Demo: cycle states">
+              <svg id="cg-ring-svg" viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+                <circle id="cg-ring-arc" cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="7"
+                  stroke-dasharray="264" stroke-dashoffset="31.68"
+                  stroke-linecap="round" style="transition:stroke-dashoffset 0.9s cubic-bezier(.2,.7,.3,1),stroke 0.6s"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div id="cg-ring-pct" style="font-family:'Fraunces',Georgia,serif;font-size:38px;font-weight:500;line-height:1;color:var(--primary);letter-spacing:-0.03em;">88</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;letter-spacing:0.18em;color:var(--text-mute);margin-top:3px;">오늘의 웰빙</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:7px;letter-spacing:0.14em;color:var(--text-mute);margin-top:1px;">WELLNESS</div>
               </div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div id="cg-answer-ko" style="font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:500;letter-spacing:-0.02em;line-height:1.15;color:var(--text);">어머니, 오늘 편안하세요.</div>
+              <div id="cg-answer-en" style="font-family:'Fraunces',Georgia,serif;font-size:14px;font-style:italic;color:var(--text-sec);margin-top:6px;line-height:1.3;">Mom is doing well today.</div>
+            </div>
+          </div>
+
+          <!-- Subline -->
+          <div id="cg-subline" style="padding:14px 16px;background:rgba(255,255,255,0.7);border-radius:14px;border:1px solid var(--border);margin-top:16px;position:relative;">
+            <div style="font-size:13px;color:var(--text-sec);line-height:1.45;" data-ko="아침 약 복용 완료, 기분 좋다고 체크인" data-en="Morning meds taken · checked in feeling good">아침 약 복용 완료, 기분 좋다고 체크인</div>
+            <div style="font-size:11px;color:var(--text-mute);font-style:italic;margin-top:3px;" id="cg-subline-en">Morning meds taken · checked in feeling good</div>
+          </div>
+
+          <!-- 4 Signal Tiles -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;position:relative;">
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text);">약</div>
+                <div id="cg-tile-meds-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:2px;flex-shrink:0;"></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-mute);margin-bottom:5px;">MEDS</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:500;line-height:1;color:var(--primary);" id="cg-tile-meds-val">3/3</div>
+              <div style="font-size:10px;color:var(--text-mute);margin-top:4px;font-style:italic;">오늘 아침</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text);">기분</div>
+                <div id="cg-tile-mood-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:2px;flex-shrink:0;"></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-mute);margin-bottom:5px;">MOOD</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:500;line-height:1;color:var(--primary);" id="cg-tile-mood-val">좋음</div>
+              <div style="font-size:10px;color:var(--text-mute);margin-top:4px;font-style:italic;">오전 8:42</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text);">혈압</div>
+                <div id="cg-tile-bp-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:2px;flex-shrink:0;"></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-mute);margin-bottom:5px;">BLOOD PRESSURE</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:500;line-height:1;color:var(--primary);" id="cg-tile-bp-val">128/82</div>
+              <div style="font-size:10px;color:var(--text-mute);margin-top:4px;font-style:italic;">정상 범위</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text);">활동</div>
+                <div id="cg-tile-steps-dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:2px;flex-shrink:0;"></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-mute);margin-bottom:5px;">STEPS</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:500;line-height:1;color:var(--primary);" id="cg-tile-steps-val">2.1k</div>
+              <div style="font-size:10px;color:var(--text-mute);margin-top:4px;font-style:italic;">걸음 수</div>
+            </div>
+          </div>
+
+          <!-- Action CTA (gentleFlag / needsAttention only) -->
+          <div id="cg-action-cta" style="display:none;background:var(--state-soft);border:1.5px solid var(--state-color);border-radius:16px;padding:16px 18px;margin-top:14px;position:relative;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div id="cg-cta-glyph" style="width:36px;height:36px;border-radius:10px;background:var(--state-color);display:grid;place-items:center;color:#fff;font-size:20px;flex-shrink:0;">💊</div>
+              <div style="flex:1;">
+                <div id="cg-cta-ko" style="font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:500;letter-spacing:-0.01em;line-height:1.3;color:var(--text);">저녁 약 알림을 보낼까요?</div>
+                <div id="cg-cta-en" style="font-family:'Fraunces',Georgia,serif;font-size:13px;font-style:italic;color:var(--text-sec);margin-top:5px;line-height:1.4;">Send a gentle evening reminder?</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:14px;">
+              <button id="cg-cta-btn1" onclick="openNudge()" style="flex:1;padding:12px;border-radius:12px;border:none;background:var(--state-color);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">알림 보내기 · Send</button>
+              <button id="cg-cta-btn2" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--state-color);background:transparent;color:var(--state-color);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">나중에 · Later</button>
+            </div>
+          </div>
+
+          <!-- Coming Up -->
+          <div style="margin-top:16px;">
+            <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:10px;padding-left:2px;">다음 예약 · COMING UP</div>
+            <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:14px;">
+              <div style="width:56px;height:60px;border-radius:12px;background:var(--green-soft);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;gap:1px;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);">화·TUE</div>
+                <div style="font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:500;line-height:1;color:var(--text);">28</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;font-weight:500;color:var(--primary);">3월</div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);">박수잔 의사 <span style="font-size:12px;font-style:italic;font-weight:400;color:var(--text-sec);">Dr. Sarah Park</span></div>
+                <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">주치의 · 10:30 AM</div>
+              </div>
+              <div onclick="openRide()" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;background:var(--border);font-size:11px;color:var(--text-sec);cursor:pointer;white-space:nowrap;flex-shrink:0;">🚐 <span>라이드</span></div>
             </div>
           </div>
         </div>
@@ -534,7 +655,7 @@
         <!-- Mom's Status Panel -->
         <div style="margin:0 20px 10px;" class="fu2">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:var(--shadow-sm);">
-            <div style="font-size:11px;font-weight:700;color:var(--text-mute);letter-spacing:0.5px;margin-bottom:10px;" data-en="MOM'S STATUS AT A GLANCE" data-ko="어머니 현황">MOM'S STATUS AT A GLANCE</div>
+            <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;color:var(--text-mute);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;" data-en="MOM'S STATUS AT A GLANCE" data-ko="어머니 현황">MOM'S STATUS AT A GLANCE</div>
             <div style="display:flex;flex-direction:column;gap:7px;">
 
               <!-- Insurance -->
@@ -568,7 +689,7 @@
               </div>
 
               <!-- Outstanding Bill -->
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--red-soft);border:1px solid rgba(220,38,38,0.15);border-radius:10px;cursor:pointer;" onclick="switchTab('care')">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--red-soft);border:1px solid rgba(220,38,38,0.15);border-radius:10px;cursor:pointer;" onclick="switchTab('appts')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Bill: $90 Copay Due" data-ko="청구서: $90 본인 부담금">Bill: $90 Copay Due</div>
@@ -578,7 +699,7 @@
               </div>
 
               <!-- Care Gaps -->
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--amber-soft);border:1px solid rgba(217,119,6,0.15);border-radius:10px;cursor:pointer;" onclick="switchTab('health')">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--amber-soft);border:1px solid rgba(217,119,6,0.15);border-radius:10px;cursor:pointer;" onclick="switchTab('meds')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="3 Screenings Overdue" data-ko="안 받은 검사 3가지">3 Screenings Overdue</div>
@@ -651,7 +772,7 @@
 
         <!-- Unused benefits -->
         <div style="margin:0 20px 8px;" class="fu4">
-          <div class="row-card" onclick="switchTab('benefits')">
+          <div class="row-card" onclick="switchTab('trends')">
             <div class="row-icon" style="background:var(--accent-soft);">💳</div>
             <div style="flex:1;">
               <div class="row-label" data-en="Unused Benefits" data-ko="미사용 혜택">Unused Benefits</div>
@@ -685,515 +806,353 @@
       </div>
     </div>
 
-    <!-- ════════ HEALTH TAB ════════ -->
-    <div class="tab-pane" id="tab-health">
-      <div style="padding:16px 0 100px;">
+    <!-- ════════ MEDS TAB ════════ -->
+    <div class="tab-pane" id="tab-meds">
+      <div style="padding:66px 22px 100px;">
 
-        <div style="padding:0 20px 14px;">
-          <div style="font-size:12px;color:var(--text-mute);font-weight:500;letter-spacing:0.2px;" data-en="HEALTH OVERVIEW" data-ko="건강 개요">HEALTH OVERVIEW</div>
-          <h2 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.4px;margin-top:4px;" data-en="Susan Kim · 76" data-ko="김순자 · 76세">Susan Kim · 76</h2>
-          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-            <span class="pill pill-gray" data-en="Type 2 Diabetes" data-ko="2형 당뇨">Type 2 Diabetes</span>
-            <span class="pill pill-gray" data-en="Hypertension" data-ko="고혈압">Hypertension</span>
-            <span class="pill pill-gray" data-en="Osteoarthritis" data-ko="골관절염">Osteoarthritis</span>
+        <!-- Header row -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px;">어머니의 약 · MOM'S MEDS</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:30px;font-weight:500;letter-spacing:-0.02em;color:var(--text);line-height:1.1;">오늘의 복용</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:14px;font-style:italic;color:var(--text-sec);margin-top:4px;">Today's doses</div>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 10px 5px 8px;background:rgba(255,255,255,0.8);border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-sec);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+            <span style="font-weight:500;color:var(--text);">어머니 공유</span>
+            <span style="color:var(--text-mute);">· Mom shares</span>
+            <span style="color:var(--text-mute);">: 약 · 진료 · 검사</span>
           </div>
         </div>
 
-        <!-- Care Gap -->
-        <div class="sec-head">
-          <span class="sec-title" data-en="Care Gaps" data-ko="안 받은 검사">Care Gaps</span>
-          <span class="pill pill-amber" data-en="3 Open" data-ko="3가지 남아있어요">3 Open</span>
-        </div>
-        <div style="margin:0 20px 6px;display:flex;flex-direction:column;gap:8px;">
-          <!-- Colonoscopy -->
-          <div class="row-card" style="border-left:3px solid var(--amber);">
-            <div style="flex:1;">
-              <div class="row-label" data-en="Colonoscopy Screening" data-ko="대장내시경 검사">Colonoscopy Screening</div>
-              <div class="row-sub" style="color:var(--amber);" data-en="Overdue by 8 months · Last: 2017" data-ko="8개월 초과 · 마지막: 2017년">Overdue by 8 months · Last: 2017</div>
-            </div>
-            <button onclick="openNudgeWithText('Mom, it\\'s important to get your colonoscopy scheduled — it\\'s 8 months overdue. Can we set up an appointment together?')" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;" data-en="Nudge Mom →" data-ko="어머님께 알림 →">Nudge Mom →</button>
+        <!-- Adherence ring card -->
+        <div style="display:flex;align-items:center;gap:14px;padding:16px;background:white;border:1px solid var(--border);border-radius:14px;">
+          <div style="position:relative;width:62px;height:62px;flex-shrink:0;">
+            <svg id="meds-ring-svg" viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" stroke-width="9"/>
+              <circle id="meds-ring-arc" cx="50" cy="50" r="42" fill="none" stroke="var(--state-color)" stroke-width="9"
+                stroke-dasharray="264" stroke-dashoffset="39.6"
+                stroke-linecap="round" style="transition:stroke-dashoffset 0.6s ease,stroke 0.6s"/>
+            </svg>
           </div>
-          <!-- Mammogram -->
-          <div class="row-card" style="border-left:3px solid var(--amber);">
-            <div style="flex:1;">
-              <div class="row-label" data-en="Mammogram" data-ko="유방 촬영">Mammogram</div>
-              <div class="row-sub" style="color:var(--amber);" data-en="Overdue by 14 months · Last: Jan 2025" data-ko="14개월 초과 · 마지막: 2025년 1월">Overdue by 14 months · Last: Jan 2025</div>
-            </div>
-            <button onclick="openNudgeWithText('Mom, your annual mammogram is 14 months overdue. Let\\'s get this scheduled soon — early detection is so important!')" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;" data-en="Nudge Mom →" data-ko="어머님께 알림 →">Nudge Mom →</button>
-          </div>
-          <!-- Diabetic Eye Exam -->
-          <div class="row-card" style="border-left:3px solid #3b82f6;">
-            <div style="flex:1;">
-              <div class="row-label" data-en="Diabetic Eye Exam" data-ko="당뇨 안과 검진">Diabetic Eye Exam</div>
-              <div class="row-sub" style="color:#3b82f6;" data-en="Due this year · Annual for diabetes management" data-ko="올해 예정 · 당뇨 관리를 위한 연간 검진">Due this year · Annual for diabetes management</div>
-            </div>
-            <button onclick="openNudgeWithText('Mom, your diabetic eye exam is due this year. Since you have diabetes, it\\'s really important to check your eyes annually. Can we schedule it?')" style="background:#3b82f6;color:white;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;" data-en="Nudge Mom →" data-ko="어머님께 알림 →">Nudge Mom →</button>
+          <div>
+            <div id="meds-adherence-ko" style="font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:var(--state-color);letter-spacing:-0.01em;">이번 주 85% 복용</div>
+            <div id="meds-adherence-en" style="font-family:'Fraunces',Georgia,serif;font-size:12px;font-style:italic;color:var(--text-sec);margin-top:2px;">85% this week</div>
           </div>
         </div>
 
-        <!-- Labs -->
-        <div class="sec-head" style="margin-top:20px;">
-          <span class="sec-title" data-en="Recent Labs" data-ko="최근 검사">Recent Labs</span>
-          <button class="sec-action" data-en="See all" data-ko="전체 보기">See all</button>
-        </div>
+        <!-- Today med list -->
+        <div style="margin-top:18px;">
+          <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:8px;">오늘 · TODAY</div>
+          <div id="meds-list-card" style="background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
 
-        <div id="cg-labs-list">
-        <!-- A1c -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('a1c-exp'); rotateChevron('chev-a1c')">
-            <div style="flex:1;">
-              <div class="row-label" data-en="Hemoglobin A1c" data-ko="당화혈색소">Hemoglobin A1c</div>
-              <div class="row-sub" data-en="6.9% · Mar 15 · Target &lt;7.0%" data-ko="6.9% · 3월 15일 · 목표 7.0% 이하">6.9% · Mar 15 · Target &lt;7.0%</div>
-            </div>
-            <div class="row-right">
-              <span class="pill pill-green" data-en="On Target" data-ko="목표 달성">On Target</span>
-              <svg id="chev-a1c" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
-            </div>
-          </div>
-          <div id="a1c-exp" class="expand-body">
-            <div style="padding:14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="gauge"><div class="gauge-pin" style="left:47%;"></div></div>
-              <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text-mute);margin-bottom:12px;"><span data-en="High" data-ko="고위험">High</span><span style="color:var(--green);font-weight:700;">6.9 ✓</span><span data-en="Ideal" data-ko="이상적">Ideal</span></div>
-              <!-- Trend bars -->
-              <div style="display:flex;align-items:flex-end;gap:8px;height:36px;">
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:var(--text-mute);">7.8</span><div style="width:100%;background:var(--amber-soft);border-radius:3px;height:28px;"></div><span style="font-size:9px;color:var(--text-mute);" data-en="Sep'24" data-ko="24년9월">Sep'24</span></div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:var(--text-mute);">7.4</span><div style="width:100%;background:var(--amber-soft);border-radius:3px;height:22px;"></div><span style="font-size:9px;color:var(--text-mute);" data-en="Mar'25" data-ko="25년3월">Mar'25</span></div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:var(--text-mute);">7.2</span><div style="width:100%;background:var(--amber-soft);border-radius:3px;height:18px;"></div><span style="font-size:9px;color:var(--text-mute);" data-en="Sep'25" data-ko="25년9월">Sep'25</span></div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:9px;color:var(--green);font-weight:700;">6.9</span><div style="width:100%;background:var(--green-soft);border-radius:3px;height:14px;"></div><span style="font-size:9px;color:var(--text-mute);" data-en="Mar'26" data-ko="26년3월">Mar'26</span></div>
+            <!-- Metformin — taken -->
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+              <div style="width:34px;height:34px;border-radius:10px;background:var(--green-soft);color:var(--primary);display:grid;place-items:center;font-size:15px;font-weight:700;flex-shrink:0;">✓</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);">메트포민 500mg</div>
+                <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Metformin 500mg</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">아침 1알 <span style="font-style:italic;">· morning</span></div>
               </div>
-              <button onclick="openNudge()" style="width:100%;background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:12px;" data-en="Send Mom a nudge about this →" data-ko="어머님께 이 결과 전달하기 →">Send Mom a nudge about this →</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- BP -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('bp-exp'); rotateChevron('chev-bp')">
-            <div style="flex:1;">
-              <div class="row-label" data-en="Blood Pressure" data-ko="혈압">Blood Pressure</div>
-              <div class="row-sub" data-en="128/82 · Mar 15 · Target &lt;130/80" data-ko="128/82 · 3월 15일 · 목표 130/80 이하">128/82 · Mar 15 · Target &lt;130/80</div>
-            </div>
-            <div class="row-right">
-              <span class="pill pill-amber" data-en="Borderline" data-ko="경계">Borderline</span>
-              <svg id="chev-bp" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
-            </div>
-          </div>
-          <div id="bp-exp" class="expand-body">
-            <div style="padding:12px 14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;" data-en="Slightly elevated — watch sodium intake. Dr. Park's goal is under 130/80 at the next visit." data-ko="약간 높아요. 짠 음식을 줄여야 해요. 다음 진료에서 130/80 이하를 목표로 해요.">Slightly elevated — watch sodium intake. Dr. Park's goal is under 130/80 at the next visit.</div>
-              <button onclick="openNudge()" style="width:100%;background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" data-en="Remind Mom to reduce salt →" data-ko="어머님께 소금 줄이기 알림 →">Remind Mom to reduce salt →</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cholesterol -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card">
-            <div style="flex:1;">
-              <div class="row-label" data-en="LDL Cholesterol" data-ko="LDL 콜레스테롤">LDL Cholesterol</div>
-              <div class="row-sub" data-en="94 mg/dL · Feb 20 · Target &lt;100" data-ko="94 mg/dL · 2월 20일 · 목표 100 이하">94 mg/dL · Feb 20 · Target &lt;100</div>
-            </div>
-            <span class="pill pill-green" data-en="On Target" data-ko="목표 달성">On Target</span>
-          </div>
-        </div>
-        </div><!-- /#cg-labs-list -->
-
-        <!-- Medications -->
-        <div class="sec-head" style="margin-top:20px;">
-          <span class="sec-title" data-en="Medications" data-ko="약 복용">Medications</span>
-          <button class="sec-action" data-en="See all" data-ko="전체 보기">See all</button>
-        </div>
-
-        <div id="cg-meds-list">
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('met-exp'); rotateChevron('chev-met')">
-            <div class="row-icon" style="background:var(--purple-soft);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:inline-block;vertical-align:-2px;"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="flex:1;">
-              <div class="row-label" data-en="Metformin 500mg" data-ko="메트포르민 500mg">Metformin 500mg</div>
-              <div class="row-sub" data-en="Twice daily · 16 days remaining" data-ko="하루 2회 · 16일 남음">Twice daily · 16 days remaining</div>
-            </div>
-            <div class="row-right">
-              <span class="pill pill-amber" data-en="Refill soon" data-ko="곧 리필">Refill soon</span>
-              <svg id="chev-met" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
-            </div>
-          </div>
-          <div id="met-exp" class="expand-body">
-            <div style="padding:12px 14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="pbar" style="margin-bottom:10px;"><div class="pbar-fill" style="width:53%;background:var(--amber);"></div></div>
-              <div style="display:flex;gap:8px;">
-                <button onclick="showToast('med-toast')" style="flex:1;background:var(--primary);color:white;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;" data-en="Deliver to Mom" data-ko="어머님께 배달">Deliver to Mom</button>
-                <button onclick="showToast('med-toast')" style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" data-en="Pharmacy Pickup" data-ko="약국 수령">Pharmacy Pickup</button>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:var(--primary);">복용함</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:2px;">8:12AM</div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div style="margin:0 20px 8px;">
-          <div class="row-card">
-            <div class="row-icon" style="background:var(--purple-soft);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:inline-block;vertical-align:-2px;"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="flex:1;">
-              <div class="row-label" data-en="Lisinopril 10mg" data-ko="리시노프릴 10mg">Lisinopril 10mg</div>
-              <div class="row-sub" data-en="Once daily · 28 days remaining" data-ko="하루 1회 · 28일 남음">Once daily · 28 days remaining</div>
+            <!-- Lisinopril — taken -->
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+              <div style="width:34px;height:34px;border-radius:10px;background:var(--green-soft);color:var(--primary);display:grid;place-items:center;font-size:15px;font-weight:700;flex-shrink:0;">✓</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);">리시노프릴 10mg</div>
+                <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Lisinopril 10mg</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">아침 1알 <span style="font-style:italic;">· morning</span></div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:var(--primary);">복용함</div>
+                <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:2px;">8:12AM</div>
+              </div>
             </div>
-            <span class="pill pill-green" data-en="Good" data-ko="충분">Good</span>
-          </div>
-        </div>
-        </div><!-- /#cg-meds-list -->
 
-        <!-- Care team -->
-        <div class="sec-head" style="margin-top:20px;">
-          <span class="sec-title" data-en="Care Team" data-ko="의료진">Care Team</span>
-        </div>
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="switchTab('messages')">
-            <div style="width:38px;height:38px;border-radius:50%;background:#DBEAFE;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">👨‍⚕️</div>
-            <div style="flex:1;"><div class="row-label" data-en="Dr. James Park" data-ko="박 원장님">Dr. James Park</div><div class="row-sub" data-en="Primary Care · SMG Koreatown" data-ko="내과 · SMG 코리아타운">Primary Care · SMG Koreatown</div></div>
-            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+            <!-- Atorvastatin — state-driven -->
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+              <div id="meds-atorva-icon" style="width:34px;height:34px;border-radius:10px;background:#FAF6EF;color:var(--text-mute);display:grid;place-items:center;font-size:15px;font-weight:700;flex-shrink:0;">○</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);">아토르바스타틴 20mg</div>
+                <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Atorvastatin 20mg</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">저녁 1알 <span style="font-style:italic;">· evening</span></div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div id="meds-atorva-status" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:var(--text-mute);">예정</div>
+                <div id="meds-atorva-time" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:2px;">9:00PM</div>
+              </div>
+            </div>
+
+            <!-- Vitamin D — state-driven -->
+            <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;">
+              <div id="meds-vitd-icon" style="width:34px;height:34px;border-radius:10px;background:var(--green-soft);color:var(--primary);display:grid;place-items:center;font-size:15px;font-weight:700;flex-shrink:0;">✓</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);">비타민 D</div>
+                <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Vitamin D</div>
+                <div style="font-size:11.5px;color:var(--text-sec);margin-top:2px;">아침 1알 <span style="font-style:italic;">· morning</span></div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div id="meds-vitd-status" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:var(--primary);">복용함</div>
+                <div id="meds-vitd-time" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:2px;">8:15AM</div>
+              </div>
+            </div>
+
           </div>
         </div>
-        <div style="margin:0 20px 20px;">
-          <div class="row-card" onclick="switchTab('messages')">
-            <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:700;flex-shrink:0;">지</div>
-            <div style="flex:1;"><div class="row-label" data-en="Jiyeon Choi" data-ko="최지연">Jiyeon Choi</div><div class="row-sub" data-en="Care Handler · Korean-English" data-ko="건강 도우미 · 한국어 가능">Care Handler · Korean-English</div></div>
-            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+
+        <!-- Reminder CTA (hidden for allGood) -->
+        <div id="meds-reminder-cta" style="display:none;margin-top:16px;border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;" id="meds-cta-ko">저녁 약 알림을 보낼까요?</div>
+          <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);margin-bottom:10px;" id="meds-cta-en">Send a gentle evening reminder?</div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="openNudge()" id="meds-cta-btn1" style="flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#fff;">지금 보내기 · Send now</button>
+            <button onclick="showToast('sched-toast')" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:white;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text);">6시 · At 6pm</button>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- ════════ CARE TAB ════════ -->
-    <div class="tab-pane" id="tab-care">
-      <div style="padding:16px 0 100px;">
-        <div style="padding:0 20px 14px;">
-          <div style="font-size:12px;color:var(--text-mute);font-weight:500;letter-spacing:0.2px;" data-en="ACTIVE CARE" data-ko="지금 현황">ACTIVE CARE</div>
-          <h2 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.4px;margin-top:4px;" data-en="Requests & Tracking" data-ko="처리 현황">Requests & Tracking</h2>
-        </div>
+    <!-- ════════ APPTS TAB ════════ -->
+    <div class="tab-pane" id="tab-appts">
+      <div style="padding:66px 22px 100px;">
 
-        <div class="sec-head">
-          <span class="sec-title" data-en="In Progress" data-ko="진행 중">In Progress</span>
-          <span class="pill pill-blue" data-en="2 Active" data-ko="2개 진행 중">2 Active</span>
-        </div>
-
-        <!-- Referral -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('ref-exp'); rotateChevron('chev-ref')">
-            <div class="row-icon" style="background:var(--blue-soft);"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7C3AED;vertical-align:-1px;"></span></div>
-            <div style="flex:1;">
-              <div class="row-label" data-en="Orthopedic Referral" data-ko="정형외과 의뢰">Orthopedic Referral</div>
-              <div class="row-sub" data-en="Step 4 of 5 · Appt Feb 25 @ 2PM" data-ko="4/5 단계 · 2월 25일 오후 2시 예약">Step 4 of 5 · Appt Feb 25 @ 2PM</div>
-            </div>
-            <div class="row-right">
-              <span class="pill pill-blue" data-en="In Progress" data-ko="진행 중">In Progress</span>
-              <svg id="chev-ref" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
-            </div>
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px;">어머니의 진료 · MOM'S VISITS</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:500;letter-spacing:-0.02em;color:var(--text);line-height:1.1;">다가오는 일정</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:14px;font-style:italic;color:var(--text-sec);margin-top:4px;">Upcoming visits</div>
           </div>
-          <div id="ref-exp" class="expand-body">
-            <div style="padding:14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="step"><div class="step-dot done">✓</div><div><div style="font-size:13px;font-weight:600;color:var(--text);" data-en="Referral issued" data-ko="의뢰서 발행">Referral issued</div><div style="font-size:11px;color:var(--text-mute);" data-en="Feb 10" data-ko="2월 10일">Feb 10</div></div><div class="step-line done"></div></div>
-              <div class="step"><div class="step-dot done">✓</div><div><div style="font-size:13px;font-weight:600;color:var(--text);" data-en="Insurance approved" data-ko="보험 승인">Insurance approved</div><div style="font-size:11px;color:var(--text-mute);" data-en="Feb 11 · Same-day" data-ko="2월 11일 · 당일 승인">Feb 11 · Same-day</div></div><div class="step-line done"></div></div>
-              <div class="step"><div class="step-dot done">✓</div><div><div style="font-size:13px;font-weight:600;color:var(--text);" data-en="Records transferred" data-ko="기록 전송">Records transferred</div><div style="font-size:11px;color:var(--text-mute);" data-en="Feb 12" data-ko="2월 12일">Feb 12</div></div><div class="step-line done"></div></div>
-              <div class="step"><div class="step-dot done">✓</div><div><div style="font-size:13px;font-weight:600;color:var(--text);" data-en="Transport booked" data-ko="교통편 예약">Transport booked</div><div style="font-size:11px;color:var(--text-mute);" data-en="Pickup 1:30 PM" data-ko="오후 1:30 픽업">Pickup 1:30 PM</div></div><div class="step-line"></div></div>
-              <div class="step"><div class="step-dot active-step">5</div><div><div style="font-size:13px;font-weight:600;color:var(--primary);" data-en="Appointment · Feb 25" data-ko="진료 · 2월 25일">Appointment · Feb 25</div><div style="font-size:11px;color:var(--text-mute);" data-en="9 days away" data-ko="9일 후">9 days away</div></div></div>
-            </div>
+          <div style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 10px 5px 8px;background:rgba(255,255,255,0.8);border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-sec);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+            <span style="font-weight:500;color:var(--text);">어머니 공유</span>
+            <span style="color:var(--text-mute);">: 약 · 진료 · 검사</span>
           </div>
         </div>
 
-        <!-- Med refill -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('refill-exp'); rotateChevron('chev-refill')">
-            <div class="row-icon" style="background:var(--purple-soft);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:inline-block;vertical-align:-2px;"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="flex:1;">
-              <div class="row-label" data-en="Metformin Refill" data-ko="메트포르민 리필">Metformin Refill</div>
-              <div class="row-sub" data-en="Home delivery · Est. Feb 18" data-ko="집 배달 · 예상 2월 18일">Home delivery · Est. Feb 18</div>
+        <!-- Next appointment hero card -->
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;">다음 방문 · NEXT</div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:70px;height:80px;background:var(--green-soft);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:var(--primary);">
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;">화·TUE</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:32px;font-weight:500;line-height:1;margin-top:2px;">28</div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;margin-top:4px;">10:30</div>
             </div>
-            <div class="row-right">
-              <span class="pill pill-amber" data-en="16 days" data-ko="16일">16 days</span>
-              <svg id="chev-refill" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
-            </div>
-          </div>
-          <div id="refill-exp" class="expand-body">
-            <div style="padding:12px 14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="pbar" style="margin-bottom:8px;"><div class="pbar-fill" style="width:53%;background:var(--amber);"></div></div>
-              <div style="font-size:12px;color:var(--text-sec);" data-en="Shipping label created · Tracking in 24h" data-ko="배송 라벨 생성 · 24시간 내 추적 가능"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Shipping label created · Tracking in 24h</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:16px;font-weight:600;color:var(--text);">박수잔 의사 <span style="font-size:13px;font-style:italic;font-weight:400;color:var(--text-sec);">Dr. Sarah Park</span></div>
+              <div style="font-size:12.5px;color:var(--text-sec);margin-top:4px;">주치의 · 3개월 정기검진</div>
+              <div style="font-size:12px;font-style:italic;color:var(--text-mute);margin-top:2px;">Primary care · 3-month check</div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:var(--text-mute);margin-top:4px;">SMG Gardena · 2F</div>
             </div>
           </div>
-        </div>
-
-        <!-- Authorizations & Bills -->
-        <div class="sec-head" style="margin-top:20px;">
-          <span class="sec-title" data-en="Authorizations &amp; Bills" data-ko="승인 및 청구서">Authorizations &amp; Bills</span>
-        </div>
-        <div id="cg-auths-list" style="margin:0 20px 8px;display:flex;flex-direction:column;gap:8px;">
-
-          <!-- MRI Auth — PENDING -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow-sm);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="MRI — Left Knee" data-ko="MRI — 왼쪽 무릎">MRI — Left Knee</div>
-              <span class="pill pill-amber" data-en="Pending" data-ko="검토 중">Pending</span>
-            </div>
-            <!-- Step tracker -->
-            <div style="display:flex;align-items:center;gap:0;margin-bottom:10px;">
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><span style="font-size:11px;color:white;font-weight:700;">✓</span></div>
-                <div style="font-size:9px;color:var(--green);font-weight:600;" data-en="Requested" data-ko="요청됨">Requested</div>
-              </div>
-              <div style="flex:1;height:2px;background:var(--amber);margin-bottom:12px;"></div>
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" style="display:inline-block;"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg></div>
-                <div style="font-size:9px;color:var(--amber);font-weight:700;" data-en="Insurance Review" data-ko="보험 검토">Insurance Review</div>
-              </div>
-              <div style="flex:1;height:2px;background:var(--border);margin-bottom:12px;"></div>
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><span style="font-size:11px;color:var(--text-mute);font-weight:700;">3</span></div>
-                <div style="font-size:9px;color:var(--text-mute);font-weight:600;" data-en="Decision" data-ko="결정">Decision</div>
-              </div>
-            </div>
-            <div style="font-size:11px;color:var(--text-sec);background:var(--amber-soft);border-radius:8px;padding:8px 10px;" data-en="Insurance is reviewing. Usually takes 3–5 business days from March 12." data-ko="보험사에서 검토 중이에요. 3월 12일부터 보통 3~5 영업일 걸려요."><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block;vertical-align:-1px;"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg> Insurance is reviewing. Usually takes 3–5 business days from March 12.</div>
-          </div>
-
-          <!-- Colonoscopy Auth — APPROVED -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow-sm);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="GI Specialist Referral" data-ko="소화기내과 의뢰">GI Specialist Referral</div>
-              <span class="pill pill-green" data-en="Approved" data-ko="승인됨">Approved</span>
-            </div>
-            <!-- Step tracker -->
-            <div style="display:flex;align-items:center;gap:0;margin-bottom:10px;">
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><span style="font-size:11px;color:white;font-weight:700;">✓</span></div>
-                <div style="font-size:9px;color:var(--green);font-weight:600;" data-en="Requested" data-ko="요청됨">Requested</div>
-              </div>
-              <div style="flex:1;height:2px;background:var(--green);margin-bottom:12px;"></div>
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><span style="font-size:11px;color:white;font-weight:700;">✓</span></div>
-                <div style="font-size:9px;color:var(--green);font-weight:600;" data-en="Reviewed" data-ko="검토됨">Reviewed</div>
-              </div>
-              <div style="flex:1;height:2px;background:var(--green);margin-bottom:12px;"></div>
-              <div style="text-align:center;flex:1;">
-                <div style="width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 3px;"><span style="font-size:11px;color:white;font-weight:700;">✓</span></div>
-                <div style="font-size:9px;color:var(--green);font-weight:700;" data-en="Approved" data-ko="승인됨">Approved</div>
-              </div>
-            </div>
-            <div style="font-size:11px;color:var(--green);background:var(--green-soft);border-radius:8px;padding:8px 10px;margin-bottom:10px;" data-en="✓ Approved Mar 5 — Mom's plan covers this colonoscopy specialist visit." data-ko="✓ 3월 5일 승인됐어요. 대장내시경 전문의 방문이 보험으로 커버돼요.">✓ Approved Mar 5 — Mom's plan covers this colonoscopy specialist visit.</div>
-            <button onclick="openNudgeWithText('Mom, your colonoscopy referral was approved! The insurance is covering it. Let\\'s get you scheduled with the specialist.')" style="width:100%;background:var(--primary);color:white;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" data-en="Help Mom Schedule This →" data-ko="어머님 예약 도와드리기 →">Help Mom Schedule This →</button>
-          </div>
-
-          <!-- Bill: $90 Copay -->
-          <div style="background:var(--card);border:1px solid rgba(220,38,38,0.25);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow-sm);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-              <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Bill: Specialist Copay" data-ko="청구서: 전문의 본인부담금">Bill: Specialist Copay</div>
-              <span style="font-size:16px;font-weight:800;color:var(--red);">$90</span>
-            </div>
-            <div style="font-size:11px;color:var(--text-sec);margin-bottom:10px;" data-en="March 14 specialist visit · Due April 14" data-ko="3월 14일 전문의 방문 · 4월 14일 납부 기한">March 14 specialist visit · Due April 14</div>
-            <div style="font-size:11px;color:var(--text-sec);background:#fef2f2;border:1px solid rgba(220,38,38,0.12);border-radius:8px;padding:8px 10px;margin-bottom:10px;" data-en="Insurance paid $1,240 for this visit. The $90 is Mom's copayment — a small share she pays for specialist visits. This is normal." data-ko="보험이 이번 방문에 $1,240을 지불했습니다. $90은 어머님의 본인부담금 — 전문의 방문 시 부담하는 소액입니다. 정상적인 청구입니다."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block;vertical-align:-2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Insurance paid $1,240 for this visit. The $90 is Mom's copayment — a small share she pays for specialist visits. This is normal.</div>
-            <div style="display:flex;gap:8px;">
-              <button onclick="showToast('bill-caregiver-toast')" style="flex:1;background:var(--red);color:white;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" data-en="Pay $90 for Mom" data-ko="어머님 대신 $90 납부">Pay $90 for Mom</button>
-              <button onclick="openNudgeWithText('Mom, you have a $90 bill from your March 14 visit. Don\\'t worry — it\\'s just your copay. I can help you pay it!')" style="flex:1;background:var(--card);color:var(--primary);border:1px solid var(--primary);border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" data-en="Ask Mom" data-ko="어머님께 문의">Ask Mom</button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Quick actions -->
-        <div class="sec-head" style="margin-top:20px;">
-          <span class="sec-title" data-en="Quick Actions" data-ko="빠른 요청">Quick Actions</span>
-        </div>
-        <div class="action-grid" style="margin-bottom:20px;">
-          <button class="action-btn" onclick="openSchedule()">
-            <div style="font-size:22px;margin-bottom:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Schedule Visit" data-ko="진료 예약">Schedule Visit</div>
-          </button>
-          <button class="action-btn" onclick="openRide()">
-            <div style="font-size:22px;margin-bottom:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M5 17H3a2 2 0 0 1-2-2V9l2-4h14l2 4v6a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg></div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Book a Ride" data-ko="교통편 예약">Book a Ride</div>
-          </button>
-          <button class="action-btn" onclick="showToast('med-toast')">
-            <div style="font-size:22px;margin-bottom:8px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:inline-block;vertical-align:-2px;"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Med Delivery" data-ko="약 배달">Med Delivery</div>
-          </button>
-          <button class="action-btn" onclick="openNudge()">
-            <div style="font-size:22px;margin-bottom:8px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Send Nudge" data-ko="메시지 보내기">Send Nudge</div>
-          </button>
-        </div>
-
-        <!-- Nudge section -->
-        <div class="sec-head">
-          <span class="sec-title" data-en="Send Mom a Nudge" data-ko="어머님께 메시지 보내기">Send Mom a Nudge</span>
-        </div>
-        <div style="margin:0 20px 20px;">
-          <div class="card" style="padding:14px 16px;">
-            <div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-bottom:12px;" data-en="Bridge AI delivers your message through Jiyeon or as Dr. Park — naturally and in the right words." data-ko="Bridge AI가 지연 또는 박 원장님을 통해 어머님께 자연스럽게 전달해요.">Bridge AI delivers your message through Jiyeon or as Dr. Park — naturally and in the right words.</div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <button class="action-btn" style="border-radius:10px;padding:11px 14px;" onclick="openNudgeWithText(this.dataset.en)" data-en="Remind her not to skip her walk today" data-ko="오늘 산책 빠지지 말라고 알려주세요"  >Remind her not to skip her walk today</button>
-              <button class="action-btn" style="border-radius:10px;padding:11px 14px;" onclick="openNudgeWithText(this.dataset.en)" data-en="Ask her to call me when she wakes up" data-ko="일어나면 저한테 전화해달라고 해주세요">Ask her to call me when she wakes up</button>
-              <button onclick="openNudge()" style="background:var(--primary-soft);border:1px solid rgba(26,107,95,0.2);border-radius:10px;padding:11px 14px;text-align:left;font-size:13px;color:var(--primary);font-weight:600;cursor:pointer;font-family:inherit;" data-en="+ Write a custom message" data-ko="+ 직접 메시지 작성">+ Write a custom message</button>
-            </div>
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+            <button onclick="openRide()" style="padding:8px 14px;background:var(--primary);color:white;border:none;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">교통편 예약 · Book ride</button>
+            <button style="padding:8px 14px;background:white;color:var(--text);border:1px solid var(--border);border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;">동행 · Go with</button>
+            <button style="padding:8px 14px;background:white;color:var(--text);border:1px solid var(--border);border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;">병원 전화 · Call clinic</button>
           </div>
         </div>
 
+        <!-- Transport card -->
+        <div style="margin-top:14px;background:#F9EDE6;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:40px;height:40px;background:white;border-radius:10px;display:grid;place-items:center;flex-shrink:0;color:#C05E24;font-family:'Fraunces',Georgia,serif;font-size:18px;">◈</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">교통편이 필요하실 거예요</div>
+            <div style="font-size:12px;font-style:italic;color:var(--text-sec);margin-top:2px;">Mom will need a ride</div>
+            <div style="font-size:11.5px;color:var(--text-mute);margin-top:4px;">비응급 의료 교통편 · 보험 적용</div>
+            <div style="font-size:11px;font-style:italic;color:var(--text-mute);margin-top:1px;">Non-emergency medical transport · Covered</div>
+          </div>
+        </div>
+
+        <!-- Later this month -->
+        <div style="margin-top:18px;">
+          <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:10px;">앞으로 · LATER THIS MONTH</div>
+
+          <!-- Apr 4: Cardiology (pending) -->
+          <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px;">
+            <div style="width:48px;height:50px;background:var(--bg);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:var(--text);">
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);">APR</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:500;line-height:1.1;">4</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);">심장내과</div>
+              <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Dr. Park · Cardiology</div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:3px;">오후 2:00 · 2:00 PM</div>
+            </div>
+            <div style="background:var(--amber-soft);color:var(--amber);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;font-weight:600;padding:4px 8px;border-radius:6px;letter-spacing:0.08em;flex-shrink:0;">대기</div>
+          </div>
+
+          <!-- Apr 12: Lab draw (confirmed) -->
+          <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px;">
+            <div style="width:48px;height:50px;background:var(--bg);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:var(--text);">
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);">APR</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:500;line-height:1.1;">12</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);">혈액 검사</div>
+              <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Lab draw · A1C</div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:3px;">오전 9:00 · 9:00 AM</div>
+            </div>
+            <div style="background:var(--green-soft);color:var(--primary);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;font-weight:600;padding:4px 8px;border-radius:6px;letter-spacing:0.08em;flex-shrink:0;">확정</div>
+          </div>
+
+          <!-- May 2: Ophthalmology (confirmed) -->
+          <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px;">
+            <div style="width:48px;height:50px;background:var(--bg);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;color:var(--text);">
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);">MAY</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:500;line-height:1.1;">2</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);">안과 검진</div>
+              <div style="font-size:11.5px;font-style:italic;color:var(--text-sec);">Ophthalmology</div>
+              <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;color:var(--text-mute);margin-top:3px;">오전 11:00 · 11:00 AM</div>
+            </div>
+            <div style="background:var(--green-soft);color:var(--primary);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;font-weight:600;padding:4px 8px;border-radius:6px;letter-spacing:0.08em;flex-shrink:0;">확정</div>
+          </div>
+
+        </div>
       </div>
     </div>
 
-    <!-- ════════ BENEFITS TAB ════════ -->
-    <div class="tab-pane" id="tab-benefits">
-      <div style="padding:16px 0 100px;">
-        <div style="padding:0 20px 14px;">
-          <div style="font-size:12px;color:var(--text-mute);font-weight:500;letter-spacing:0.2px;" data-en="Q1 2026" data-ko="2026년 1분기">Q1 2026</div>
-          <h2 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.4px;margin-top:4px;" data-en="Benefits & Credits" data-ko="혜택 및 크레딧">Benefits & Credits</h2>
-          <div style="font-size:13px;color:var(--text-sec);margin-top:4px;" data-en="Resets April 1 · 16 days remaining" data-ko="4월 1일 초기화 · 16일 남음">Resets April 1 · 16 days remaining</div>
+    <!-- ════════ TRENDS TAB ════════ -->
+    <div class="tab-pane" id="tab-trends">
+      <div style="padding:66px 22px 100px;">
+
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px;">주간 추이 · WEEKLY TRENDS</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:30px;font-weight:500;letter-spacing:-0.02em;color:var(--text);line-height:1.1;">이번 주 어머니</div>
+            <div style="font-family:'Fraunces',Georgia,serif;font-size:14px;font-style:italic;color:var(--text-sec);margin-top:4px;">Mom this week</div>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 10px 5px 8px;background:rgba(255,255,255,0.8);border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-sec);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+            <span style="font-weight:500;color:var(--text);">어머니 공유</span>
+            <span style="color:var(--text-mute);">: 약 · 진료 · 검사</span>
+          </div>
         </div>
 
-        <!-- Total hero -->
-        <div style="margin:0 20px 16px;">
-          <div style="background:linear-gradient(135deg,#C05E24,#E07B39);border-radius:18px;padding:20px;color:white;">
-            <div style="font-size:11px;opacity:0.7;font-weight:600;letter-spacing:0.5px;margin-bottom:6px;" data-en="UNUSED THIS QUARTER" data-ko="이번 분기 안 쓴 혜택">UNUSED THIS QUARTER</div>
-            <div style="font-size:34px;font-weight:800;letter-spacing:-1px;">$265</div>
-            <div style="margin-top:10px;background:rgba(255,255,255,0.15);border-radius:6px;padding:8px 12px;">
-              <div style="height:4px;background:rgba(255,255,255,0.2);border-radius:4px;overflow:hidden;"><div style="width:35%;height:100%;background:white;border-radius:4px;"></div></div>
-              <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:11px;opacity:0.7;" data-en="$265 unused · $765 total" data-ko="$265 미사용 · $765 총액"><span data-en="$265 unused" data-ko="$265 미사용">$265 unused</span><span data-en="$765 total" data-ko="$765 총액">$765 total</span></div>
+        <!-- Summary card (state-driven) -->
+        <div id="trends-summary-card" style="background:var(--state-soft);border:1px solid var(--state-color);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+          <div id="trends-summary-ko" style="font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:500;color:var(--text);letter-spacing:-0.01em;">지난 주보다 더 좋아지셨어요</div>
+          <div id="trends-summary-en" style="font-family:'Fraunces',Georgia,serif;font-size:12px;font-style:italic;color:var(--text-sec);margin-top:4px;">Mom is trending better than last week</div>
+        </div>
+
+        <!-- BP Trend Card -->
+        <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div>
+              <span style="font-size:13.5px;font-weight:600;color:var(--text);">혈압</span>
+              <span style="font-family:'Fraunces',Georgia,serif;font-size:10.5px;font-style:italic;color:var(--text-sec);margin-left:6px;">Blood pressure</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;">
+              <span id="trends-bp-avg" style="font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:var(--text);">126/80</span>
+              <span id="trends-bp-delta" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:#1C5430;">-4 ↓</span>
             </div>
           </div>
+          <svg id="trends-bp-sparkline" width="100%" height="56" viewBox="0 0 300 56" preserveAspectRatio="none" style="display:block;">
+            <defs><linearGradient id="grad-bp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1C5430" stop-opacity="0.1"/><stop offset="100%" stop-color="#1C5430" stop-opacity="0"/></linearGradient></defs>
+            <path id="trends-bp-area" fill="url(#grad-bp)" d=""/>
+            <path id="trends-bp-line" fill="none" stroke="#1C5430" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d=""/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">월MON</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">화</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">수</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">목</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">금</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">토</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">일SUN</span>
+          </div>
         </div>
 
-        <div class="sec-head">
-          <span class="sec-title" data-en="Available Credits" data-ko="쓸 수 있는 혜택">Available Credits</span>
-        </div>
-
-        <!-- H Mart -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="toggleExpand('hmart-exp'); rotateChevron('chev-hmart')">
-            <div class="row-icon" style="background:#FEF9EE;font-size:18px;">🛒</div>
-            <div style="flex:1;"><div class="row-label" data-en="H Mart Grocery" data-ko="H Mart 식료품">H Mart Grocery</div><div class="row-sub" data-en="OTC grocery benefit · Full amount available" data-ko="OTC 식료품 혜택 · 전액 사용 가능">OTC grocery benefit · Full amount available</div></div>
-            <div class="row-right">
-              <span style="font-size:15px;font-weight:800;color:var(--text);">$100</span>
-              <svg id="chev-hmart" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg>
+        <!-- Medication Adherence Trend Card -->
+        <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div>
+              <span style="font-size:13.5px;font-weight:600;color:var(--text);">복용률</span>
+              <span style="font-family:'Fraunces',Georgia,serif;font-size:10.5px;font-style:italic;color:var(--text-sec);margin-left:6px;">Medication adherence</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;">
+              <span id="trends-meds-avg" style="font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:var(--text);">94%</span>
+              <span id="trends-meds-delta" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:#1C5430;">+6 ↑</span>
             </div>
           </div>
-          <div id="hmart-exp" class="expand-body">
-            <div style="padding:12px 14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="pbar" style="margin-bottom:10px;"><div class="pbar-fill" style="width:0%;background:var(--amber);"></div></div>
-              <button onclick="showToast('benefit-toast')" style="width:100%;background:var(--primary);color:white;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" data-en="Help Mom Use This →" data-ko="어머님이 사용할 수 있게 도와주기 →">Help Mom Use This →</button>
+          <svg id="trends-meds-sparkline" width="100%" height="56" viewBox="0 0 300 56" preserveAspectRatio="none" style="display:block;">
+            <defs><linearGradient id="grad-meds" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1C5430" stop-opacity="0.1"/><stop offset="100%" stop-color="#1C5430" stop-opacity="0"/></linearGradient></defs>
+            <path id="trends-meds-area" fill="url(#grad-meds)" d=""/>
+            <path id="trends-meds-line" fill="none" stroke="#1C5430" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d=""/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">월MON</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">화</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">수</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">목</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">금</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">토</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">일SUN</span>
+          </div>
+        </div>
+
+        <!-- Daily Mood Trend Card -->
+        <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div>
+              <span style="font-size:13.5px;font-weight:600;color:var(--text);">기분</span>
+              <span style="font-family:'Fraunces',Georgia,serif;font-size:10.5px;font-style:italic;color:var(--text-sec);margin-left:6px;">Daily mood</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;">
+              <span id="trends-mood-avg" style="font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:var(--text);">3.6<span style="font-size:13px;color:var(--text-mute);">/5</span></span>
+              <span id="trends-mood-delta" style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:#1C5430;">+0.3</span>
             </div>
           </div>
-        </div>
-
-        <!-- Transport -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="openRide()">
-            <div class="row-icon" style="background:var(--blue-soft);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M5 17H3a2 2 0 0 1-2-2V9l2-4h14l2 4v6a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg></div>
-            <div style="flex:1;"><div class="row-label" data-en="Non-Emergency Transport" data-ko="비응급 교통편">Non-Emergency Transport</div><div class="row-sub" data-en="Rides to appointments · $85 remaining" data-ko="예약 교통편 · $85 남음">Rides to appointments · $85 remaining</div></div>
-            <div class="row-right"><span style="font-size:15px;font-weight:800;color:var(--text);">$85</span><svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <svg id="trends-mood-sparkline" width="100%" height="56" viewBox="0 0 300 56" preserveAspectRatio="none" style="display:block;">
+            <defs><linearGradient id="grad-mood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1C5430" stop-opacity="0.1"/><stop offset="100%" stop-color="#1C5430" stop-opacity="0"/></linearGradient></defs>
+            <path id="trends-mood-area" fill="url(#grad-mood)" d=""/>
+            <path id="trends-mood-line" fill="none" stroke="#1C5430" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d=""/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">월MON</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">화</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">수</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">목</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">금</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">토</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">일SUN</span>
           </div>
         </div>
 
-        <!-- Meals -->
-        <div style="margin:0 20px 20px;">
-          <div class="row-card" onclick="toggleExpand('meal-exp'); rotateChevron('chev-meal')">
-            <div class="row-icon" style="background:var(--green-soft);">🍱</div>
-            <div style="flex:1;"><div class="row-label" data-en="Meal Delivery" data-ko="식사 배달">Meal Delivery</div><div class="row-sub" data-en="Korean-friendly · $80 available" data-ko="한식 가능 · $80 사용 가능">Korean-friendly · $80 available</div></div>
-            <div class="row-right"><span style="font-size:15px;font-weight:800;color:var(--text);">$80</span><svg id="chev-meal" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="9,18 15,12 9,6"/></svg></div>
-          </div>
-          <div id="meal-exp" class="expand-body">
-            <div style="padding:12px 14px;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;">
-              <div class="pbar" style="margin-bottom:10px;"><div class="pbar-fill" style="width:0%;background:var(--green);"></div></div>
-              <button onclick="showToast('benefit-toast')" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" data-en="Set Up Meals for Mom" data-ko="어머님 식사 배달 설정">Set Up Meals for Mom</button>
+        <!-- Steps Trend Card -->
+        <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div>
+              <span style="font-size:13.5px;font-weight:600;color:var(--text);">활동</span>
+              <span style="font-family:'Fraunces',Georgia,serif;font-size:10.5px;font-style:italic;color:var(--text-sec);margin-left:6px;">Steps per day</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;">
+              <span style="font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:var(--text);">2,140</span>
+              <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;font-weight:600;color:#1C5430;">+210 ↑</span>
             </div>
           </div>
-        </div>
-
-        <!-- Dental -->
-        <div style="margin:0 20px 8px;">
-          <div class="row-card" onclick="showToast('benefit-toast')">
-            <div class="row-icon" style="background:#F5F3FF;font-size:18px;">🦷</div>
-            <div style="flex:1;"><div class="row-label" data-en="Dental Benefits" data-ko="치과 혜택">Dental Benefits</div><div class="row-sub" data-en="Cleanings · X-rays · Basic procedures covered" data-ko="스케일링 · X-레이 · 기본 시술 보장">Cleanings · X-rays · Basic procedures covered</div></div>
-            <span class="pill pill-green" data-en="Covered" data-ko="보장됨">Covered</span>
-          </div>
-        </div>
-
-        <!-- Other Benefits -->
-        <div style="margin:0 20px 20px;">
-          <div class="row-card" onclick="showToast('benefit-toast')" style="opacity:0.7;">
-            <div class="row-icon" style="background:var(--border-soft);font-size:18px;">💳</div>
-            <div style="flex:1;"><div class="row-label" data-en="Other Benefits" data-ko="기타 혜택">Other Benefits</div><div class="row-sub" data-en="Vision, hearing aids & more — ask Jiyeon" data-ko="시력, 보청기 등 — 지연씨에게 문의">Vision, hearing aids & more — ask Jiyeon</div></div>
-            <span class="pill pill-gray" data-en="Ask Jiyeon" data-ko="문의하기">Ask Jiyeon</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ════════ MEDICAL RECORDS TAB ════════ -->
-    <div class="tab-pane" id="tab-messages">
-      <div style="padding:4px 0 100px;">
-
-        <div style="padding:8px 20px 14px;" class="fu">
-          <div style="font-size:12px;color:var(--text-mute);font-weight:500;letter-spacing:0.2px;" data-en="MOM'S HEALTH" data-ko="어머님 건강">MOM'S HEALTH</div>
-          <h2 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.4px;margin-top:4px;" data-en="Medical Record" data-ko="의료 기록">Medical Record</h2>
-        </div>
-
-        <!-- Labs -->
-        <div class="sec-head fu1">
-          <span class="sec-title" data-en="Lab Results" data-ko="검사 결과">Lab Results</span>
-          <span style="font-size:12px;color:var(--text-mute);" data-en="Mar 2026" data-ko="2026년 3월">Mar 2026</span>
-        </div>
-        <div style="margin:0 20px 6px;display:flex;flex-direction:column;gap:8px;" class="fu1">
-          <div class="row-card" onclick="switchTab('health')">
-            <div style="flex:1;"><div class="row-label" data-en="Hemoglobin A1c" data-ko="당화혈색소">Hemoglobin A1c</div><div class="row-sub" data-en="6.9% · Mar 14 · Target &lt;7.0% ✓" data-ko="6.9% · 3월 14일 · 목표 7.0% 이하 ✓">6.9% · Mar 14 · Target &lt;7.0% ✓</div></div>
-            <span class="pill pill-green" data-en="On Target" data-ko="정상">On Target</span>
-          </div>
-          <div class="row-card" onclick="switchTab('health')">
-            <div style="flex:1;"><div class="row-label" data-en="Blood Pressure" data-ko="혈압">Blood Pressure</div><div class="row-sub" data-en="128/82 · Mar 14 · Slightly elevated" data-ko="128/82 · 3월 14일 · 약간 높음">128/82 · Mar 14 · Slightly elevated</div></div>
-            <span class="pill pill-amber" data-en="Watch" data-ko="주의">Watch</span>
-          </div>
-          <div class="row-card" onclick="switchTab('health')">
-            <div style="flex:1;"><div class="row-label" data-en="LDL Cholesterol" data-ko="LDL 콜레스테롤">LDL Cholesterol</div><div class="row-sub" data-en="94 mg/dL · Mar 14 · On target" data-ko="94 mg/dL · 3월 14일 · 정상">94 mg/dL · Mar 14 · On target</div></div>
-            <span class="pill pill-green" data-en="Normal" data-ko="정상">Normal</span>
-          </div>
-        </div>
-
-        <!-- Prescriptions -->
-        <div class="sec-head fu2" style="margin-top:10px;">
-          <span class="sec-title" data-en="Prescriptions" data-ko="처방약">Prescriptions</span>
-        </div>
-        <div style="margin:0 20px 6px;display:flex;flex-direction:column;gap:8px;" class="fu2">
-          <div class="row-card">
-            <div class="row-icon" style="background:#FEF3C7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="flex:1;"><div class="row-label" data-en="Metformin 500mg" data-ko="메트포르민 500mg">Metformin 500mg</div><div class="row-sub" data-en="Twice daily · Refill in 16 days" data-ko="하루 2회 · 16일 후 리필">Twice daily · Refill in 16 days</div></div>
-            <span class="pill pill-amber" data-en="Refill soon" data-ko="리필 예정">Refill soon</span>
-          </div>
-          <div class="row-card">
-            <div class="row-icon" style="background:#DBEAFE;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="9" width="20" height="7" rx="3.5"/><line x1="12" y1="9" x2="12" y2="16"/></svg></div>
-            <div style="flex:1;"><div class="row-label" data-en="Lisinopril 10mg" data-ko="리시노프릴 10mg">Lisinopril 10mg</div><div class="row-sub" data-en="Once daily (evening) · 28 days remaining" data-ko="하루 1회 (저녁) · 28일 남음">Once daily (evening) · 28 days remaining</div></div>
-            <span class="pill pill-green" data-en="OK" data-ko="양호">OK</span>
-          </div>
-        </div>
-
-        <!-- Visit Notes -->
-        <div class="sec-head fu3" style="margin-top:10px;">
-          <span class="sec-title" data-en="Visit Notes" data-ko="진료 메모">Visit Notes</span>
-        </div>
-        <div style="margin:0 20px 6px;display:flex;flex-direction:column;gap:8px;" class="fu3">
-          <div class="card tap" onclick="showToast('record-toast')" style="padding:14px;">
-            <div style="display:flex;align-items:flex-start;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0;">박</div>
-              <div style="flex:1;">
-                <div style="font-size:13px;font-weight:700;color:var(--text);" data-en="Dr. Park — March 14 Visit" data-ko="박 원장님 — 3월 14일 진료">Dr. Park — March 14 Visit</div>
-                <div style="font-size:12px;color:var(--text-sec);margin-top:3px;line-height:1.5;" data-en="A1c excellent. BP slightly elevated — reduce sodium. Continue meds. Follow-up in 3 months." data-ko="A1c 우수. 혈압 약간 높음 — 소금 줄이기. 약 유지. 3개월 후 재방문.">A1c excellent. BP slightly elevated — reduce sodium. Continue meds. Follow-up in 3 months.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hospital Visits -->
-        <div class="sec-head fu4" style="margin-top:10px;">
-          <span class="sec-title" data-en="Hospital Visits" data-ko="입원 기록">Hospital Visits</span>
-        </div>
-        <div style="padding:0 20px 10px;" class="fu4">
-          <div style="background:var(--border-soft);border-radius:14px;padding:16px;text-align:center;">
-            <div style="font-size:28px;margin-bottom:6px;">🏥</div>
-            <div style="font-size:14px;font-weight:600;color:var(--text-sec);" data-en="No recent hospital visits — great news!" data-ko="최근 입원 기록 없음 — 건강하게 지내고 계세요!">No recent hospital visits — great news!</div>
+          <svg id="trends-steps-sparkline" width="100%" height="56" viewBox="0 0 300 56" preserveAspectRatio="none" style="display:block;">
+            <defs><linearGradient id="grad-steps" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1C5430" stop-opacity="0.1"/><stop offset="100%" stop-color="#1C5430" stop-opacity="0"/></linearGradient></defs>
+            <path id="trends-steps-area" fill="url(#grad-steps)" d=""/>
+            <path id="trends-steps-line" fill="none" stroke="#1C5430" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d=""/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">월MON</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">화</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">수</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">목</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">금</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">토</span>
+            <span style="font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9px;color:var(--text-mute);">일SUN</span>
           </div>
         </div>
 
@@ -1204,11 +1163,10 @@
 
   <!-- ══════════ TAB BAR ══════════ -->
   <div class="tab-bar">
-    <button class="tab-btn active" id="btn-home" onclick="switchTab('home')"><span class="tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="tab-label" data-en="Home" data-ko="홈">Home</span></button>
-    <button class="tab-btn" id="btn-health" onclick="switchTab('health')"><span class="tab-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="tab-label" data-en="Health" data-ko="건강">Health</span></button>
-    <button class="tab-btn" id="btn-care" onclick="switchTab('care')"><span class="tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span class="tab-label" data-en="Care" data-ko="케어">Care</span></button>
-    <button class="tab-btn" id="btn-benefits" onclick="switchTab('benefits')"><span class="tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><span class="tab-label" data-en="Benefits" data-ko="혜택">Benefits</span></button>
-    <button class="tab-btn" id="btn-messages" onclick="switchTab('messages')"><span class="tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span class="tab-label" data-en="Records" data-ko="기록">Records</span></button>
+    <button class="tab-btn active" id="btn-home" onclick="switchTab('home')"><span class="tab-label" data-en="오늘" data-ko="오늘">오늘</span><span class="tab-label-en">Today</span></button>
+    <button class="tab-btn" id="btn-meds" onclick="switchTab('meds')"><span class="tab-label" data-en="약" data-ko="약">약</span><span class="tab-label-en">Meds</span></button>
+    <button class="tab-btn" id="btn-appts" onclick="switchTab('appts')"><span class="tab-label" data-en="진료" data-ko="진료">진료</span><span class="tab-label-en">Visits</span></button>
+    <button class="tab-btn" id="btn-trends" onclick="switchTab('trends')"><span class="tab-label" data-en="추이" data-ko="추이">추이</span><span class="tab-label-en">Trends</span></button>
   </div>
   <div class="home-bar"><div></div></div>
 
@@ -1340,79 +1298,6 @@
     if (!el) return;
     const isOpen = el.style.transform === 'rotate(90deg)';
     el.style.transform = isOpen ? '' : 'rotate(90deg)';
-  }
-
-  // ── Messages ──
-  function setMsgTab(type) {
-    document.getElementById('thread-human').style.display = type === 'human' ? 'flex' : 'none';
-    document.getElementById('thread-ai').style.display = type === 'ai' ? 'flex' : 'none';
-    const isHuman = type === 'human';
-    document.getElementById('toggleHuman').style.cssText = isHuman
-      ? 'flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--card);color:var(--primary);box-shadow:var(--shadow-sm);'
-      : 'flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--text-mute);';
-    document.getElementById('toggleAI').style.cssText = !isHuman
-      ? 'flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--card);color:var(--purple);box-shadow:var(--shadow-sm);'
-      : 'flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--text-mute);';
-    // re-apply lang
-    if (currentLang === 'ko') setLang('ko');
-  }
-
-  function sendHumanMsg() {
-    const input = document.getElementById('humanInput');
-    const text = input.value.trim();
-    if (!text) return;
-    const body = document.querySelector('#thread-human .msg-body');
-    const msg = document.createElement('div');
-    msg.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;';
-    msg.innerHTML = `<div><div class="bubble bubble-out">${text}</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;text-align:right;margin-right:2px;">Just now · ${caregiverFirst}</div></div>`;
-    body.appendChild(msg);
-    input.value = '';
-    body.scrollTop = body.scrollHeight;
-    setTimeout(() => {
-      const reply = document.createElement('div');
-      reply.style.cssText = 'display:flex;gap:10px;';
-      reply.innerHTML = `<div style="width:28px;height:28px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0;margin-top:4px;">지</div><div><div class="bubble bubble-in">Got it! I'll let her know 👍</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;margin-left:2px;">Just now · Jiyeon</div></div>`;
-      body.appendChild(reply);
-      body.scrollTop = body.scrollHeight;
-    }, 1000);
-  }
-
-  function sendAISuggestion(btn) {
-    const text = btn.getAttribute('data-' + currentLang) || btn.textContent;
-    const body = btn.closest('.msg-body');
-    btn.parentElement.remove();
-    const msg = document.createElement('div');
-    msg.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;';
-    msg.innerHTML = `<div><div class="bubble bubble-out">${text}</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;text-align:right;margin-right:2px;">Just now · ${caregiverFirst}</div></div>`;
-    body.appendChild(msg);
-    body.scrollTop = body.scrollHeight;
-    setTimeout(() => {
-      const reply = document.createElement('div');
-      reply.style.cssText = 'display:flex;gap:10px;';
-      reply.innerHTML = `<div style="width:28px;height:28px;border-radius:50%;background:var(--purple-soft);border:1px solid rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;font-size:13px;">✦</div><div><div class="bubble bubble-ai">Let me pull that from Mom's records...</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;margin-left:2px;">Just now · Bridge AI</div></div>`;
-      body.appendChild(reply);
-      body.scrollTop = body.scrollHeight;
-    }, 900);
-  }
-
-  function sendAIMsg() {
-    const input = document.getElementById('aiInput');
-    const text = input.value.trim();
-    if (!text) return;
-    const body = document.querySelector('#thread-ai .msg-body');
-    const msg = document.createElement('div');
-    msg.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;';
-    msg.innerHTML = `<div><div class="bubble bubble-out">${text}</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;text-align:right;margin-right:2px;">Just now · ${caregiverFirst}</div></div>`;
-    body.appendChild(msg);
-    input.value = '';
-    body.scrollTop = body.scrollHeight;
-    setTimeout(() => {
-      const reply = document.createElement('div');
-      reply.style.cssText = 'display:flex;gap:10px;';
-      reply.innerHTML = `<div style="width:28px;height:28px;border-radius:50%;background:var(--purple-soft);border:1px solid rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;font-size:13px;">✦</div><div><div class="bubble bubble-ai">I'm reviewing Mom's records now...</div><div style="font-size:11px;color:var(--text-mute);margin-top:3px;margin-left:2px;">Just now · Bridge AI</div></div>`;
-      body.appendChild(reply);
-      body.scrollTop = body.scrollHeight;
-    }, 900);
   }
 
   // ── Nudge sheet ──
@@ -1681,9 +1566,337 @@
     setTimeout(() => document.getElementById('greeting').style.display = 'none', 500);
   }
 
-  // Enter key for message inputs
-  document.getElementById('humanInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendHumanMsg(); });
-  document.getElementById('aiInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendAIMsg(); });
+  // ── Sparkline helper ──
+  function sparklinePaths(data, color, svgId, areaId, lineId) {
+    const W = 300, H = 56, pad = 4;
+    const min = Math.min(...data), max = Math.max(...data);
+    const range = max - min || 1;
+    const xs = data.map((_, i) => (i / (data.length - 1)) * W);
+    const ys = data.map(v => H - pad - ((v - min) / range) * (H - pad * 2));
+    const pts = xs.map((x, i) => `${x},${ys[i]}`).join(' L ');
+    const linePath = `M ${pts}`;
+    const areaPath = `M ${xs[0]},${H} L ${pts} L ${xs[xs.length-1]},${H} Z`;
+    const lineEl = document.getElementById(lineId);
+    const areaEl = document.getElementById(areaId);
+    if (lineEl) lineEl.setAttribute('d', linePath);
+    if (areaEl) areaEl.setAttribute('d', areaPath);
+    // update gradient color stops
+    const svg = document.getElementById(svgId);
+    if (svg) {
+      svg.querySelectorAll('stop').forEach(s => s.setAttribute('stop-color', color));
+    }
+    if (lineEl) lineEl.setAttribute('stroke', color);
+  }
+
+  function drawSparklines(state) {
+    const s = C1_STATES[state];
+    const d = s.trendData;
+    if (!d) return;
+    sparklinePaths(d.bp.data,   d.bp.color,   'trends-bp-sparkline',    'trends-bp-area',    'trends-bp-line');
+    sparklinePaths(d.meds.data, d.meds.color, 'trends-meds-sparkline',  'trends-meds-area',  'trends-meds-line');
+    sparklinePaths(d.mood.data, d.mood.color, 'trends-mood-sparkline',  'trends-mood-area',  'trends-mood-line');
+    sparklinePaths(d.steps.data,'#1C5430',    'trends-steps-sparkline', 'trends-steps-area', 'trends-steps-line');
+    // update delta gradient headers for meds/mood/bp
+    const setGradient = (svgId, color) => {
+      const svg = document.getElementById(svgId);
+      if (svg) svg.querySelectorAll('linearGradient stop').forEach(s => s.setAttribute('stop-color', color));
+    };
+    setGradient('trends-bp-sparkline',   d.bp.color);
+    setGradient('trends-meds-sparkline', d.meds.color);
+    setGradient('trends-mood-sparkline', d.mood.color);
+    // delta text colors
+    const elBpDelta   = document.getElementById('trends-bp-delta');
+    const elMedsDelta = document.getElementById('trends-meds-delta');
+    const elMoodDelta = document.getElementById('trends-mood-delta');
+    if (elBpDelta)   { elBpDelta.textContent   = d.bp.delta;   elBpDelta.style.color   = d.bp.color; }
+    if (elMedsDelta) { elMedsDelta.textContent = d.meds.delta; elMedsDelta.style.color = d.meds.color; }
+    if (elMoodDelta) { elMoodDelta.textContent = d.mood.delta; elMoodDelta.style.color = d.mood.color; }
+    // avg values
+    const elBpAvg   = document.getElementById('trends-bp-avg');
+    const elMedsAvg = document.getElementById('trends-meds-avg');
+    const elMoodAvg = document.getElementById('trends-mood-avg');
+    if (elBpAvg)   elBpAvg.textContent   = d.bp.avg;
+    if (elMedsAvg) elMedsAvg.textContent = d.meds.avg;
+    if (elMoodAvg) elMoodAvg.innerHTML   = d.mood.avg + '<span style="font-size:13px;color:var(--text-mute);">/5</span>';
+  }
+
+  // ── C1 State Machine ──
+  const C1_STATES = {
+    allGood: {
+      pct: 88,
+      color: '#1C5430',
+      soft: '#E6EFD8',
+      gradient: 'linear-gradient(170deg, #D9ECD9 0%, #E6EFD8 40%, var(--bg) 100%)',
+      answerKo: '어머니, 오늘 편안하세요.',
+      answerEn: 'Mom is doing well today.',
+      sublineKo: '아침 약 복용 완료, 기분 좋다고 체크인',
+      sublineEn: 'Morning meds taken · checked in feeling good',
+      tiles: {
+        meds: { val: '3/3', color: '#1C5430' },
+        mood: { val: '좋음', color: '#1C5430' },
+        bp:   { val: '128/82', color: '#1C5430' },
+        steps:{ val: '2.1k',  color: '#1C5430' },
+      },
+      dotColors: { meds: '#2B7A48', mood: '#2B7A48', bp: '#2B7A48', steps: '#2B7A48' },
+      showCTA: false,
+      // Meds tab
+      medsAdherenceKo: '이번 주 85% 복용',
+      medsAdherenceEn: '85% this week',
+      medsRingOffset: 39.6, // 264*(1-0.85)
+      medsAtorvIcon: { bg:'#FAF6EF', color:'var(--text-mute)', glyph:'○' },
+      medsAtorvStatus: '예정', medsAtorvTime: '9:00PM',
+      medsVitdIcon: { bg:'var(--green-soft)', color:'var(--primary)', glyph:'✓' },
+      medsVitdStatus: '복용함', medsVitdStatusColor:'var(--primary)', medsVitdTime: '8:15AM',
+      medsCtaShow: false,
+      // Trends tab
+      trendsSummaryKo: '지난 주보다 더 좋아지셨어요',
+      trendsSummaryEn: 'Mom is trending better than last week',
+      trendData: {
+        bp:   { avg:'126/80', delta:'-4 ↓', color:'#1C5430', data:[132,128,130,126,124,128,122] },
+        meds: { avg:'94%',    delta:'+6 ↑', color:'#1C5430', data:[85,92,88,100,95,100,100] },
+        mood: { avg:'3.6',    delta:'+0.3', color:'#1C5430', data:[3,4,4,3,4,4,4] },
+        steps:{ avg:'2,140',  delta:'+210 ↑', color:'#1C5430', data:[1800,2100,1950,2300,2200,2100,2400] },
+      },
+    },
+    gentleFlag: {
+      pct: 72,
+      color: '#C68A3D',
+      soft: '#F5E6C8',
+      gradient: 'linear-gradient(170deg, #F5E6C8 0%, #FFF7E6 40%, var(--bg) 100%)',
+      answerKo: '어머니, 대체로 괜찮으세요.',
+      answerEn: 'Mostly good — one thing to watch.',
+      sublineKo: '약 1회 놓치셨고, 기분은 평범',
+      sublineEn: 'Missed 1 dose · mood is "okay"',
+      tiles: {
+        meds: { val: '2/3', color: '#C68A3D' },
+        mood: { val: '보통', color: '#C68A3D' },
+        bp:   { val: '128/82', color: '#1C5430' },
+        steps:{ val: '2.1k',  color: '#1C5430' },
+      },
+      dotColors: { meds: '#C68A3D', mood: '#C68A3D', bp: '#2B7A48', steps: '#2B7A48' },
+      showCTA: true,
+      ctaGlyph: '◐',
+      ctaKo: '저녁 약 알림을 보낼까요?',
+      ctaEn: 'Send a gentle evening reminder?',
+      ctaBtn1Ko: '알림 보내기 · Send', ctaBtn1En: 'Send',
+      ctaBtn2Ko: '나중에 · Later',     ctaBtn2En: 'Later',
+      // Meds tab
+      medsAdherenceKo: '이번 주 72% 복용',
+      medsAdherenceEn: '72% this week',
+      medsRingOffset: 105.6, // 264*(1-0.6)
+      medsAtorvIcon: { bg:'#F2DCD5', color:'#A13525', glyph:'✕' },
+      medsAtorvStatus: '놓침', medsAtorvTime: '어제 저녁',
+      medsVitdIcon: { bg:'var(--green-soft)', color:'var(--primary)', glyph:'✓' },
+      medsVitdStatus: '복용함', medsVitdStatusColor:'var(--primary)', medsVitdTime: '8:15AM',
+      medsCtaShow: true,
+      medsCtaKo: '저녁 약 알림을 보낼까요?',
+      medsCtaEn: 'Send a gentle evening reminder?',
+      // Trends tab
+      trendsSummaryKo: '기분이 조금 가라앉으셨어요',
+      trendsSummaryEn: 'Mood is a little lower than usual',
+      trendData: {
+        bp:   { avg:'126/80', delta:'-4 ↓', color:'#1C5430', data:[132,128,130,126,124,128,122] },
+        meds: { avg:'72%',    delta:'-12 ↓', color:'#C68A3D', data:[90,85,80,70,65,60,72] },
+        mood: { avg:'3.6',    delta:'+0.3', color:'#1C5430', data:[3,4,4,3,4,4,4] },
+        steps:{ avg:'2,140',  delta:'+210 ↑', color:'#1C5430', data:[1800,2100,1950,2300,2200,2100,2400] },
+      },
+    },
+    needsAttention: {
+      pct: 48,
+      color: '#A13525',
+      soft: '#F2DCD5',
+      gradient: 'linear-gradient(170deg, #F2DCD5 0%, #FAE8E4 40%, var(--bg) 100%)',
+      answerKo: '어머니 상태, 잠시 확인해 주세요.',
+      answerEn: 'Please check in on Mom today.',
+      sublineKo: '약 2회 놓치셨고, 혈압 이상 감지',
+      sublineEn: 'Missed 2 doses · BP elevated this morning',
+      tiles: {
+        meds: { val: '1/3',  color: '#A13525' },
+        mood: { val: '—',    color: '#C68A3D' },
+        bp:   { val: '152/94', color: '#A13525' },
+        steps:{ val: '2.1k', color: '#1C5430' },
+      },
+      dotColors: { meds: '#A13525', mood: '#C68A3D', bp: '#A13525', steps: '#2B7A48' },
+      showCTA: true,
+      ctaGlyph: '◆',
+      ctaKo: '어머니께 전화드리는 게 좋겠어요',
+      ctaEn: 'Best to give Mom a call today',
+      ctaBtn1Ko: '전화 · Call Mom', ctaBtn1En: 'Call Mom',
+      ctaBtn2Ko: '나중에 · Later',  ctaBtn2En: 'Later',
+      // Meds tab
+      medsAdherenceKo: '이번 주 55% 복용',
+      medsAdherenceEn: '55% this week',
+      medsRingOffset: 158.4, // 264*(1-0.4)
+      medsAtorvIcon: { bg:'#F2DCD5', color:'#A13525', glyph:'✕' },
+      medsAtorvStatus: '놓침', medsAtorvTime: '어제 저녁',
+      medsVitdIcon: { bg:'#F2DCD5', color:'#A13525', glyph:'✕' },
+      medsVitdStatus: '놓침', medsVitdStatusColor:'#A13525', medsVitdTime: '건너뜀',
+      medsCtaShow: true,
+      medsCtaKo: '저녁 약 알림을 보낼까요?',
+      medsCtaEn: 'Send a gentle evening reminder?',
+      // Trends tab
+      trendsSummaryKo: '혈압이 오르고 복용률이 떨어지고 있어요',
+      trendsSummaryEn: 'BP is trending up and adherence is falling',
+      trendData: {
+        bp:   { avg:'138/88', delta:'+14 ↑', color:'#A13525', data:[124,128,132,136,140,138,148] },
+        meds: { avg:'55%',    delta:'-28 ↓', color:'#A13525', data:[90,75,60,55,45,50,40] },
+        mood: { avg:'2.8',    delta:'-0.4',  color:'#C68A3D', data:[3,3,3,2,2,3,2] },
+        steps:{ avg:'2,140',  delta:'+210 ↑', color:'#1C5430', data:[1800,2100,1950,2300,2200,2100,2400] },
+      },
+    },
+  };
+
+  const STATE_ORDER = ['allGood', 'gentleFlag', 'needsAttention'];
+  let currentState = 'allGood';
+  const CIRC = 264;
+
+  function applyState(state) {
+    currentState = state;
+    const s = C1_STATES[state];
+
+    // Update CSS variables (drives CTA card, tab bar active color)
+    document.documentElement.style.setProperty('--state-color', s.color);
+    document.documentElement.style.setProperty('--state-soft', s.soft);
+
+    // Ring arc
+    const arc = document.getElementById('cg-ring-arc');
+    if (arc) {
+      arc.style.stroke = s.color;
+      arc.setAttribute('stroke-dashoffset', String(Math.round(CIRC * (1 - s.pct / 100) * 100) / 100));
+    }
+
+    // Ring percent label
+    const pct = document.getElementById('cg-ring-pct');
+    if (pct) { pct.textContent = s.pct; pct.style.color = s.color; }
+
+    // Gradient flourish
+    const flourish = document.getElementById('cg-gradient-flourish');
+    if (flourish) flourish.style.background = s.gradient;
+
+    // Answer text
+    const ko = document.getElementById('cg-answer-ko');
+    const en = document.getElementById('cg-answer-en');
+    if (ko) ko.textContent = s.answerKo;
+    if (en) en.textContent = s.answerEn;
+
+    // Subline
+    const subline = document.getElementById('cg-subline');
+    if (subline) {
+      const sub1 = subline.querySelector('div:first-child');
+      const sub2 = document.getElementById('cg-subline-en');
+      if (sub1) sub1.textContent = s.sublineKo;
+      if (sub2) sub2.textContent = s.sublineEn;
+    }
+
+    // Tiles
+    const tileIds = { meds: 'cg-tile-meds', mood: 'cg-tile-mood', bp: 'cg-tile-bp', steps: 'cg-tile-steps' };
+    Object.entries(tileIds).forEach(([key, idBase]) => {
+      const valEl  = document.getElementById(idBase + '-val');
+      const dotEl  = document.getElementById(idBase + '-dot');
+      if (valEl) valEl.style.color = s.tiles[key].color;
+      if (valEl) valEl.textContent = s.tiles[key].val;
+      if (dotEl) dotEl.style.background = s.dotColors[key];
+    });
+
+    // Action CTA (home tab)
+    const cta = document.getElementById('cg-action-cta');
+    if (cta) {
+      cta.style.display = s.showCTA ? 'block' : 'none';
+      if (s.showCTA) {
+        const glyph = document.getElementById('cg-cta-glyph');
+        const ctaKo = document.getElementById('cg-cta-ko');
+        const ctaEn = document.getElementById('cg-cta-en');
+        const btn1  = document.getElementById('cg-cta-btn1');
+        const btn2  = document.getElementById('cg-cta-btn2');
+        if (glyph) glyph.textContent = s.ctaGlyph;
+        if (ctaKo) ctaKo.textContent = s.ctaKo;
+        if (ctaEn) ctaEn.textContent = s.ctaEn;
+        if (btn1) btn1.textContent = s.ctaBtn1Ko;
+        if (btn2) btn2.textContent = s.ctaBtn2Ko;
+      }
+    }
+
+    // ── Meds tab ──
+    const medsArc = document.getElementById('meds-ring-arc');
+    if (medsArc) {
+      medsArc.style.stroke = s.color;
+      medsArc.setAttribute('stroke-dashoffset', String(s.medsRingOffset));
+    }
+    const medsAdKo = document.getElementById('meds-adherence-ko');
+    const medsAdEn = document.getElementById('meds-adherence-en');
+    if (medsAdKo) { medsAdKo.textContent = s.medsAdherenceKo; medsAdKo.style.color = s.color; }
+    if (medsAdEn) medsAdEn.textContent = s.medsAdherenceEn;
+
+    // Atorvastatin row
+    const atorvIcon = document.getElementById('meds-atorva-icon');
+    const atorvStat = document.getElementById('meds-atorva-status');
+    const atorvTime = document.getElementById('meds-atorva-time');
+    if (atorvIcon && s.medsAtorvIcon) {
+      atorvIcon.style.background = s.medsAtorvIcon.bg;
+      atorvIcon.style.color      = s.medsAtorvIcon.color;
+      atorvIcon.textContent      = s.medsAtorvIcon.glyph;
+    }
+    if (atorvStat) { atorvStat.textContent = s.medsAtorvStatus; atorvStat.style.color = s.medsAtorvIcon ? s.medsAtorvIcon.color : s.color; }
+    if (atorvTime) atorvTime.textContent = s.medsAtorvTime;
+
+    // Vitamin D row
+    const vitdIcon = document.getElementById('meds-vitd-icon');
+    const vitdStat = document.getElementById('meds-vitd-status');
+    const vitdTime = document.getElementById('meds-vitd-time');
+    if (vitdIcon && s.medsVitdIcon) {
+      vitdIcon.style.background = s.medsVitdIcon.bg;
+      vitdIcon.style.color      = s.medsVitdIcon.color;
+      vitdIcon.textContent      = s.medsVitdIcon.glyph;
+    }
+    if (vitdStat) { vitdStat.textContent = s.medsVitdStatus; vitdStat.style.color = s.medsVitdStatusColor || s.color; }
+    if (vitdTime) vitdTime.textContent = s.medsVitdTime;
+
+    // Meds reminder CTA
+    const medsCta = document.getElementById('meds-reminder-cta');
+    if (medsCta) {
+      medsCta.style.display    = s.medsCtaShow ? 'block' : 'none';
+      medsCta.style.background = s.soft;
+      medsCta.style.border     = '1px solid ' + s.color;
+      const medsCtaKo = document.getElementById('meds-cta-ko');
+      const medsCtaEn = document.getElementById('meds-cta-en');
+      const medsCtaBtn1 = document.getElementById('meds-cta-btn1');
+      if (medsCtaKo && s.medsCtaKo) medsCtaKo.textContent = s.medsCtaKo;
+      if (medsCtaEn && s.medsCtaEn) medsCtaEn.textContent = s.medsCtaEn;
+      if (medsCtaBtn1) medsCtaBtn1.style.background = s.color;
+    }
+
+    // ── Trends tab ──
+    const trendsSumKo = document.getElementById('trends-summary-ko');
+    const trendsSumEn = document.getElementById('trends-summary-en');
+    const trendsSumCard = document.getElementById('trends-summary-card');
+    if (trendsSumKo) trendsSumKo.textContent = s.trendsSummaryKo;
+    if (trendsSumEn) trendsSumEn.textContent = s.trendsSummaryEn;
+    if (trendsSumCard) {
+      trendsSumCard.style.background = s.soft;
+      trendsSumCard.style.borderColor = s.color;
+    }
+    drawSparklines(state);
+  }
+
+  function cycleState() {
+    const idx = STATE_ORDER.indexOf(currentState);
+    const next = STATE_ORDER[(idx + 1) % STATE_ORDER.length];
+    applyState(next);
+  }
+
+  // Mount animation: dashoffset starts at CIRC (empty), transitions to target
+  (function mountRingAnimation() {
+    const arc = document.getElementById('cg-ring-arc');
+    if (!arc) return;
+    arc.setAttribute('stroke-dashoffset', String(CIRC));
+    arc.style.transition = 'none';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        arc.style.transition = 'stroke-dashoffset 0.9s cubic-bezier(.2,.7,.3,1), stroke 0.6s';
+        applyState('allGood');
+      });
+    });
+  })();
 </script>
 
 </body>

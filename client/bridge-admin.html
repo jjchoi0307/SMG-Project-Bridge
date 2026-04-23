@@ -10,24 +10,24 @@
     theme: {
       extend: {
         colors: {
-          'smg-bg': '#0D1421',
-          'smg-sidebar': '#0A1020',
-          'smg-card': '#162032',
-          'smg-card2': '#1C2B3F',
-          'smg-border': '#1C2F47',
-          'smg-border2': '#243A52',
-          'smg-accent': '#3B82F6',
-          'smg-green': '#10B981',
-          'smg-amber': '#F59E0B',
-          'smg-red': '#EF4444',
-          'smg-purple': '#8B5CF6',
-          'smg-teal': '#14B8A6',
-          'smg-text': '#E2E8F0',
-          'smg-text-sec': '#7A9AB8',
-          'smg-text-mute': '#3D5A75',
+          'smg-bg': '#F6F5F0',
+          'smg-sidebar': '#F6F5F0',
+          'smg-card': '#FFFFFF',
+          'smg-card2': '#EEECE4',
+          'smg-border': '#D8D5CB',
+          'smg-border2': '#E5E2D8',
+          'smg-accent': '#1B3E7A',
+          'smg-green': '#1F8A4C',
+          'smg-amber': '#B8860B',
+          'smg-red': '#A13525',
+          'smg-purple': '#7B3B5C',
+          'smg-teal': '#1F8A4C',
+          'smg-text': '#101418',
+          'smg-text-sec': '#5B6069',
+          'smg-text-mute': '#8A8F98',
         },
         fontFamily: {
-          sans: ['Inter', '-apple-system', 'sans-serif'],
+          sans: ['IBM Plex Sans', '-apple-system', 'system-ui', 'sans-serif'],
         },
         borderRadius: {
           'smg': '12px',
@@ -37,7 +37,33 @@
   }
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
+  :root {
+    --smg-navy: #1B3E7A; --smg-navy-deep: #0E2449; --smg-navy-ink: #0A1B36;
+    --smg-emerald: #1F8A4C; --smg-emerald-deep: #146837; --smg-emerald-soft: #E6F3EB;
+    --a-paper: #F6F5F0; --a-paper-deep: #EEECE4;
+    --a-ink: #101418; --a-ink-2: #2A2E35; --a-ink-3: #5B6069; --a-ink-4: #8A8F98;
+    --a-rule: #D8D5CB; --a-rule-soft: #E5E2D8;
+    --a-card: #FFFFFF; --a-accent: #1B3E7A; --a-accent-soft: #DDE5F2;
+    --a-good: #1F8A4C; --a-warn: #B8860B; --a-warn-soft: #F5EACB;
+    --a-danger: #A13525; --a-danger-soft: #F2DCD5;
+    --font-sans-a: 'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --font-serif-a: 'IBM Plex Serif', Georgia, serif;
+    /* ── Direction B tokens ── */
+    --b-paper: #FAF6EF; --b-paper-deep: #F2ECE0; --b-ivory: #FDFAF3;
+    --b-ink: #1A1814; --b-ink-2: #3B3830; --b-ink-3: #6B675C; --b-ink-4: #A29D90;
+    --b-rule: #E5DFD0;
+    --b-emerald: #2B7A48; --b-emerald-deep: #1C5430; --b-emerald-soft: #E6EFD8;
+    --b-peach: #E8A87C; --b-peach-soft: #F7E3D1;
+    --b-plum: #7B3B5C;
+    --b-amber: #C68A3D; --b-amber-soft: #F5E6C8;
+    --b-card: #FFFFFF;
+    --font-display-b: 'Fraunces', Georgia, serif;
+    --font-kr: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+    --font-sans-b: 'Pretendard Variable', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  .tt-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   .animate-pulse-sync { animation: pulse 1s infinite; }
@@ -49,6 +75,8 @@
   /* ── JS-toggled display states ── */
   .page { display: none; }
   .page.active { display: flex; flex-direction: column; }
+  #page-appointments.active { flex-direction: column; }
+  #page-upload-b.active { flex-direction: row; padding: 0; }
   .drawer { right: -700px; }
   .drawer.open { right: 0; }
   .drawer-overlay { display: none; }
@@ -58,264 +86,619 @@
   #login-overlay { display: none; }
   #login-overlay.active { display: flex; }
   .upload-progress { display: none; }
-  .nav-item.active { background: rgba(59,130,246,0.12); color: #3B82F6; }
-  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #243A52; color: #7A9AB8; cursor: pointer; transition: all 0.15s; background: #1C2B3F; user-select: none; }
-  .chip:hover { background: rgba(59,130,246,0.08); border-color: #3B82F6; color: #3B82F6; }
-  .chip.active { background: rgba(59,130,246,0.12); border-color: #3B82F6; color: #3B82F6; }
-  .d-tab.active { color: #3B82F6; border-bottom-color: #3B82F6; }
-  .filter-btn { background: #1C2B3F; border: 1px solid #1C2F47; color: #7A9AB8; border-radius: 6px; cursor: pointer; font-family: inherit; }
-  .filter-btn.active { background: rgba(59,130,246,0.12); border-color: #3B82F6; color: #3B82F6; }
+  .nav-item.active { background: var(--a-paper-deep) !important; color: var(--a-ink) !important; font-weight: 500; }
+  .nav-item:hover { background: var(--a-paper-deep); }
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--a-rule); color: var(--a-ink-3); cursor: pointer; transition: all 0.15s; background: white; user-select: none; font-family: var(--font-sans-a); }
+  .chip:hover { background: var(--a-accent-soft); border-color: var(--smg-navy); color: var(--smg-navy); }
+  .chip.active { background: var(--a-accent-soft); border-color: var(--smg-navy); color: var(--smg-navy); }
+  .d-tab.active { color: var(--smg-navy); border-bottom-color: var(--smg-navy); }
+  .filter-btn { background: white; border: 1px solid var(--a-rule); color: var(--a-ink-3); border-radius: 6px; cursor: pointer; font-family: var(--font-sans-a); }
+  .filter-btn.active { background: var(--a-accent-soft); border-color: var(--smg-navy); color: var(--smg-navy); }
 
   /* ── Data tables (JS-generated HTML) ── */
   .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .data-table th {
     text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700;
-    color: #3D5A75; letter-spacing: 0.6px; text-transform: uppercase;
-    border-bottom: 1px solid #1C2F47; background: #1C2B3F;
-    white-space: nowrap; user-select: none;
+    color: var(--a-ink-4); letter-spacing: 0.14em; text-transform: uppercase;
+    border-bottom: 1px solid var(--a-rule); background: var(--a-paper-deep);
+    white-space: nowrap; user-select: none; font-family: var(--font-mono);
   }
   .data-table th.sortable { cursor: pointer; }
-  .data-table th.sortable:hover { color: #7A9AB8; }
-  .data-table td { padding: 12px 16px; border-bottom: 1px solid #1C2F47; vertical-align: middle; }
+  .data-table th.sortable:hover { color: var(--a-ink-3); }
+  .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--a-rule-soft); vertical-align: middle; color: var(--a-ink-2); }
   .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr.clickable:hover td { background: rgba(59,130,246,0.04); cursor: pointer; }
+  .data-table tr.clickable:hover td { background: rgba(27,62,122,0.02); cursor: pointer; }
 
   /* Keep legacy alias so existing JS template strings work unchanged */
   .patient-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .patient-table th {
     text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700;
-    color: #3D5A75; letter-spacing: 0.6px; text-transform: uppercase;
-    border-bottom: 1px solid #1C2F47; background: #1C2B3F;
-    cursor: pointer; white-space: nowrap; user-select: none;
+    color: var(--a-ink-4); letter-spacing: 0.14em; text-transform: uppercase;
+    border-bottom: 1px solid var(--a-rule); background: var(--a-paper-deep);
+    cursor: pointer; white-space: nowrap; user-select: none; font-family: var(--font-mono);
   }
-  .patient-table th:hover { color: #7A9AB8; }
-  .patient-table td { padding: 12px 16px; border-bottom: 1px solid #1C2F47; vertical-align: middle; }
+  .patient-table th:hover { color: var(--a-ink-3); }
+  .patient-table td { padding: 12px 16px; border-bottom: 1px solid var(--a-rule-soft); vertical-align: middle; color: var(--a-ink-2); }
   .patient-table tr:last-child td { border-bottom: none; }
-  .patient-table tr:hover td { background: rgba(59,130,246,0.04); cursor: pointer; }
+  .patient-table tr:hover td { background: rgba(27,62,122,0.02); cursor: pointer; }
 
   .file-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .file-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700; color: #3D5A75; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid #1C2F47; background: #1C2B3F; }
-  .file-table td { padding: 12px 16px; border-bottom: 1px solid #1C2F47; vertical-align: middle; }
+  .file-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 700; color: var(--a-ink-4); letter-spacing: 0.14em; text-transform: uppercase; border-bottom: 1px solid var(--a-rule); background: var(--a-paper-deep); font-family: var(--font-mono); }
+  .file-table td { padding: 12px 16px; border-bottom: 1px solid var(--a-rule-soft); vertical-align: middle; color: var(--a-ink-2); }
   .file-table tr:last-child td { border-bottom: none; }
-  .file-table tr:hover td { background: #1C2B3F; }
+  .file-table tr:hover td { background: rgba(27,62,122,0.02); }
 
   /* ── Patient cell components ── */
   .patient-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-  .patient-name { font-weight: 600; color: #E2E8F0; font-size: 13px; }
-  .patient-sub { font-size: 11px; color: #7A9AB8; margin-top: 1px; }
+  .patient-name { font-weight: 600; color: var(--a-ink); font-size: 13px; }
+  .patient-sub { font-size: 11px; color: var(--a-ink-3); margin-top: 1px; }
 
   /* ── Badges ── */
-  .alert-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-  .alert-badge.critical { background: rgba(239,68,68,0.12); color: #EF4444; }
-  .alert-badge.high     { background: rgba(245,158,11,0.12); color: #F59E0B; }
-  .alert-badge.normal   { background: rgba(16,185,129,0.12); color: #10B981; }
-  .alert-badge.pending  { background: rgba(59,130,246,0.12); color: #3B82F6; }
+  .alert-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-family: var(--font-mono); }
+  .alert-badge.critical { background: var(--a-danger-soft); color: var(--a-danger); }
+  .alert-badge.high     { background: var(--a-warn-soft); color: var(--a-warn); }
+  .alert-badge.normal   { background: var(--smg-emerald-soft); color: var(--a-good); }
+  .alert-badge.pending  { background: var(--a-accent-soft); color: var(--smg-navy); }
 
-  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
-  .status-pill.done       { background: rgba(16,185,129,0.12); color: #10B981; }
-  .status-pill.processing { background: rgba(245,158,11,0.12); color: #F59E0B; }
-  .status-pill.error      { background: rgba(239,68,68,0.12);  color: #EF4444; }
-  .status-pill.pending    { background: rgba(59,130,246,0.12); color: #3B82F6; }
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; font-family: var(--font-mono); }
+  .status-pill.done       { background: var(--smg-emerald-soft); color: var(--a-good); }
+  .status-pill.processing { background: var(--a-warn-soft); color: var(--a-warn); }
+  .status-pill.error      { background: var(--a-danger-soft); color: var(--a-danger); }
+  .status-pill.pending    { background: var(--a-accent-soft); color: var(--smg-navy); }
   .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
   /* ── Patient drawer — info grid ── */
-  .info-label { font-size: 10px; font-weight: 700; color: #3D5A75; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .info-value { font-size: 14px; font-weight: 500; color: #E2E8F0; }
-  .info-value.empty { color: #3D5A75; font-style: italic; font-weight: 400; }
+  .info-label { font-size: 10px; font-weight: 700; color: var(--a-ink-4); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; font-family: var(--font-mono); }
+  .info-value { font-size: 14px; font-weight: 500; color: var(--a-ink); }
+  .info-value.empty { color: var(--a-ink-4); font-style: italic; font-weight: 400; }
   .info-item {}
 
   /* ── Patient drawer — data rows ── */
-  .data-row { padding: 12px 0; border-bottom: 1px solid #1C2F47; display: flex; flex-direction: column; gap: 4px; }
+  .data-row { padding: 12px 0; border-bottom: 1px solid var(--a-rule-soft); display: flex; flex-direction: column; gap: 4px; }
   .data-row:last-child { border-bottom: none; }
   .data-row-header { display: flex; justify-content: space-between; align-items: center; }
-  .data-row-title { font-size: 13px; font-weight: 600; color: #E2E8F0; }
-  .data-row-sub { font-size: 12px; color: #7A9AB8; }
-  .data-row-meta { font-size: 11px; color: #3D5A75; }
+  .data-row-title { font-size: 13px; font-weight: 600; color: var(--a-ink); }
+  .data-row-sub { font-size: 12px; color: var(--a-ink-3); }
+  .data-row-meta { font-size: 11px; color: var(--a-ink-4); font-family: var(--font-mono); }
 
   /* ── Empty state ── */
   .empty-state { display: flex; flex-direction: column; align-items: center; padding: 56px 24px; text-align: center; }
   .empty-icon  { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
-  .empty-text  { font-size: 14px; font-weight: 500; color: #7A9AB8; }
-  .empty-sub   { font-size: 12px; color: #3D5A75; margin-top: 4px; }
+  .empty-text  { font-size: 14px; font-weight: 500; color: var(--a-ink-3); }
+  .empty-sub   { font-size: 12px; color: var(--a-ink-4); margin-top: 4px; }
 
   /* ── Pagination (JS-rendered) ── */
-  .pag-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #1C2F47; font-size: 12px; color: #7A9AB8; }
+  .pag-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid var(--a-rule); font-size: 12px; color: var(--a-ink-3); font-family: var(--font-mono); }
   .pag-btns { display: flex; gap: 3px; }
-  .pag-page { background: none; border: 1px solid transparent; color: #7A9AB8; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.12s; }
-  .pag-page.active { background: rgba(59,130,246,0.12); border-color: #3B82F6; color: #3B82F6; }
-  .pag-page:hover:not(.active):not(:disabled) { border-color: #243A52; color: #E2E8F0; }
+  .pag-page { background: none; border: 1px solid transparent; color: var(--a-ink-3); border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-sans-a); transition: all 0.12s; }
+  .pag-page.active { background: var(--a-accent-soft); border-color: var(--smg-navy); color: var(--smg-navy); }
+  .pag-page:hover:not(.active):not(:disabled) { border-color: var(--a-rule); color: var(--a-ink); }
   .pag-page:disabled { opacity: 0.3; cursor: not-allowed; }
 
   /* ── Pharmacy action button ── */
-  .ph-action-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.25); color: #14B8A6; border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
-  .ph-action-btn:hover { background: rgba(20,184,166,0.2); }
+  .ph-action-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--smg-emerald-soft); border: 1px solid rgba(31,138,76,0.25); color: var(--a-good); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+  .ph-action-btn:hover { background: rgba(31,138,76,0.15); }
 </style>
 </head>
-<body class="font-sans bg-smg-bg text-smg-text min-h-screen flex">
+<body style="margin:0;padding:0;background:var(--a-paper);font-family:var(--font-sans-a);color:var(--a-ink);min-height:100vh;display:flex;flex-direction:column;">
 
 <!-- LOGIN OVERLAY -->
-<div id="login-overlay" class="active fixed inset-0 bg-smg-bg z-[9999] items-center justify-center">
-  <div id="login-box" class="bg-smg-card border border-smg-border rounded-2xl p-9 w-[360px] flex flex-col gap-4 shadow-2xl">
-    <div class="flex items-center gap-2.5 mb-3">
+<div id="login-overlay" class="active" style="position:fixed;inset:0;background:var(--a-paper);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--a-card);border:1px solid var(--a-rule);border-radius:16px;padding:36px;width:360px;display:flex;flex-direction:column;gap:16px;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:32px;height:32px;background:var(--smg-navy);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;">S</div>
       <div>
-        <div class="text-sm font-extrabold text-smg-text tracking-wide">SMG BRIDGE</div>
-        <div class="text-[9px] font-bold tracking-widest bg-blue-500/12 text-smg-accent border border-blue-500/25 rounded px-1.5 py-0.5 mt-0.5 inline-block">ADMIN PORTAL</div>
+        <div style="font-family:var(--font-sans-a);font-size:13px;font-weight:600;color:var(--a-ink);">SMG Bridge</div>
+        <div class="tt-label" style="color:var(--a-ink-4);margin-top:2px;">ADMIN · v2.1</div>
       </div>
     </div>
-    <h2 class="text-[22px] font-extrabold text-smg-text -mt-2">Sign in</h2>
-    <p class="text-[13px] text-smg-text-sec -mt-2 mb-2">Enter your credentials to access the portal.</p>
-    <label class="block text-[11px] font-bold text-smg-text-sec tracking-wide">USERNAME</label>
-    <input type="text" id="login-username" placeholder="admin" autocomplete="username"
-      class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text font-sans text-[14px] outline-none focus:border-smg-accent -mt-2">
-    <label class="block text-[11px] font-bold text-smg-text-sec tracking-wide">PASSWORD</label>
-    <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"
-      class="w-full bg-smg-card2 border border-smg-border2 rounded-lg px-3.5 py-2.5 text-smg-text font-sans text-[14px] outline-none focus:border-smg-accent -mt-2">
-    <button class="w-full bg-smg-accent text-white border-none rounded-lg py-3 text-[14px] font-bold font-sans cursor-pointer hover:bg-blue-600 mt-1 disabled:opacity-50" id="login-btn" onclick="doLogin()">Sign In</button>
-    <div id="login-error" class="text-smg-red text-[12px] mt-2" style="display:none;">Invalid username or password.</div>
+    <div style="font-family:var(--font-serif-a);font-size:22px;font-weight:600;color:var(--a-ink);margin-top:4px;">Sign in</div>
+    <div style="font-size:13px;color:var(--a-ink-3);">Enter your credentials to access the portal.</div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--a-ink-4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">USERNAME</div>
+      <input type="text" id="login-username" placeholder="admin" autocomplete="username"
+        style="width:100%;box-sizing:border-box;background:var(--a-paper-deep);border:1px solid var(--a-rule);border-radius:8px;padding:10px 14px;color:var(--a-ink);font-family:var(--font-sans-a);font-size:14px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--a-ink-4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">PASSWORD</div>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"
+        style="width:100%;box-sizing:border-box;background:var(--a-paper-deep);border:1px solid var(--a-rule);border-radius:8px;padding:10px 14px;color:var(--a-ink);font-family:var(--font-sans-a);font-size:14px;outline:none;">
+    </div>
+    <button id="login-btn" onclick="doLogin()"
+      style="width:100%;background:var(--smg-navy);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;font-family:var(--font-sans-a);cursor:pointer;">Sign In</button>
+    <div id="login-error" style="display:none;color:var(--a-danger);font-size:12px;">Invalid username or password.</div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<nav class="w-60 bg-smg-sidebar border-r border-smg-border flex flex-col flex-shrink-0 fixed top-0 left-0 bottom-0 z-[100]">
-  <div class="px-5 py-6 border-b border-smg-border flex items-center gap-2.5">
-    <img src="smg.logo.transparent.v1.png" alt="SMG" class="h-9" style="filter:brightness(0) invert(1);opacity:0.85;">
-    <div>
-      <div class="text-[13px] font-bold text-smg-text-sec tracking-wide">BRIDGE</div>
-      <div class="text-[9px] font-bold tracking-widest bg-blue-500/12 text-smg-accent border border-blue-500/25 rounded px-1.5 py-0.5 mt-0.5 inline-block">ADMIN PORTAL</div>
+<!-- ══ ADMIN PORTAL A — 3-COLUMN LAYOUT ══ -->
+<div style="display:flex;width:100%;min-height:100vh;background:var(--a-paper);">
+
+<!-- ═══ SIDEBAR (232px) ═══ -->
+<nav style="width:232px;flex-shrink:0;background:var(--a-paper);border-right:1px solid var(--a-rule);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;" class="hide-scrollbar">
+
+  <!-- Logo row -->
+  <div style="display:flex;align-items:center;gap:10px;padding:20px 16px 16px;border-bottom:1px solid var(--a-rule);">
+    <div style="width:28px;height:28px;background:var(--smg-navy);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;">S</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-family:var(--font-sans-a);font-size:13px;font-weight:600;color:var(--a-ink);line-height:1.2;">SMG Bridge</div>
+      <div class="tt-label" style="color:var(--a-ink-4);margin-top:2px;">ADMIN · v2.1</div>
     </div>
   </div>
 
-  <div class="flex-1 p-3 overflow-y-auto hide-scrollbar">
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">Overview</div>
-    <div class="nav-item active flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('dashboard')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Dashboard
+  <!-- Nav groups -->
+  <div style="flex:1;padding:12px 8px;">
+
+    <!-- Data group -->
+    <div class="tt-label" style="color:var(--a-ink-4);padding:6px 8px;margin-top:8px;">Data</div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('upload')">
+      <span style="flex:1;">Upload files</span>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);background:var(--a-paper-deep);border-radius:4px;padding:1px 5px;">3</span>
+    </div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('patients')">
+      <span style="flex:1;">Patient registry</span>
+      <span id="nav-patient-count" style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);background:var(--a-paper-deep);border-radius:4px;padding:1px 5px;">9,847</span>
+    </div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('eligibility')">
+      <span style="flex:1;">Eligibility</span>
+    </div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('claims')">
+      <span style="flex:1;">Claims</span>
+    </div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('auths')">
+      <span style="flex:1;">Authorizations</span>
+      <span id="nav-auths-badge" style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--a-warn);background:var(--a-warn-soft);border-radius:4px;padding:1px 5px;">42</span>
     </div>
 
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">Data Management</div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('upload')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></span> Upload Excel Files
+    <!-- Clinical group -->
+    <div class="tt-label" style="color:var(--a-ink-4);padding:6px 8px;margin-top:12px;">Clinical</div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('labs')">
+      <span style="flex:1;">Lab results</span>
     </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('patients')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Patient Registry
-      <span class="ml-auto text-[10px] font-bold bg-smg-green text-black rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-patient-count">0</span>
-    </div>
-
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">MSO Operations</div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('eligibility')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span> Eligibility
-    </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('claims')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Claims
-      <span class="ml-auto text-[10px] font-bold bg-smg-red text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-claims-badge">0</span>
-    </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('auths')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Authorizations
-      <span class="ml-auto text-[10px] font-bold bg-smg-amber text-black rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-auths-badge">0</span>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('pharmacy')">
+      <span style="flex:1;">Pharmacy</span>
     </div>
 
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">Clinical</div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('labs')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Lab Results
+    <!-- Patient portal group -->
+    <div class="tt-label" style="color:var(--a-ink-4);padding:6px 8px;margin-top:12px;">Patient portal</div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('dashboard')">
+      <span style="flex:1;">Today's schedule</span>
     </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('pharmacy')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span> Pharmacy
+    <div class="nav-item active" id="nav-appointments" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--a-ink);cursor:pointer;margin-bottom:1px;background:var(--a-paper-deep);" onclick="showPage('appointments')">
+      <span style="flex:1;">Appointment calendar</span>
     </div>
-
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">Patient Portal</div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('schedule')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> Today's Schedule
-    </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('apptQueue')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg></span> Appt. Calendar
-      <span class="ml-auto text-[10px] font-bold bg-smg-accent text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-appt-badge">0</span>
-    </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('consents')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span> Caregiver Consents
-      <span class="ml-auto text-[10px] font-bold bg-smg-amber text-black rounded-full px-1.5 py-0.5 min-w-[18px] text-center" id="nav-consent-badge">0</span>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="showPage('portals')">
+      <span style="flex:1;">Caregiver consents</span>
+      <span style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--a-warn);background:var(--a-warn-soft);border-radius:4px;padding:1px 5px;">7</span>
     </div>
 
-    <div class="text-[10px] font-bold text-smg-text-mute tracking-widest uppercase px-2 mt-4 mb-1.5">Member Portals</div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="window.open('bridge-members-v2.html','_blank')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span> Bridge v2
+    <!-- Member portals group -->
+    <div class="tt-label" style="color:var(--a-ink-4);padding:6px 8px;margin-top:12px;">Member portals</div>
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="window.open('bridge-patient.html','_blank')">
+      <span style="flex:1;">Patient app</span>
+      <span style="font-size:11px;color:var(--a-ink-4);">&#8599;</span>
     </div>
-    <div class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13px] font-medium text-smg-text-sec transition-all duration-150 no-underline mb-0.5 hover:bg-smg-card hover:text-smg-text" onclick="showPage('portals')">
-      <span class="w-5 flex items-center justify-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span> Portal Links
+    <div class="nav-item" style="display:flex;align-items:center;padding:7px 10px;border-radius:6px;font-size:12.5px;color:var(--a-ink-2);cursor:pointer;margin-bottom:1px;" onclick="window.open('bridge-caregiver.html','_blank')">
+      <span style="flex:1;">Caregiver app</span>
+      <span style="font-size:11px;color:var(--a-ink-4);">&#8599;</span>
     </div>
   </div>
 
-  <div class="p-4 border-t border-smg-border text-[11px] text-smg-text-mute">
-    <div class="flex items-center gap-1.5 mb-1">
-      <div class="w-1.5 h-1.5 rounded-full bg-smg-green" id="syncDot"></div>
-      <span id="syncStatus">Connecting...</span>
+  <!-- User row -->
+  <div style="padding:12px 14px;border-top:1px solid var(--a-rule);display:flex;align-items:center;gap:10px;">
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--a-accent-soft);display:flex;align-items:center;justify-content:center;color:var(--smg-navy);font-size:11px;font-weight:700;flex-shrink:0;">JK</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:12px;font-weight:500;color:var(--a-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Jennifer Kim</div>
+      <div style="font-size:10px;color:var(--a-ink-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Operations · SMG MSO</div>
     </div>
-    <div id="lastSync" class="text-[10px]">Last sync: —</div>
+    <div style="display:flex;align-items:center;gap:4px;cursor:pointer;" onclick="doLogout()" title="Sign out">
+      <div id="syncDot" style="width:6px;height:6px;border-radius:50%;background:var(--a-good);flex-shrink:0;"></div>
+      <span id="syncStatus" style="display:none;"></span>
+    </div>
   </div>
 </nav>
 
-<!-- MAIN -->
-<div class="ml-60 flex-1 flex flex-col min-h-screen">
+<!-- ═══ CENTER + RIGHT wrapper (offset by sidebar) ═══ -->
+<div style="margin-left:232px;flex:1;display:flex;flex-direction:column;min-width:0;">
 
-  <!-- Top Bar -->
-  <div class="h-14 px-7 flex items-center justify-between bg-smg-sidebar border-b border-smg-border flex-shrink-0 sticky top-0 z-50">
-    <div class="text-base font-bold tracking-tight" id="pageTitle">Dashboard</div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2 bg-smg-card border border-smg-border rounded-lg px-3 py-1.5 min-w-[220px]">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" class="text-smg-text-mute flex-shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="globalSearch" placeholder="Search patients, IDs..." oninput="onGlobalSearch(this.value)"
-          class="bg-transparent border-none text-smg-text text-[13px] font-sans outline-none w-full placeholder:text-smg-text-mute">
+<!-- ═══ TOP BAR ═══ -->
+<div id="topbar-appointments" style="background:var(--a-card);border-bottom:1px solid var(--a-rule);padding:16px 28px;display:flex;align-items:center;gap:16px;flex-shrink:0;position:sticky;top:0;z-index:50;">
+  <div style="flex:1;">
+    <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:4px;">PATIENT PORTAL / APPOINTMENT CALENDAR</div>
+    <div style="font-family:var(--font-serif-a);font-size:20px;font-weight:600;color:var(--a-ink);" id="pageTitle">March 2026</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:var(--font-sans-a);">&#8592;</button>
+    <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:var(--font-sans-a);">Today</button>
+    <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:var(--font-sans-a);">&#8594;</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--a-rule);border-radius:4px;padding:6px 12px;background:var(--a-card);">
+    <div style="width:7px;height:7px;border-radius:50%;background:var(--a-good);flex-shrink:0;" class="animate-pulse-sync"></div>
+    <span style="font-family:var(--font-mono);font-size:12px;color:var(--a-ink-2);">LIVE · synced 0:04s ago</span>
+  </div>
+  <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:var(--font-sans-a);">Filter</button>
+  <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:var(--font-sans-a);" onclick="window.open(API+'/export/appointments','_blank')">Export CSV</button>
+  <button style="background:var(--smg-navy);color:#fff;border:none;border-radius:4px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans-a);">+ New appointment</button>
+</div>
+
+<!-- hidden top bar placeholder for other pages -->
+<div id="topbar-other" style="display:none;background:var(--a-card);border-bottom:1px solid var(--a-rule);padding:16px 28px;flex-shrink:0;position:sticky;top:0;z-index:50;">
+  <div style="font-family:var(--font-serif-a);font-size:20px;font-weight:600;color:var(--a-ink);" id="pageTitleOther">Dashboard</div>
+</div>
+
+<!-- ═══ MAIN CONTENT AREA ═══ -->
+<div style="flex:1;display:flex;min-height:0;">
+
+<!-- ═══════════════════════════════════════════
+     PAGE: APPOINTMENTS (default active)
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-appointments" style="flex:1;min-height:0;min-width:0;">
+
+  <!-- TOP BAR -->
+  <div style="padding:16px 28px;border-bottom:1px solid var(--a-rule);display:flex;align-items:center;gap:20px;background:var(--a-card);flex-shrink:0;">
+    <div>
+      <div class="tt-label" style="color:var(--a-ink-4);font-size:9px;margin-bottom:3px;">PATIENT PORTAL / APPOINTMENT CALENDAR</div>
+      <div style="font-family:var(--font-serif-a);font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--a-ink);">March 2026</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-left:24px;">
+      <div style="padding:6px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-2);background:var(--a-card);cursor:pointer;">←</div>
+      <div style="padding:6px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-2);background:var(--a-card);cursor:pointer;">Today</div>
+      <div style="padding:6px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-2);background:var(--a-card);cursor:pointer;">→</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center;">
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-3);font-family:var(--font-mono);">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--a-good);"></span>
+        LIVE · synced 0:04s ago
       </div>
-      <button class="bg-smg-accent border border-smg-accent text-white rounded-lg px-3.5 py-1.5 text-[12px] font-semibold cursor-pointer transition-all duration-150 hover:bg-blue-600" onclick="showPage('upload')">+ Upload Files</button>
-      <button class="bg-smg-card border border-smg-border text-smg-text-sec rounded-lg px-3.5 py-1.5 text-[12px] font-semibold cursor-pointer transition-all duration-150 hover:border-smg-accent hover:text-smg-accent" onclick="doLogout()" title="Sign out">⎋ Sign Out</button>
+      <div style="padding:6px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-2);background:var(--a-card);cursor:pointer;">Filter</div>
+      <div style="padding:6px 10px;border:1px solid var(--a-rule);border-radius:4px;font-size:12px;color:var(--a-ink-2);background:var(--a-card);cursor:pointer;">Export CSV</div>
+      <div style="padding:6px 12px;background:var(--smg-navy);color:#fff;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;">+ New appointment</div>
     </div>
   </div>
 
-  <!-- PAGE: DASHBOARD -->
-  <div class="page active gap-6" id="page-dashboard" style="padding:28px;">
+  <!-- CONTENT ROW (mini cal + day detail + right rail) -->
+  <div style="display:flex;flex:1;min-height:0;min-width:0;">
+
+  <!-- 2-col: Calendar mini panel | Day detail -->
+  <div style="display:flex;flex:1;min-height:0;min-width:0;">
+
+    <!-- Calendar mini panel (360px) -->
+    <div style="width:360px;flex-shrink:0;border-right:1px solid var(--a-rule);background:var(--a-paper);overflow-y:auto;padding:20px 16px;" class="hide-scrollbar">
+
+      <!-- Mini calendar grid -->
+      <div style="margin-bottom:20px;">
+        <!-- Day headers -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px;">
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">S</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">M</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">T</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">W</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">T</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">F</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);padding:4px 0;">S</div>
+        </div>
+        <!-- Week 1: blank x6, 1 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;">
+          <div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>1</span></div>
+        </div>
+        <!-- Week 2: 2,3,4,5,6,7,8 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;">
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>2</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>3</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>4</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>5</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span><span style="width:3px;height:3px;border-radius:50%;background:#7B3B5C;"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>6</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>7</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>8</span></div>
+        </div>
+        <!-- Week 3: 9,10,11,12,13,14,15 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;">
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>9</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>10</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>11</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>12</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>13</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>14</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>15</span></div>
+        </div>
+        <!-- Week 4: 16,17,18(TODAY),19,20,21,22 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;">
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>16</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>17</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span></div></div>
+          <!-- TODAY = 18, navy bg -->
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;background:var(--smg-navy);color:#fff;cursor:pointer;font-weight:600;"><span>18</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.7);"></span><span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.7);"></span><span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.5);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>19</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>20</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>21</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>22</span></div>
+        </div>
+        <!-- Week 5: 23,24,25,26,27,28,29 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;">
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>23</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>24</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span><span style="width:3px;height:3px;border-radius:50%;background:#7B3B5C;"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>25</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>26</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span><span style="width:3px;height:3px;border-radius:50%;background:var(--a-warn);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>27</span><div style="display:flex;gap:2px;margin-top:2px;"><span style="width:3px;height:3px;border-radius:50%;background:var(--a-good);"></span></div></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>28</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>29</span></div>
+        </div>
+        <!-- Week 6: 30,31 -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>30</span></div>
+          <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;color:var(--a-ink-2);cursor:pointer;"><span>31</span></div>
+          <div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div><div style="aspect-ratio:1;"></div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid var(--a-rule-soft);border-bottom:1px solid var(--a-rule-soft);margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--a-ink-3);"><span style="width:8px;height:8px;border-radius:50%;background:var(--a-good);flex-shrink:0;"></span>Confirmed</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--a-ink-3);"><span style="width:8px;height:8px;border-radius:50%;background:var(--a-warn);flex-shrink:0;"></span>Pending</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--a-ink-3);"><span style="width:8px;height:8px;border-radius:50%;background:#7B3B5C;flex-shrink:0;"></span>Rescheduled</div>
+      </div>
+
+      <!-- Pending queue -->
+      <div>
+        <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:10px;">Pending queue · 12</div>
+        <!-- Row 1 -->
+        <div style="padding:10px 10px;border-radius:4px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;cursor:pointer;">
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <div style="font-weight:600;color:var(--a-ink);">Kim, Soonja</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">SMG-2047</div>
+            <div style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">2h ago</div>
+          </div>
+          <div style="color:var(--a-ink-3);">Med refill · metformin</div>
+          <div style="display:flex;gap:6px;align-items:center;color:var(--a-ink-3);font-size:10.5px;font-family:var(--font-mono);">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--a-warn);"></span>
+            Mar 19 · preferred AM
+          </div>
+        </div>
+        <!-- Row 2 -->
+        <div style="padding:10px 10px;border-radius:4px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;cursor:pointer;">
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <div style="font-weight:600;color:var(--a-ink);">Park, Young-ho</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">SMG-2217</div>
+            <div style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">4h ago</div>
+          </div>
+          <div style="color:var(--a-ink-3);">Follow-up BP check</div>
+          <div style="display:flex;gap:6px;align-items:center;color:var(--a-ink-3);font-size:10.5px;font-family:var(--font-mono);">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--a-warn);"></span>
+            Mar 20 · afternoon
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div style="padding:10px 10px;border-radius:4px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;cursor:pointer;">
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <div style="font-weight:600;color:var(--a-ink);">Lee, Helen</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">SMG-3868</div>
+            <div style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">6h ago</div>
+          </div>
+          <div style="color:var(--a-ink-3);">Annual wellness</div>
+          <div style="display:flex;gap:6px;align-items:center;color:var(--a-ink-3);font-size:10.5px;font-family:var(--font-mono);">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--a-warn);"></span>
+            Mar 21 · any
+          </div>
+        </div>
+        <!-- Row 4 -->
+        <div style="padding:10px 10px;border-radius:4px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;cursor:pointer;">
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <div style="font-weight:600;color:var(--a-ink);">Choi, Margaret</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">SMG-2401</div>
+            <div style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">1d ago</div>
+          </div>
+          <div style="color:var(--a-ink-3);">Lab review request</div>
+          <div style="display:flex;gap:6px;align-items:center;color:var(--a-ink-3);font-size:10.5px;font-family:var(--font-mono);">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--a-warn);"></span>
+            Mar 24 · morning
+          </div>
+        </div>
+      </div>
+    </div><!-- /calendar mini panel -->
+
+    <!-- Day detail panel -->
+    <div style="flex:1;background:var(--a-card);overflow-y:auto;padding:24px 28px;" class="hide-scrollbar">
+
+      <!-- Day header -->
+      <div style="margin-bottom:20px;">
+        <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:6px;">WEDNESDAY · TODAY</div>
+        <div style="display:flex;align-items:baseline;gap:14px;">
+          <div style="font-family:var(--font-serif-a);font-size:34px;font-weight:500;color:var(--a-ink);line-height:1;">March 18</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--a-ink-3);">6 confirmed · 2 pending · 1 rescheduled</div>
+        </div>
+      </div>
+
+      <!-- Confirmed section -->
+      <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:12px;">Confirmed · time-sorted</div>
+
+      <!-- Appointment row 1 -->
+      <div style="display:grid;grid-template-columns:64px 1fr auto;padding:12px 0;border-bottom:1px solid var(--a-rule-soft);align-items:start;margin-bottom:0;">
+        <div style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--a-ink-2);">08:30</div>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:6px;"><div style="font-size:14px;font-weight:600;color:var(--a-ink);">Yoon, Daniel</div><div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">SMG-1988</div></div>
+          <div style="font-size:12px;color:var(--a-ink-3);margin-top:2px;">Annual wellness · Dr. Park, Steven</div>
+        </div>
+        <div style="border:1px solid var(--a-rule);border-radius:3px;padding:1px 6px;font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">40m</div>
+      </div>
+
+      <!-- Appointment row 2 (highlighted — navy border, navy tint) -->
+      <div style="display:grid;grid-template-columns:64px 1fr auto;padding:12px 12px;border:1px solid var(--smg-navy);border-radius:3px;margin:8px -12px;align-items:start;background:rgba(27,62,122,0.02);">
+        <div style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--a-ink-2);">09:15</div>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:6px;"><div style="font-size:14px;font-weight:600;color:var(--a-ink);">Kim, Soonja</div><div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">SMG-2047</div></div>
+          <div style="font-size:12px;color:var(--a-ink-3);margin-top:2px;">Follow-up · A1C · Dr. Oh, Michael</div>
+        </div>
+        <div style="border:1px solid var(--a-rule);border-radius:3px;padding:1px 6px;font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">20m</div>
+      </div>
+
+      <!-- Appointment row 3 -->
+      <div style="display:grid;grid-template-columns:64px 1fr auto;padding:12px 0;border-bottom:1px solid var(--a-rule-soft);align-items:start;margin-bottom:20px;">
+        <div style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--a-ink-2);">10:00</div>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:6px;"><div style="font-size:14px;font-weight:600;color:var(--a-ink);">Park, Young-ho</div><div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">SMG-2217</div></div>
+          <div style="font-size:12px;color:var(--a-ink-3);margin-top:2px;">Med refill · rx review · Dr. Oh, Michael</div>
+        </div>
+        <div style="border:1px solid var(--a-rule);border-radius:3px;padding:1px 6px;font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">15m</div>
+      </div>
+
+      <!-- Pending section -->
+      <div class="tt-label" style="color:var(--a-warn);margin-bottom:12px;">Pending · awaiting confirmation</div>
+
+      <!-- Pending request card -->
+      <div style="border:1px solid var(--a-warn-soft);border-left:2px solid var(--a-warn);background:rgba(184,134,11,0.03);border-radius:3px;padding:14px 16px;margin-top:4px;">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
+          <div style="font-size:14px;font-weight:600;color:var(--a-ink);">Lee, Helen</div>
+          <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);">SMG-3868</div>
+          <div style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--a-warn);text-transform:uppercase;letter-spacing:0.08em;">Pending</div>
+        </div>
+        <div style="font-size:12px;color:var(--a-ink-3);margin-bottom:12px;">Annual wellness visit — overdue 14 months · with Dr. Park, Steven</div>
+        <!-- Time slots grid -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">
+          <div style="border:1px solid var(--a-rule);border-radius:4px;padding:8px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--a-ink-2);cursor:pointer;">10:30</div>
+          <div style="border:1px solid var(--smg-navy);border-radius:4px;padding:8px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--smg-navy);cursor:pointer;background:var(--a-accent-soft);font-weight:600;">11:00</div>
+          <div style="border:1px solid var(--a-rule);border-radius:4px;padding:8px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--a-ink-2);cursor:pointer;">11:30</div>
+          <div style="border:1px solid var(--a-rule);border-radius:4px;padding:8px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--a-ink-2);cursor:pointer;">14:00</div>
+        </div>
+        <!-- Actions -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button style="background:var(--smg-navy);color:#fff;border:none;border-radius:4px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-sans-a);">Confirm 11:00</button>
+          <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:7px 12px;font-size:12px;cursor:pointer;font-family:var(--font-sans-a);">Reschedule</button>
+          <button style="border:1px solid var(--a-rule);background:var(--a-card);color:var(--a-ink-2);border-radius:4px;padding:7px 12px;font-size:12px;cursor:pointer;font-family:var(--font-sans-a);">Cancel</button>
+          <div style="margin-left:auto;font-size:11px;color:var(--a-ink-4);">Patient will see confirmation instantly</div>
+        </div>
+      </div>
+
+    </div><!-- /day detail -->
+  </div><!-- /2-col -->
+
+  <!-- RIGHT RAIL (320px) -->
+  <div style="width:320px;flex-shrink:0;background:var(--a-paper);border-left:1px solid var(--a-rule);padding:20px;overflow-y:auto;" class="hide-scrollbar">
+
+    <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:12px;">OPS HEALTH · LAST 24H</div>
+
+    <!-- 2x2 stat grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
+      <!-- Stat 1 -->
+      <div style="background:var(--a-card);border:1px solid var(--a-rule-soft);border-radius:4px;padding:12px;">
+        <div style="font-family:var(--font-serif-a);font-size:22px;font-weight:600;color:var(--a-ink);line-height:1.1;margin-bottom:4px;">127</div>
+        <div style="font-size:10.5px;color:var(--a-ink-3);margin-bottom:4px;">Requests confirmed</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-ink-4);">+12%</div>
+      </div>
+      <!-- Stat 2 -->
+      <div style="background:var(--a-card);border:1px solid var(--a-rule-soft);border-radius:4px;padding:12px;">
+        <div style="font-family:var(--font-serif-a);font-size:22px;font-weight:600;color:var(--a-ink);line-height:1.1;margin-bottom:4px;">4.2m</div>
+        <div style="font-size:10.5px;color:var(--a-ink-3);margin-bottom:4px;">Median response</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-good);">-8%</div>
+      </div>
+      <!-- Stat 3 -->
+      <div style="background:var(--a-card);border:1px solid var(--a-rule-soft);border-radius:4px;padding:12px;">
+        <div style="font-family:var(--font-serif-a);font-size:22px;font-weight:600;color:var(--a-ink);line-height:1.1;margin-bottom:4px;">42</div>
+        <div style="font-size:10.5px;color:var(--a-ink-3);margin-bottom:4px;">Pending auths</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-warn);">+3</div>
+      </div>
+      <!-- Stat 4 -->
+      <div style="background:var(--a-card);border:1px solid var(--a-rule-soft);border-radius:4px;padding:12px;">
+        <div style="font-family:var(--font-serif-a);font-size:22px;font-weight:600;color:var(--a-ink);line-height:1.1;margin-bottom:4px;">7</div>
+        <div style="font-size:10.5px;color:var(--a-ink-3);margin-bottom:4px;">Consents awaiting</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--a-warn);">+2</div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="tt-label" style="color:var(--a-ink-4);margin-bottom:10px;">Recent activity</div>
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:16px;">
+      <div style="padding:7px 0;border-bottom:1px solid var(--a-rule-soft);display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">0:04</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">Dr. Oh confirmed</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">Kim, Soonja · 9:15</div></div>
+      </div>
+      <div style="padding:7px 0;border-bottom:1px solid var(--a-rule-soft);display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">1:12</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">Auth approved</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">Physical therapy · SMG-2047</div></div>
+      </div>
+      <div style="padding:7px 0;border-bottom:1px solid var(--a-rule-soft);display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">3:40</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">New request</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">Lee, Helen · Annual</div></div>
+      </div>
+      <div style="padding:7px 0;border-bottom:1px solid var(--a-rule-soft);display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">12:21</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">Lab signed</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">HbA1c panel · SMG-2217</div></div>
+      </div>
+      <div style="padding:7px 0;border-bottom:1px solid var(--a-rule-soft);display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">18:04</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">Consent granted</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">Daughter · Kim household</div></div>
+      </div>
+      <div style="padding:7px 0;display:flex;gap:10px;font-size:12px;">
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--a-ink-4);width:36px;flex-shrink:0;padding-top:1px;">24:11</div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:500;">Upload complete</div><div style="color:var(--a-ink-3);font-size:11px;margin-top:1px;">eligibility-mar.xlsx · 2,014 rows</div></div>
+      </div>
+    </div>
+
+    <!-- SSE stream card -->
+    <div style="border:1px solid var(--a-rule);border-radius:4px;background:var(--a-card);padding:14px;">
+      <div class="tt-label" style="color:var(--smg-navy);margin-bottom:10px;">SSE · UPLOAD STREAM</div>
+      <div style="font-family:var(--font-mono);font-size:10.5px;line-height:1.7;color:var(--a-ink-3);">
+        <div style="display:flex;gap:8px;"><span style="color:var(--a-ink-4);min-width:44px;">12:14:02</span><span>claims-q1-mar.xlsx · 2,014 rows</span></div>
+        <div style="display:flex;gap:8px;color:var(--a-good);"><span style="color:var(--a-ink-4);min-width:44px;">12:14:04</span><span>schema: claims_v3 &#10003;</span></div>
+        <div style="display:flex;gap:8px;"><span style="color:var(--a-ink-4);min-width:44px;">12:14:05</span><span>upserting patients [1204/2014]</span></div>
+        <div style="display:flex;gap:8px;color:var(--a-good);"><span style="color:var(--a-ink-4);min-width:44px;">12:14:07</span><span>2,014 upserts complete · 0 errors</span></div>
+        <div style="display:flex;gap:8px;"><span style="color:var(--a-ink-4);min-width:44px;">12:14:12</span><span>stream idle · heartbeat 25s</span></div>
+      </div>
+    </div>
+
+  </div><!-- /right rail -->
+
+  </div><!-- /content row -->
+
+</div><!-- /page-appointments -->
+
+<!-- ═══════════════════════════════════════════
+     PAGE: DASHBOARD
+═══════════════════════════════════════════ -->
+<div class="page" id="page-dashboard" style="flex:1;min-width:0;overflow-y:auto;padding:28px;gap:24px;">
     <div class="grid grid-cols-4 gap-4" id="dashStats">
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-blue-500/40" onclick="showPage('patients')" title="View all patients">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">👥</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-accent" id="ds-patients">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Total Patients</div>
         <div class="text-[11px] text-smg-text-mute" id="ds-patients-d">Loading...</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-green-500/40" onclick="showPage('eligibility'); filterEligibility(null,'Active');" title="View active eligibility">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">✅</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-green" id="ds-elig">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Active Eligibility</div>
         <div class="text-[11px] text-smg-green" id="ds-elig-d">—</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-amber-500/40" onclick="showPage('claims'); filterClaims(null,'Pending');" title="View pending claims">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">📋</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-amber" id="ds-claims">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Pending Claims</div>
         <div class="text-[11px] text-smg-amber" id="ds-claims-d">—</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-red-500/40" onclick="showPage('auths'); filterAuths(null,'Pending');" title="View pending authorizations">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">🔐</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-red" id="ds-auths">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Pending Auths</div>
         <div class="text-[11px] text-smg-red" id="ds-auths-d">—</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-red-500/40" onclick="showPage('labs'); filterLabs(null,'Critical');" title="View critical labs">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">🧪</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-red" id="ds-labs">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Critical Labs</div>
         <div class="text-[11px] text-smg-text-mute" id="ds-labs-d">—</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-purple-500/40" onclick="showPage('pharmacy')" title="View pharmacy">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">💊</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-purple" id="ds-refills">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Refills Due (7d)</div>
         <div class="text-[11px] text-smg-amber" id="ds-refills-d">—</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-teal-500/40" onclick="showPage('upload')" title="View uploaded files">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(20,184,166,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
+        <div class="text-[22px] mb-3">📂</div>
         <div class="text-[30px] font-extrabold tracking-tight leading-none mb-1.5 text-smg-teal" id="ds-files">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Files Uploaded</div>
         <div class="text-[11px] text-smg-text-mute" id="ds-files-d">—</div>
       </div>
       <div class="bg-smg-card border border-smg-border rounded-smg p-5">
-        <div class="mb-3" style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+        <div class="text-[22px] mb-3">🔄</div>
         <div class="text-[16px] font-bold leading-none mb-1.5" id="ds-lastsync">—</div>
         <div class="text-[12px] text-smg-text-sec font-medium mb-1">Last Data Sync</div>
         <div class="text-[11px] text-smg-green" id="ds-lastsync-d">Auto-sync on</div>
@@ -358,7 +741,7 @@
         </div>
         <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
           <div id="dash-files-list">
-            <div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div class="text-[14px] text-smg-text-sec">No files uploaded yet</div></div>
+            <div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">📂</div><div class="text-[14px] text-smg-text-sec">No files uploaded yet</div></div>
           </div>
         </div>
       </div>
@@ -369,7 +752,7 @@
         </div>
         <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
           <div id="dash-refills-list">
-            <div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="text-[14px] text-smg-text-sec">No refills due</div></div>
+            <div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">💊</div><div class="text-[14px] text-smg-text-sec">No refills due</div></div>
           </div>
         </div>
       </div>
@@ -379,11 +762,11 @@
   <!-- PAGE: UPLOAD -->
   <div class="page gap-6" id="page-upload" style="padding:28px;">
     <div>
-      <div class="border-2 border-dashed border-smg-border2 rounded-smg p-12 text-center cursor-pointer transition-all duration-200 bg-smg-card hover:border-smg-accent hover:bg-blue-500/12" id="uploadZone"
+      <div class="border-2 border-dashed border-smg-border2 rounded-smg p-12 text-center cursor-pointer transition-all duration-200 bg-smg-card hover:border-smg-accent hover:bg-smg-card2" id="uploadZone"
            ondragover="event.preventDefault();this.classList.add('dragover')"
            ondragleave="this.classList.remove('dragover')"
            ondrop="handleDrop(event)">
-        <div class="mb-4 opacity-50"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+        <div class="text-[44px] mb-3">📊</div>
         <div class="text-[18px] font-bold mb-1.5">Upload Patient Excel Files</div>
         <div class="text-[13px] text-smg-text-sec mb-5 leading-relaxed">
           Drag &amp; drop one or multiple Excel files here, or click to browse.<br>
@@ -396,7 +779,7 @@
           <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-smg-card2 border border-smg-border2 text-smg-text-sec">Up to 200 files</span>
           <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-smg-card2 border border-smg-border2 text-smg-text-sec">50 MB each</span>
         </div>
-        <label class="inline-block bg-smg-accent text-white px-6 py-2.5 rounded-lg text-[14px] font-semibold cursor-pointer hover:bg-blue-600" for="fileInput">Browse Files</label>
+        <label class="inline-block bg-smg-accent text-white px-6 py-2.5 rounded-lg text-[14px] font-semibold cursor-pointer " for="fileInput">Browse Files</label>
         <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)" style="display:none;">
       </div>
 
@@ -427,34 +810,34 @@
             </tr>
           </thead>
           <tbody id="fileTableBody">
-            <tr><td colspan="6"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div class="text-[14px] text-smg-text-sec">No files yet</div></div></td></tr>
+            <tr><td colspan="6"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">📂</div><div class="text-[14px] text-smg-text-sec">No files yet</div></div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
     <div class="p-5 bg-smg-card2 border border-smg-border rounded-smg overflow-hidden">
-      <div class="text-[14px] font-bold mb-3" style="display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Excel Column Guide</div>
+      <div class="text-[14px] font-bold mb-3">📌 Excel Column Guide</div>
       <p class="text-[13px] text-smg-text-sec leading-relaxed mb-3">
         SMG Bridge auto-detects sheet types and maps common column names. No template required.
         The system recognizes hundreds of column name variations.
       </p>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
         <div>
-          <div style="font-weight:700;color:#3B82F6;margin-bottom:6px;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Patient Columns</div>
-          <div style="color:#7A9AB8;line-height:1.8;">Patient ID / Member ID<br>Last Name, First Name<br>DOB / Date of Birth<br>Gender / Sex<br>Phone / Cell<br>Email, Address, City, State, ZIP</div>
+          <div style="font-weight:700;color:#3B82F6;margin-bottom:6px;">👥 Patient Columns</div>
+          <div style="color:var(--a-ink-3);line-height:1.8;">Patient ID / Member ID<br>Last Name, First Name<br>DOB / Date of Birth<br>Gender / Sex<br>Phone / Cell<br>Email, Address, City, State, ZIP</div>
         </div>
         <div>
-          <div style="font-weight:700;color:#10B981;margin-bottom:6px;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Eligibility Columns</div>
-          <div style="color:#7A9AB8;line-height:1.8;">Payer / Insurance Company<br>Plan Name / Benefit Plan<br>Member ID / Subscriber ID<br>Effective Date / Start Date<br>Term Date / End Date<br>Status / Coverage Status</div>
+          <div style="font-weight:700;color:#10B981;margin-bottom:6px;">✅ Eligibility Columns</div>
+          <div style="color:var(--a-ink-3);line-height:1.8;">Payer / Insurance Company<br>Plan Name / Benefit Plan<br>Member ID / Subscriber ID<br>Effective Date / Start Date<br>Term Date / End Date<br>Status / Coverage Status</div>
         </div>
         <div>
-          <div style="font-weight:700;color:#F59E0B;margin-bottom:6px;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Claims Columns</div>
-          <div style="color:#7A9AB8;line-height:1.8;">Claim Number / Claim ID<br>DOS / Date of Service<br>CPT Code / Procedure Code<br>ICD Code / Diagnosis Code<br>Billed / Paid Amount<br>Status / Claim Status</div>
+          <div style="font-weight:700;color:#F59E0B;margin-bottom:6px;">📋 Claims Columns</div>
+          <div style="color:var(--a-ink-3);line-height:1.8;">Claim Number / Claim ID<br>DOS / Date of Service<br>CPT Code / Procedure Code<br>ICD Code / Diagnosis Code<br>Billed / Paid Amount<br>Status / Claim Status</div>
         </div>
         <div>
-          <div style="font-weight:700;color:#8B5CF6;margin-bottom:6px;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Pharmacy Columns</div>
-          <div style="color:#7A9AB8;line-height:1.8;">Medication / Drug Name<br>NDC Code<br>Dosage / Strength<br>Pharmacy Name<br>Fill Date / Last Fill<br>Refill Due / Next Fill</div>
+          <div style="font-weight:700;color:#8B5CF6;margin-bottom:6px;">💊 Pharmacy Columns</div>
+          <div style="color:var(--a-ink-3);line-height:1.8;">Medication / Drug Name<br>NDC Code<br>Dosage / Strength<br>Pharmacy Name<br>Fill Date / Last Fill<br>Refill Due / Next Fill</div>
         </div>
       </div>
     </div>
@@ -511,109 +894,32 @@
   <div class="page gap-5" id="page-eligibility" style="padding:28px;">
     <!-- Stat cards -->
     <div class="grid grid-cols-3 gap-4">
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-smg-green" onclick="filterEligibility(document.querySelector('#page-eligibility .chip:nth-child(2)'),'Active')" title="Filter: Active only">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
         <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-green" id="e-active">—</div>
-        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Active Members <span style="font-size:10px;color:#10B981;opacity:0.7;">— click to filter</span></div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Active Members</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-smg-red" onclick="filterEligibility(document.querySelector('#page-eligibility .chip:nth-child(3)'),'Termed')" title="Filter: Termed only">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
         <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-red" id="e-termed">—</div>
-        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Termed / Inactive <span style="font-size:10px;color:#EF4444;opacity:0.7;">— click to filter</span></div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Termed / Inactive</div>
       </div>
-      <div class="bg-smg-card border border-smg-border rounded-smg p-5 cursor-pointer transition-all hover:border-smg-amber" onclick="filterEligibility(document.querySelector('#page-eligibility .chip:nth-child(5)'),'Pending')" title="Filter: Pending only">
+      <div class="bg-smg-card border border-smg-border rounded-smg p-5">
         <div class="text-[28px] font-extrabold leading-none mb-1 text-smg-amber" id="e-pending">—</div>
-        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Pending Verification <span style="font-size:10px;color:#F59E0B;opacity:0.7;">— click to filter</span></div>
+        <div class="text-[11px] text-smg-text-sec font-medium mt-1">Pending Verification</div>
       </div>
     </div>
     <!-- Toolbar -->
-    <div class="flex items-center justify-between flex-wrap gap-3">
-      <div class="flex gap-1.5 items-center flex-wrap">
-        <span class="chip active" onclick="filterEligibility(this,'')">All</span>
-        <span class="chip" onclick="filterEligibility(this,'Active')">Active</span>
-        <span class="chip" onclick="filterEligibility(this,'Termed')">Termed</span>
-        <span class="chip" onclick="filterEligibility(this,'Inactive')">Inactive</span>
-        <span class="chip" onclick="filterEligibility(this,'Pending')">Pending</span>
-      </div>
+    <div class="flex items-center justify-between">
+      <div class="text-[13px] font-semibold text-smg-text-sec">All Eligibility Records</div>
       <button onclick="window.open(API+'/export/eligibility','_blank')"
-        class="px-3.5 py-2 bg-smg-card2 border border-smg-border rounded-lg text-smg-text-sec text-[12px] font-semibold cursor-pointer hover:border-smg-accent hover:text-smg-accent whitespace-nowrap font-sans">
+        class="px-3.5 py-2 bg-smg-card2 border border-smg-border rounded-lg text-smg-text-sec text-[12px] font-semibold cursor-pointer hover:border-smg-accent hover:text-smg-accent font-sans">
         ↓ Export CSV
       </button>
     </div>
     <!-- Table -->
     <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="eligTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div><div class="empty-text">No eligibility data</div><div class="empty-sub">Upload an eligibility Excel to populate this view</div></div></div>
+      <div id="eligTable"><div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No eligibility data</div><div class="empty-sub">Upload an eligibility Excel to populate this view</div></div></div>
     </div>
   </div>
-
-  <!-- ══ TODAY'S SCHEDULE ══════════════════════════════════════════ -->
-  <div class="page gap-5" id="page-schedule" style="padding:28px;">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="text-[13px] font-semibold text-smg-text-sec" id="schedule-date-label">Today's appointments</div>
-      </div>
-      <div class="flex gap-2" id="schedule-provider-chips"></div>
-    </div>
-    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="scheduleTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="empty-text">Loading today's schedule...</div></div></div>
-    </div>
-  </div>
-
-  <!-- ══ APPOINTMENT CALENDAR ═════════════════════════════════════ -->
-  <div class="page gap-0" id="page-apptQueue" style="padding:0;">
-    <div style="display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 56px);">
-      <!-- Left panel: Mini calendar + pending list -->
-      <div style="border-right:1px solid #1C2F47;padding:20px 16px;background:#0A1020;overflow-y:auto;" class="hide-scrollbar">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <button onclick="calPrevMonth()" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #1C2F47;border-radius:6px;color:#7A9AB8;cursor:pointer;font-size:16px;line-height:1;font-family:inherit;">‹</button>
-          <div id="cal-month-label" style="font-size:13px;font-weight:700;color:#E2E8F0;">—</div>
-          <button onclick="calNextMonth()" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #1C2F47;border-radius:6px;color:#7A9AB8;cursor:pointer;font-size:16px;line-height:1;font-family:inherit;">›</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">S</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">M</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">T</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">W</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">T</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">F</div>
-          <div style="text-align:center;font-size:10px;font-weight:700;color:#3D5A75;padding:4px 0;">S</div>
-        </div>
-        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;"></div>
-        <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:16px;padding:8px 10px;background:#162032;border-radius:8px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Confirmed</span></div>
-          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Pending</span></div>
-          <div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#8B5CF6;flex-shrink:0;"></div><span style="font-size:10px;color:#3D5A75;">Rescheduled</span></div>
-        </div>
-        <div id="cal-pending-count" style="font-size:10px;font-weight:700;letter-spacing:.8px;color:#3D5A75;text-transform:uppercase;margin-bottom:8px;">PENDING REQUESTS</div>
-        <div id="cal-pending-list"></div>
-      </div>
-      <!-- Right panel: Day detail -->
-      <div style="padding:28px;overflow-y:auto;" id="cal-day-detail">
-        <div style="text-align:center;padding:80px 20px;color:#3D5A75;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40" style="margin:0 auto 12px;display:block;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <div style="font-size:14px;">Loading calendar…</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ CAREGIVER CONSENTS ════════════════════════════════════════ -->
-  <div class="page gap-5" id="page-consents" style="padding:28px;">
-    <div class="flex items-center justify-between">
-      <div class="text-[13px] font-semibold text-smg-text-sec">Digital caregiver consent records</div>
-      <div class="flex gap-2" id="consent-chips">
-        <span class="chip active" onclick="filterConsents(this,'all')">All</span>
-        <span class="chip" onclick="filterConsents(this,'pending')">Pending Review</span>
-        <span class="chip" onclick="filterConsents(this,'approved')">Approved</span>
-        <span class="chip" onclick="filterConsents(this,'declined')">Declined</span>
-      </div>
-    </div>
-    <div class="flex gap-2 mb-1">
-      <input id="consent-search" type="text" placeholder="Search by patient or caregiver name..." oninput="loadConsents()" style="flex:1;background:#162032;border:1px solid #1C2F47;border-radius:8px;padding:8px 12px;font-size:12px;color:#E2E8F0;font-family:inherit;outline:none;">
-    </div>
-    <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="consentsTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="empty-text">No consent records yet</div><div class="empty-sub">Caregiver access requests from the Bridge app will appear here</div></div></div>
-    </div>
-  </div>
-
 
   <!-- PAGE: CLAIMS -->
   <div class="page gap-5" id="page-claims" style="padding:28px;">
@@ -631,7 +937,7 @@
       </button>
     </div>
     <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="claimsTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="empty-text">No claims data</div><div class="empty-sub">Upload a claims Excel file</div></div></div>
+      <div id="claimsTable"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No claims data</div><div class="empty-sub">Upload a claims Excel file</div></div></div>
     </div>
   </div>
 
@@ -651,7 +957,7 @@
       </button>
     </div>
     <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="authsTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="empty-text">No authorization data</div><div class="empty-sub">Upload an authorizations Excel file</div></div></div>
+      <div id="authsTable"><div class="empty-state"><div class="empty-icon">🔐</div><div class="empty-text">No authorization data</div><div class="empty-sub">Upload an authorizations Excel file</div></div></div>
     </div>
   </div>
 
@@ -671,14 +977,14 @@
       </button>
     </div>
     <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden">
-      <div id="labsTable"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="38" height="38"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="empty-text">No lab data</div><div class="empty-sub">Upload a labs Excel file</div></div></div>
+      <div id="labsTable"><div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-text">No lab data</div><div class="empty-sub">Upload a labs Excel file</div></div></div>
     </div>
   </div>
 
   <!-- PAGE: PHARMACY -->
   <div class="page gap-6" id="page-pharmacy" style="padding:28px;">
     <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-      <button onclick="window.open(API+'/export/pharmacy','_blank')" style="padding:8px 14px;background:#1C2B3F;border:1px solid #1C2F47;border-radius:8px;color:#7A9AB8;font-size:12px;font-family:inherit;cursor:pointer;">↓ Export CSV</button>
+      <button onclick="window.open(API+'/export/pharmacy','_blank')" style="padding:8px 14px;background:var(--a-paper-deep);border:1px solid var(--a-rule);border-radius:8px;color:var(--a-ink-3);font-size:12px;font-family:inherit;cursor:pointer;">↓ Export CSV</button>
     </div>
     <div class="grid grid-cols-3 gap-4" id="pharmStats">
       <div class="bg-smg-card border border-smg-border rounded-smg p-4"><div class="text-[26px] font-extrabold mb-1 text-smg-amber" id="p-duesoon">—</div><div class="text-[11px] text-smg-text-sec">Refills Due (7 days)</div></div>
@@ -688,11 +994,11 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
       <div>
         <div class="flex items-center justify-between mb-3.5"><div class="text-[14px] font-bold">Refills Due Soon</div></div>
-        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="pharmRefills"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="text-[14px] text-smg-text-sec">No refills due</div></div></div></div>
+        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="pharmRefills"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">💊</div><div class="text-[14px] text-smg-text-sec">No refills due</div></div></div></div>
       </div>
       <div>
         <div class="flex items-center justify-between mb-3.5"><div class="text-[14px] font-bold">Top Medications</div></div>
-        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="pharmTopMeds"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="text-[14px] text-smg-text-sec">No data</div></div></div></div>
+        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden"><div id="pharmTopMeds"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">💊</div><div class="text-[14px] text-smg-text-sec">No data</div></div></div></div>
       </div>
     </div>
 
@@ -701,15 +1007,15 @@
       <div class="flex items-center justify-between mb-3.5">
         <div class="text-[14px] font-bold">Pharmacy Request Queue</div>
         <div style="display:flex;gap:6px;align-items:center;">
-          <button onclick="loadPharmacyRequests('')"          id="prq-btn-all"        class="filter-btn active" style="font-size:11px;padding:5px 12px;background:#1C2B3F;border:1px solid #1C2F47;color:#7A9AB8;border-radius:6px;cursor:pointer;">All</button>
-          <button onclick="loadPharmacyRequests('Processing')" id="prq-btn-processing" class="filter-btn"        style="font-size:11px;padding:5px 12px;background:#1C2B3F;border:1px solid #1C2F47;color:#7A9AB8;border-radius:6px;cursor:pointer;">Processing</button>
-          <button onclick="loadPharmacyRequests('Completed')"  id="prq-btn-completed"  class="filter-btn"        style="font-size:11px;padding:5px 12px;background:#1C2B3F;border:1px solid #1C2F47;color:#7A9AB8;border-radius:6px;cursor:pointer;">Completed</button>
-          <button onclick="loadPharmacyRequests('Failed')"     id="prq-btn-failed"     class="filter-btn"        style="font-size:11px;padding:5px 12px;background:#1C2B3F;border:1px solid #1C2F47;color:#7A9AB8;border-radius:6px;cursor:pointer;">Failed</button>
-          <button onclick="loadPharmacy()" style="font-size:11px;padding:5px 12px;background:#1C2B3F;border:1px solid #1C2F47;color:#7A9AB8;border-radius:6px;cursor:pointer;">↻ Refresh</button>
+          <button onclick="loadPharmacyRequests('')"          id="prq-btn-all"        class="filter-btn active" style="font-size:11px;padding:5px 12px;background:var(--a-paper-deep);border:1px solid var(--a-rule);color:var(--a-ink-3);border-radius:6px;cursor:pointer;">All</button>
+          <button onclick="loadPharmacyRequests('Processing')" id="prq-btn-processing" class="filter-btn"        style="font-size:11px;padding:5px 12px;background:var(--a-paper-deep);border:1px solid var(--a-rule);color:var(--a-ink-3);border-radius:6px;cursor:pointer;">Processing</button>
+          <button onclick="loadPharmacyRequests('Completed')"  id="prq-btn-completed"  class="filter-btn"        style="font-size:11px;padding:5px 12px;background:var(--a-paper-deep);border:1px solid var(--a-rule);color:var(--a-ink-3);border-radius:6px;cursor:pointer;">Completed</button>
+          <button onclick="loadPharmacyRequests('Failed')"     id="prq-btn-failed"     class="filter-btn"        style="font-size:11px;padding:5px 12px;background:var(--a-paper-deep);border:1px solid var(--a-rule);color:var(--a-ink-3);border-radius:6px;cursor:pointer;">Failed</button>
+          <button onclick="loadPharmacy()" style="font-size:11px;padding:5px 12px;background:var(--a-paper-deep);border:1px solid var(--a-rule);color:var(--a-ink-3);border-radius:6px;cursor:pointer;">↻ Refresh</button>
         </div>
       </div>
       <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden" style="padding:0;">
-        <div id="pharmRequests"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="mb-3 opacity-40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="text-[14px] text-smg-text-sec">No pharmacy requests</div></div></div>
+        <div id="pharmRequests"><div class="flex flex-col items-center px-6 py-12 text-smg-text-mute text-center"><div class="text-[40px] mb-3 opacity-50">📋</div><div class="text-[14px] text-smg-text-sec">No pharmacy requests</div></div></div>
       </div>
     </div>
   </div>
@@ -722,24 +1028,32 @@
         <div class="text-[12px] text-smg-text-sec">Open Bridge portals — or open a patient's view directly from their profile</div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
-        <!-- Bridge v2 Combined -->
-        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden p-5 cursor-pointer" style="border-color:#14B8A6;" onclick="window.open('bridge-members-v2.html','_blank')">
-          <div style="margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
-          <div style="font-size:16px;font-weight:700;color:#14B8A6;margin-bottom:4px;">Bridge v2 — Combined</div>
-          <div style="font-size:12px;color:#7A9AB8;line-height:1.6;">Patient + Caregiver portal in one app. Members select their role on signup. Bilingual EN/한국어.</div>
-          <div style="margin-top:14px;display:flex;gap:8px;">
-            <button onclick="event.stopPropagation();window.open('bridge-members-v2.html?role=patient','_blank')" style="flex:1;padding:8px;background:rgba(20,184,166,0.12);color:#14B8A6;border:1px solid #14B8A6;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Patient View →</button>
-            <button onclick="event.stopPropagation();window.open('bridge-members-v2.html?role=caregiver','_blank')" style="flex:1;padding:8px;background:rgba(139,92,246,0.12);color:#8B5CF6;border:1px solid #8B5CF6;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Caregiver View →</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+        <!-- Patient App -->
+        <div style="background:var(--a-card);border:1px solid var(--b-emerald-deep);border-radius:8px;overflow:hidden;padding:20px;cursor:pointer;" onclick="window.open('bridge-patient.html','_blank')">
+          <div style="font-size:28px;margin-bottom:12px;">📱</div>
+          <div style="font-size:16px;font-weight:700;color:var(--b-emerald-deep);margin-bottom:4px;">Patient App</div>
+          <div style="font-size:12px;color:var(--a-ink-3);line-height:1.6;">Patient-facing mobile experience. Mood check-in, meds, upcoming visits, labs. Bilingual EN/한국어.</div>
+          <div style="margin-top:14px;">
+            <button onclick="event.stopPropagation();window.open('bridge-patient.html','_blank')" style="width:100%;padding:8px;background:var(--b-emerald-soft);color:var(--b-emerald-deep);border:1px solid var(--b-emerald-deep);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Open Patient App ↗</button>
+          </div>
+        </div>
+        <!-- Caregiver App -->
+        <div style="background:var(--a-card);border:1px solid var(--b-emerald-deep);border-radius:8px;overflow:hidden;padding:20px;cursor:pointer;" onclick="window.open('bridge-caregiver.html','_blank')">
+          <div style="font-size:28px;margin-bottom:12px;">👨‍👩‍👧</div>
+          <div style="font-size:16px;font-weight:700;color:var(--b-emerald-deep);margin-bottom:4px;">Caregiver App</div>
+          <div style="font-size:12px;color:var(--a-ink-3);line-height:1.6;">Family caregiver view. Wellness ring, meds adherence, visit alerts, trend sparklines. State-driven UI.</div>
+          <div style="margin-top:14px;">
+            <button onclick="event.stopPropagation();window.open('bridge-caregiver.html','_blank')" style="width:100%;padding:8px;background:var(--b-emerald-soft);color:var(--b-emerald-deep);border:1px solid var(--b-emerald-deep);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Open Caregiver App ↗</button>
           </div>
         </div>
         <!-- Doctor Portal -->
-        <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden p-5 cursor-pointer" onclick="window.open('bridge-doctor.html','_blank')">
-          <div style="margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg></div>
-          <div style="font-size:16px;font-weight:700;color:#3B82F6;margin-bottom:4px;">Doctor Portal</div>
-          <div style="font-size:12px;color:#7A9AB8;line-height:1.6;">PCP-facing panel view. Doctors log in with their NPI and see only their assigned patients.</div>
+        <div style="background:var(--a-card);border:1px solid var(--a-rule);border-radius:8px;overflow:hidden;padding:20px;cursor:pointer;" onclick="window.open('bridge-doctor.html','_blank')">
+          <div style="font-size:28px;margin-bottom:12px;">👨‍⚕️</div>
+          <div style="font-size:16px;font-weight:700;color:var(--smg-navy);margin-bottom:4px;">Doctor Portal</div>
+          <div style="font-size:12px;color:var(--a-ink-3);line-height:1.6;">PCP-facing panel. Doctors see today's schedule and patient care gaps by NPI.</div>
           <div style="margin-top:14px;">
-            <button onclick="event.stopPropagation();window.open('bridge-doctor.html','_blank')" style="width:100%;padding:8px;background:rgba(59,130,246,0.12);color:#3B82F6;border:1px solid #3B82F6;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Open Doctor Portal →</button>
+            <button onclick="event.stopPropagation();window.open('bridge-doctor.html','_blank')" style="width:100%;padding:8px;background:var(--a-accent-soft);color:var(--smg-navy);border:1px solid var(--smg-navy);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Open Doctor Portal ↗</button>
           </div>
         </div>
       </div>
@@ -751,14 +1065,220 @@
       <div class="bg-smg-card border border-smg-border rounded-smg overflow-hidden p-5">
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <input type="text" id="portal-search" placeholder="Search by name, patient ID, or member ID..." oninput="searchForPortalLaunch(this.value)"
-            style="flex:1;padding:10px 14px;background:#1C2B3F;border:1px solid #243A52;color:#E2E8F0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;">
+            style="flex:1;padding:10px 14px;background:var(--a-paper-deep);border:1px solid var(--a-rule-soft);color:var(--a-ink);border-radius:8px;font-size:13px;font-family:inherit;outline:none;">
         </div>
         <div id="portal-search-results" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
     </div>
   </div>
 
-</div><!-- /main -->
+  <!-- PAGE: UPLOAD-B (Direction B — Warm Human Bulk Import) -->
+  <div class="page" id="page-upload-b" style="padding:0;background:var(--b-paper);flex-direction:row;min-height:100vh;">
+
+    <!-- B-Sidebar -->
+    <aside style="width:240px;flex-shrink:0;padding:22px 18px;background:var(--b-ivory);border-right:1px solid var(--b-rule);display:flex;flex-direction:column;gap:6px;min-height:100%;">
+      <!-- Brand -->
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 20px;border-bottom:1px solid var(--b-rule);margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--smg-navy) 0%,var(--smg-emerald) 100%);display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;">S</div>
+        <div>
+          <div style="font-family:var(--font-display-b);font-weight:500;font-size:16px;letter-spacing:-0.01em;color:var(--b-ink);">Bridge</div>
+          <div class="tt-label" style="color:var(--b-ink-4);font-size:9px;">SMG MSO · Admin</div>
+        </div>
+      </div>
+
+      <!-- Nav group: Data -->
+      <div style="margin-top:8px;">
+        <div class="tt-label" style="color:var(--b-ink-4);padding:4px 8px;">Data</div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;background:var(--b-emerald-soft);color:var(--b-emerald-deep);font-weight:600;cursor:pointer;">
+          <span style="flex:1;">Upload files</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--b-emerald-deep);">3</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('patients')">
+          <span style="flex:1;">Patient registry</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--b-ink-4);">9.8k</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('eligibility')">
+          <span style="flex:1;">Eligibility</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('claims')">
+          <span style="flex:1;">Claims</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('auths')">
+          <span style="flex:1;">Authorizations</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--b-ink-4);">42</span>
+        </div>
+      </div>
+
+      <!-- Nav group: Clinical -->
+      <div style="margin-top:8px;">
+        <div class="tt-label" style="color:var(--b-ink-4);padding:4px 8px;">Clinical</div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('labs')">
+          <span style="flex:1;">Lab results</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;" onclick="showPage('pharmacy')">
+          <span style="flex:1;">Pharmacy</span>
+        </div>
+      </div>
+
+      <!-- Nav group: Patient portal -->
+      <div style="margin-top:8px;">
+        <div class="tt-label" style="color:var(--b-ink-4);padding:4px 8px;">Patient portal</div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;">
+          <span style="flex:1;">Schedule today</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;">
+          <span style="flex:1;">Appointment calendar</span>
+        </div>
+        <div style="display:flex;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;">
+          <span style="flex:1;">Caregiver consents</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--b-ink-4);">7</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div style="display:flex;flex-direction:column;background:var(--b-paper);flex:1;min-width:0;">
+
+      <!-- Header -->
+      <div style="padding:24px 36px 16px;">
+        <div class="tt-label" style="color:var(--b-ink-3);font-size:9px;">DATA / BULK IMPORT</div>
+        <div style="font-family:var(--font-display-b);font-size:38px;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-top:6px;color:var(--b-ink);">
+          Bring the data <em style="font-style:italic;font-variation-settings:'opsz' 96;color:var(--b-emerald-deep);">home.</em>
+        </div>
+        <div style="font-size:14px;color:var(--b-ink-3);margin-top:8px;max-width:560px;line-height:1.5;">
+          Drop eligibility files, pharmacy extracts, or claim rosters into this tray. Bridge reconciles records and streams progress in real time &mdash; no waiting on an email.
+        </div>
+      </div>
+
+      <!-- 2-column grid -->
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;padding:0 36px 24px;flex:1;min-height:0;">
+
+        <!-- Left column: DropZone + Livestream -->
+        <div style="display:flex;flex-direction:column;gap:16px;min-height:0;">
+
+          <!-- DropZone -->
+          <div style="background:var(--b-ivory);border:1.5px dashed var(--b-emerald);border-radius:14px;padding:36px 28px;display:flex;align-items:center;gap:24px;">
+            <div style="width:96px;height:96px;border-radius:14px;background:var(--b-emerald-soft);display:grid;place-items:center;font-family:var(--font-mono);font-size:10px;color:var(--b-emerald-deep);letter-spacing:0.1em;text-align:center;flex-shrink:0;">
+              .XLSX
+              <div style="font-size:32px;line-height:1;">&#8595;</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-family:var(--font-display-b);font-size:22px;font-weight:500;letter-spacing:-0.01em;color:var(--b-ink);">Drop an .xlsx file here</div>
+              <div style="font-size:13px;color:var(--b-ink-3);margin-top:4px;line-height:1.5;">
+                Patients, eligibility, claims, labs, authorizations, pharmacy refills &mdash; Bridge detects the schema automatically and upserts idempotently.
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                <label for="uploadBFileInput" style="padding:8px 16px;background:var(--b-emerald-deep);color:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-block;">Browse files</label>
+                <input type="file" id="uploadBFileInput" multiple accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)" style="display:none;">
+                <div style="padding:8px 16px;border:1px solid var(--b-rule);border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;background:#fff;">Use sample data</div>
+                <div style="padding:8px 16px;border:1px solid var(--b-rule);border-radius:8px;font-size:13px;color:var(--b-ink-2);cursor:pointer;background:#fff;">Watch folder: /uploads</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Livestream card -->
+          <div style="flex:1;background:#FFFFFF;border-radius:14px;border:1px solid var(--b-rule);overflow:hidden;display:flex;flex-direction:column;">
+            <!-- Header -->
+            <div style="padding:14px 20px;border-bottom:1px solid var(--b-rule);display:flex;align-items:center;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--b-emerald);box-shadow:0 0 0 4px rgba(43,122,72,0.15);flex-shrink:0;"></div>
+              <div style="font-family:var(--font-display-b);font-size:16px;font-weight:500;color:var(--b-ink);">Livestream</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--b-ink-3);">GET /api/upload/events</div>
+              <div style="margin-left:auto;font-size:11px;color:var(--b-ink-3);">SSE &middot; connected 18s</div>
+            </div>
+            <!-- Event log -->
+            <div style="padding:12px 20px;font-family:var(--font-mono);font-size:12px;line-height:1.7;background:#FDFBF5;flex:1;">
+              <div style="display:flex;gap:10px;color:var(--b-ink-2);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:02</span><span style="flex:1;">claims-q1-mar.xlsx &middot; 2,014 rows detected</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-emerald-deep);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:04</span><span style="flex:1;">schema: claims_v3 &#10003;</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-ink-2);align-items:center;">
+                <span style="color:var(--b-ink-4);min-width:56px;">12:14:05</span>
+                <span style="flex:1;">upserting patients [1204/2014]</span>
+                <span style="width:140px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                  <span style="flex:1;height:3px;background:var(--b-rule);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;">
+                    <span style="display:block;width:60%;height:100%;background:var(--b-emerald);"></span>
+                  </span>
+                  <span style="font-size:10px;">60%</span>
+                </span>
+              </div>
+              <div style="display:flex;gap:10px;color:var(--b-emerald-deep);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:07</span><span style="flex:1;">2,014 upserts complete &middot; 0 errors</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-ink-2);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:07</span><span style="flex:1;">audit log written &middot; 2,014 rows by jkim@smg</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-ink-2);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:09</span><span style="flex:1;">broadcasting to 3 connected portals...</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-emerald-deep);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:09</span><span style="flex:1;">admin, doctor.oh, ops.smg refreshed</span></div>
+              <div style="display:flex;gap:10px;color:var(--b-ink-4);"><span style="color:var(--b-ink-4);min-width:56px;">12:14:12</span><span style="flex:1;">stream idle &middot; heartbeat 25s</span></div>
+            </div>
+            <!-- Footer -->
+            <div style="padding:10px 20px;border-top:1px solid var(--b-rule);font-size:11px;color:var(--b-ink-3);display:flex;gap:14px;font-family:var(--font-mono);">
+              <span>&#10003; 2,014 rows</span>
+              <span>&#10003; 8 jobs today</span>
+              <span style="margin-left:auto;">Retention: audit_log 7y &middot; stream 24h</span>
+            </div>
+          </div>
+
+        </div><!-- /left col -->
+
+        <!-- Right column: SidebarStats -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <!-- Stat card: big number + bar chart -->
+          <div style="padding:22px;background:var(--b-ivory);border-radius:14px;border:1px solid var(--b-rule);">
+            <div class="tt-label" style="color:var(--b-ink-3);">Since Monday</div>
+            <div style="font-family:var(--font-display-b);font-size:54px;font-weight:400;letter-spacing:-0.03em;line-height:1;margin-top:4px;color:var(--b-emerald-deep);">9,847</div>
+            <div style="font-size:13px;color:var(--b-ink-3);margin-top:6px;">Patient records reconciled across eligibility, PCP, and pharmacy silos.</div>
+            <!-- Mini bar chart -->
+            <div style="margin-top:14px;display:flex;gap:2px;height:40px;align-items:flex-end;">
+              <div style="flex:1;height:32%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:44%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:38%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:60%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:52%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:72%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:68%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:80%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:76%;background:var(--b-emerald);opacity:0.5;border-radius:1px;"></div>
+              <div style="flex:1;height:92%;background:var(--b-emerald);opacity:1;border-radius:1px;"></div>
+              <div style="flex:1;height:84%;background:var(--b-emerald);opacity:1;border-radius:1px;"></div>
+              <div style="flex:1;height:100%;background:var(--b-emerald);opacity:1;border-radius:1px;"></div>
+              <div style="flex:1;height:88%;background:var(--b-emerald);opacity:1;border-radius:1px;"></div>
+            </div>
+          </div>
+
+          <!-- Metrics table -->
+          <div style="padding:20px;background:var(--b-card);border-radius:14px;border:1px solid var(--b-rule);">
+            <div class="tt-label" style="color:var(--b-ink-3);margin-bottom:10px;">Last 24h</div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b-rule);font-size:13px;">
+              <span style="color:var(--b-ink-3);">Rows imported</span>
+              <span style="font-family:var(--font-mono);font-weight:500;">2,014</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b-rule);font-size:13px;">
+              <span style="color:var(--b-ink-3);">Duplicate keys</span>
+              <span style="font-family:var(--font-mono);font-weight:500;">118 merged</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b-rule);font-size:13px;">
+              <span style="color:var(--b-ink-3);">Schema errors</span>
+              <span style="font-family:var(--font-mono);font-weight:500;">0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px;">
+              <span style="color:var(--b-ink-3);">Avg row time</span>
+              <span style="font-family:var(--font-mono);font-weight:500;">4.2ms</span>
+            </div>
+          </div>
+
+          <!-- Tip card -->
+          <div style="padding:20px;background:var(--b-peach-soft);border-radius:14px;border:1px solid #E8C9AE;font-size:12.5px;color:var(--b-ink-2);line-height:1.5;">
+            <div class="tt-label" style="color:var(--b-plum);margin-bottom:6px;">Tip</div>
+            Drop files into <span style="font-family:var(--font-mono);">/uploads/</span> and they import automatically &mdash; Chokidar watches the folder so you don&rsquo;t have to babysit the browser.
+          </div>
+
+        </div><!-- /right col -->
+
+      </div><!-- /grid -->
+
+    </div><!-- /main content -->
+
+  </div><!-- /page-upload-b -->
+
+</div><!-- /main content area -->
+</div><!-- /center+right wrapper -->
+</div><!-- /3-col layout -->
 
 <!-- PATIENT DRAWER -->
 <div class="drawer-overlay fixed inset-0 bg-black/50 z-[200] backdrop-blur-sm" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -766,11 +1286,12 @@
   <div class="px-6 py-5 border-b border-smg-border flex items-start justify-between flex-shrink-0 sticky top-0 bg-smg-bg z-10">
     <div>
       <div style="font-size:18px;font-weight:800;letter-spacing:-0.4px;" id="drawerName">Patient Name</div>
-      <div style="font-size:12px;color:#7A9AB8;margin-top:2px;" id="drawerSub">ID · DOB · Gender</div>
+      <div style="font-size:12px;color:var(--a-ink-3);margin-top:2px;" id="drawerSub">ID · DOB · Gender</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <button class="inline-flex items-center gap-1.5 border rounded-md px-3 py-1 text-[11px] font-bold cursor-pointer transition-all" style="background:rgba(20,184,166,0.12);color:#14B8A6;border-color:rgba(20,184,166,0.25);" onclick="openInBridge('patient')" title="Open patient view in Bridge v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Patient View</button>
-      <button class="inline-flex items-center gap-1.5 border rounded-md px-3 py-1 text-[11px] font-bold cursor-pointer transition-all" style="background:rgba(139,92,246,0.12);color:#8B5CF6;border-color:rgba(139,92,246,0.25);" onclick="openInBridge('caregiver')" title="Open caregiver view in Bridge v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Caregiver View</button>
+      <button class="inline-flex items-center gap-1.5 bg-teal-500/12 border border-teal-500/25 text-smg-teal rounded-md px-3 py-1 text-[11px] font-bold cursor-pointer transition-all hover:bg-teal-500/20" onclick="sendRefillRequest()">💊 Request Refill</button>
+      <button class="inline-flex items-center gap-1.5 border rounded-md px-3 py-1 text-[11px] font-bold cursor-pointer transition-all" style="background:rgba(20,184,166,0.12);color:#14B8A6;border-color:rgba(20,184,166,0.25);" onclick="openInBridge('patient')" title="Open patient view in Bridge v2">📱 Patient View</button>
+      <button class="inline-flex items-center gap-1.5 border rounded-md px-3 py-1 text-[11px] font-bold cursor-pointer transition-all" style="background:rgba(139,92,246,0.12);color:#8B5CF6;border-color:rgba(139,92,246,0.25);" onclick="openInBridge('caregiver')" title="Open caregiver view in Bridge v2">👨‍👩‍👧 Caregiver View</button>
       <button class="bg-smg-card border border-smg-border text-smg-text-sec rounded-lg px-3 py-1.5 text-[12px] cursor-pointer font-sans" onclick="closeDrawer()">✕ Close</button>
     </div>
   </div>
@@ -836,27 +1357,28 @@ const PAGE_SIZE = 100;
 //  Navigation
 // ══════════════════════════════════════════════════════════════
 const PAGE_TITLES = {
+  appointments: 'March 2026',
   dashboard: 'Dashboard',
   upload: 'Upload Excel Files',
+  'upload-b': 'Upload — Bulk Import',
   patients: 'Patient Registry',
   eligibility: 'Eligibility Status',
   claims: 'Claims Management',
   auths: 'Authorizations',
   labs: 'Lab Results',
   pharmacy: 'Pharmacy',
-  portals: 'Member Portal Launch Pad',
-  schedule: "Today's Schedule",
-  apptQueue: 'Appointment Calendar',
-  consents: 'Caregiver Consents',
+  portals: 'Caregiver Consents',
 };
 
 function updateLastSyncDisplay(iso) {
   try {
     const d = new Date(iso);
     const fmt = d.toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
-    document.getElementById('lastSync').textContent = 'Last sync: ' + fmt;
+    const el = document.getElementById('lastSync');
+    if (el) el.textContent = 'Last sync: ' + fmt;
   } catch(_) {
-    document.getElementById('lastSync').textContent = 'Last sync: ' + iso.replace('T',' ').replace('Z','');
+    const el = document.getElementById('lastSync');
+    if (el) el.textContent = 'Last sync: ' + iso.replace('T',' ').replace('Z','');
   }
 }
 
@@ -876,14 +1398,39 @@ async function updateLastSync() {
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + name);
+  if (pageEl) pageEl.classList.add('active');
+
+  // Update nav active state
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.trim().toLowerCase().startsWith(PAGE_TITLES[name]?.split(' ')[0]?.toLowerCase() || '')) {
-      n.classList.add('active');
-    }
+    n.classList.remove('active');
+    n.style.background = '';
+    n.style.fontWeight = '';
+    n.style.color = '';
   });
-  document.getElementById('pageTitle').textContent = PAGE_TITLES[name] || name;
+  const navId = 'nav-' + name;
+  const navEl = document.getElementById(navId);
+  if (navEl) {
+    navEl.classList.add('active');
+  }
+
+  // Toggle appointment topbar vs generic topbar
+  const tbAppt = document.getElementById('topbar-appointments');
+  const tbOther = document.getElementById('topbar-other');
+  if (name === 'appointments') {
+    if (tbAppt) tbAppt.style.display = 'flex';
+    if (tbOther) tbOther.style.display = 'none';
+  } else {
+    if (tbAppt) tbAppt.style.display = 'none';
+    if (tbOther) { tbOther.style.display = 'block'; }
+    const titleEl = document.getElementById('pageTitleOther');
+    if (titleEl) titleEl.textContent = PAGE_TITLES[name] || name;
+  }
+
+  // Also update the appointments header title reference
+  const mainTitle = document.getElementById('pageTitle');
+  if (mainTitle && name === 'appointments') mainTitle.textContent = PAGE_TITLES[name] || name;
+
   currentPage = name;
 
   // Load page data
@@ -925,7 +1472,7 @@ async function doLogin() {
     if (!r.ok || !data.token) throw new Error(data.error || 'Login failed');
     setToken(data.token);
     document.getElementById('login-overlay').classList.remove('active');
-    loadDashboard();
+    showPage('appointments');
     connectSSE();
     initDemoDataIfEmpty();
   } catch (e) {
@@ -990,11 +1537,13 @@ async function loadDashboard() {
     }
   }
 
-  // Update nav badges
-  document.getElementById('nav-patient-count').textContent = stats.totalPatients > 999
-    ? Math.round(stats.totalPatients/1000) + 'k' : stats.totalPatients;
-  document.getElementById('nav-claims-badge').textContent = stats.pendingClaims;
-  document.getElementById('nav-auths-badge').textContent = stats.pendingAuths;
+  // Update nav badges (null-safe)
+  const patCountEl = document.getElementById('nav-patient-count');
+  if (patCountEl) patCountEl.textContent = stats.totalPatients > 999 ? Math.round(stats.totalPatients/1000) + 'k' : stats.totalPatients;
+  const claimsBadgeEl = document.getElementById('nav-claims-badge');
+  if (claimsBadgeEl) claimsBadgeEl.textContent = stats.pendingClaims;
+  const authsBadgeEl = document.getElementById('nav-auths-badge');
+  if (authsBadgeEl) authsBadgeEl.textContent = stats.pendingAuths;
 
   // Patient Portal Activity — load from API
   const [aData, cData] = await Promise.all([
@@ -1043,10 +1592,10 @@ async function loadDashboard() {
     } else {
       el.innerHTML = files.slice(0, 5).map(f => `
         <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #1C2F47;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span style="font-size:20px;">📊</span>
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.filename}</div>
-            <div style="font-size:11px;color:#7A9AB8;">${f.row_count || 0} rows · ${formatDate(f.uploaded_at)}</div>
+            <div style="font-size:11px;color:var(--a-ink-3);">${f.row_count || 0} rows · ${formatDate(f.uploaded_at)}</div>
           </div>
           ${statusPill(f.status)}
         </div>
@@ -1063,10 +1612,10 @@ async function loadDashboard() {
     } else {
       el.innerHTML = refills.slice(0, 5).map(r => `
         <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #1C2F47;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span style="font-size:20px;">💊</span>
           <div style="flex:1;">
             <div style="font-size:13px;font-weight:600;">${r.first_name} ${r.last_name}</div>
-            <div style="font-size:11px;color:#7A9AB8;">${r.medication_name} · Due ${formatDate(r.refill_due_date)}</div>
+            <div style="font-size:11px;color:var(--a-ink-3);">${r.medication_name} · Due ${formatDate(r.refill_due_date)}</div>
           </div>
           <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(245,158,11,0.12);color:#F59E0B;">${isOverdue(r.refill_due_date)?'OVERDUE':'DUE SOON'}</span>
         </div>
@@ -1178,14 +1727,14 @@ async function loadFiles() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           <div>
             <div style="font-weight:600;font-size:13px;">${f.filename}</div>
-            <div style="font-size:11px;color:#3D5A75;">ID: ${f.id}</div>
+            <div style="font-size:11px;color:var(--a-ink-4);">ID: ${f.id}</div>
           </div>
         </div>
       </td>
       <td style="font-weight:600;">${(f.row_count || 0).toLocaleString()}</td>
       <td>${statusPill(f.status)}</td>
-      <td style="color:#7A9AB8;font-size:12px;">${formatDate(f.uploaded_at)}</td>
-      <td style="color:#7A9AB8;font-size:12px;">${f.last_synced ? formatDate(f.last_synced) : '—'}</td>
+      <td style="color:var(--a-ink-3);font-size:12px;">${formatDate(f.uploaded_at)}</td>
+      <td style="color:var(--a-ink-3);font-size:12px;">${f.last_synced ? formatDate(f.last_synced) : '—'}</td>
       <td>
         <button onclick="deleteFile(${f.id})" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);color:#EF4444;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Remove</button>
       </td>
@@ -1249,20 +1798,20 @@ async function loadPatients() {
     const color = colors[p.patient_id?.charCodeAt(0) % colors.length || 0];
     const eligBadge = p.elig_status
       ? `<span class="alert-badge ${p.elig_status === 'Active' ? 'normal' : p.elig_status === 'Pending' ? 'pending' : 'critical'}">${p.elig_status}</span>`
-      : '<span style="color:#3D5A75;font-size:12px;">—</span>';
+      : '<span style="color:var(--a-ink-4);font-size:12px;">—</span>';
     return `
       <tr onclick="openPatient('${p.patient_id}')">
         <td>
           <div style="display:flex;align-items:center;gap:10px;">
             <div class="patient-avatar" style="background:${color}22;color:${color};">${initials}</div>
             <div>
-              <div class="patient-name">${p.last_name || ''}, ${p.first_name || ''}${p.korean_name ? ` <span style="font-size:11px;color:#3D5A75;font-weight:400;">${p.korean_name}</span>` : ''}</div>
+              <div class="patient-name">${p.last_name || ''}, ${p.first_name || ''}${p.korean_name ? ` <span style="font-size:11px;color:var(--a-ink-4);font-weight:400;">${p.korean_name}</span>` : ''}</div>
               <div class="patient-sub">${p.patient_id}</div>
             </div>
           </div>
         </td>
-        <td style="color:#7A9AB8;font-size:12px;">${p.dob || '—'}</td>
-        <td style="font-size:12px;color:#7A9AB8;">${p.pcp_name || '—'}</td>
+        <td style="color:var(--a-ink-3);font-size:12px;">${p.dob || '—'}</td>
+        <td style="font-size:12px;color:var(--a-ink-3);">${p.pcp_name || '—'}</td>
         <td>${eligBadge}</td>
         <td style="font-size:12px;font-weight:600;color:${p.claim_count>0?'#3B82F6':'#3D5A75'};">${p.claim_count || 0}</td>
         <td style="font-size:12px;font-weight:600;color:${p.pending_auths>0?'#F59E0B':'#3D5A75'};">${p.pending_auths || 0}</td>
@@ -1302,7 +1851,7 @@ async function openPatient(pid) {
   const p = data.patient;
   const engName = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Unknown Patient';
   document.getElementById('drawerName').innerHTML = p.korean_name
-    ? `${engName} <span style="font-size:14px;font-weight:500;color:#7A9AB8;margin-left:6px;">${p.korean_name}</span>`
+    ? `${engName} <span style="font-size:14px;font-weight:500;color:var(--a-ink-3);margin-left:6px;">${p.korean_name}</span>`
     : engName;
   document.getElementById('drawerSub').textContent = `${p.patient_id} · DOB: ${p.dob || '—'} · ${p.gender || '—'}`;
 
@@ -1320,7 +1869,7 @@ async function openPatient(pid) {
     <div class="info-item"><div class="info-label">Email</div><div class="info-value ${!p.email?'empty':''}">${p.email || 'Not provided'}</div></div>
     <div class="info-item"><div class="info-label">Address</div><div class="info-value">${[p.address,p.city,p.state,p.zip].filter(Boolean).join(', ') || '—'}</div></div>
     <div class="info-item"><div class="info-label">Language</div><div class="info-value">${p.language || 'English'}</div></div>
-    <div class="info-item" style="grid-column:1/-1;border-top:1px solid #1C2F47;padding-top:12px;margin-top:4px;"><div class="info-label" style="color:#3B82F6;letter-spacing:0.8px;">INSURANCE</div></div>
+    <div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--a-rule);padding-top:12px;margin-top:4px;"><div class="info-label" style="color:#3B82F6;letter-spacing:0.8px;">INSURANCE</div></div>
     <div class="info-item"><div class="info-label">Member ID</div><div class="info-value" style="font-weight:700;">${elig0?.member_id || '—'}</div></div>
     <div class="info-item"><div class="info-label">Elig. Status</div><div class="info-value" style="color:${eligColor};font-weight:700;">${eligStatus}</div></div>
     <div class="info-item"><div class="info-label">Payer</div><div class="info-value">${elig0?.payer_name || '—'}</div></div>
@@ -1329,11 +1878,11 @@ async function openPatient(pid) {
     <div class="info-item"><div class="info-label">Group #</div><div class="info-value">${elig0?.group_number || '—'}</div></div>
     <div class="info-item"><div class="info-label">Effective</div><div class="info-value">${elig0?.effective_date || '—'}</div></div>
     <div class="info-item"><div class="info-label">Term Date</div><div class="info-value">${elig0?.term_date || '—'}</div></div>
-    <div class="info-item" style="grid-column:1/-1;border-top:1px solid #1C2F47;padding-top:12px;margin-top:4px;"><div class="info-label" style="color:#3B82F6;letter-spacing:0.8px;">PRIMARY CARE</div></div>
+    <div class="info-item" style="grid-column:1/-1;border-top:1px solid var(--a-rule);padding-top:12px;margin-top:4px;"><div class="info-label" style="color:#3B82F6;letter-spacing:0.8px;">PRIMARY CARE</div></div>
     <div class="info-item"><div class="info-label">PCP</div><div class="info-value">${data.pcp?.provider_name || '—'}</div></div>
     <div class="info-item"><div class="info-label">Practice</div><div class="info-value ${!data.pcp?'empty':''}">${data.pcp?.practice_name || 'Not assigned'}</div></div>
-    <div class="info-item"><div class="info-label">Source File</div><div class="info-value" style="font-size:11px;color:#7A9AB8;">${p.source_file || '—'}</div></div>
-    <div class="info-item"><div class="info-label">Last Updated</div><div class="info-value" style="font-size:11px;color:#7A9AB8;">${formatDate(p.updated_at)}</div></div>
+    <div class="info-item"><div class="info-label">Source File</div><div class="info-value" style="font-size:11px;color:var(--a-ink-3);">${p.source_file || '—'}</div></div>
+    <div class="info-item"><div class="info-label">Last Updated</div><div class="info-value" style="font-size:11px;color:var(--a-ink-3);">${formatDate(p.updated_at)}</div></div>
   `;
 
   // Eligibility
@@ -1410,15 +1959,15 @@ async function openPatient(pid) {
   // Pharmacy — request history for this patient
   const rxReqs = data.pharmacyRequests || [];
   const reqHistHtml = rxReqs.length ? `
-    <div style="padding:12px 16px 6px;font-size:11px;font-weight:700;color:#3D5A75;letter-spacing:0.6px;border-top:1px solid #1C2F47;margin-top:8px;">REQUEST HISTORY</div>
+    <div style="padding:12px 16px 6px;font-size:11px;font-weight:700;color:var(--a-ink-4);letter-spacing:0.6px;border-top:1px solid var(--a-rule);margin-top:8px;">REQUEST HISTORY</div>
     ${rxReqs.map(r => {
       const stColor = r.status === 'Completed' ? '#10B981' : r.status === 'Failed' ? '#EF4444' : '#F59E0B';
       return `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-bottom:1px solid #1C2F47;font-size:12px;">
           <div>
             <span style="font-weight:600;">${r.medication_name||'—'}</span>
-            <span style="color:#7A9AB8;margin-left:6px;">${r.request_type}</span>
-            <div style="color:#3D5A75;font-size:11px;margin-top:2px;">${r.pharmacy_name||'—'} · ${r.requested_by||'—'} · ${formatDate(r.requested_at)}</div>
+            <span style="color:var(--a-ink-3);margin-left:6px;">${r.request_type}</span>
+            <div style="color:var(--a-ink-4);font-size:11px;margin-top:2px;">${r.pharmacy_name||'—'} · ${r.requested_by||'—'} · ${formatDate(r.requested_at)}</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="color:${stColor};font-weight:700;font-size:11px;">${r.status}</span>
@@ -1461,18 +2010,18 @@ async function searchForPortalLaunch(q) {
   portalSearchTimer = setTimeout(async () => {
     const data = await api(`/patients?q=${encodeURIComponent(q)}&limit=6`);
     if (!data || !data.patients.length) {
-      el.innerHTML = `<div style="font-size:13px;color:#3D5A75;padding:8px 0;">No patients found.</div>`;
+      el.innerHTML = `<div style="font-size:13px;color:var(--a-ink-4);padding:8px 0;">No patients found.</div>`;
       return;
     }
     el.innerHTML = data.patients.map(p => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#1C2B3F;border:1px solid #1C2F47;border-radius:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--a-paper-deep);border:1px solid var(--a-rule);border-radius:10px;">
         <div>
-          <div style="font-size:13px;font-weight:700;">${p.first_name} ${p.last_name}${p.korean_name ? ' <span style="font-weight:500;color:#7A9AB8;">'+p.korean_name+'</span>' : ''}</div>
-          <div style="font-size:11px;color:#7A9AB8;margin-top:2px;">${p.patient_id} · ${p.elig_status || '—'} · ${p.pcp_name || 'No PCP'}</div>
+          <div style="font-size:13px;font-weight:700;">${p.first_name} ${p.last_name}${p.korean_name ? ' <span style="font-weight:500;color:var(--a-ink-3);">'+p.korean_name+'</span>' : ''}</div>
+          <div style="font-size:11px;color:var(--a-ink-3);margin-top:2px;">${p.patient_id} · ${p.elig_status || '—'} · ${p.pcp_name || 'No PCP'}</div>
         </div>
         <div style="display:flex;gap:6px;">
-          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=patient','_blank')" style="padding:6px 12px;background:rgba(20,184,166,0.12);color:#14B8A6;border:1px solid #14B8A6;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">Patient</button>
-          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=caregiver','_blank')" style="padding:6px 12px;background:rgba(139,92,246,0.12);color:#8B5CF6;border:1px solid #8B5CF6;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">Caregiver</button>
+          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=patient','_blank')" style="padding:6px 12px;background:rgba(20,184,166,0.12);color:#14B8A6;border:1px solid #14B8A6;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">📱 Patient</button>
+          <button onclick="window.open('bridge-members-v2.html?pid=${p.patient_id}&role=caregiver','_blank')" style="padding:6px 12px;background:rgba(139,92,246,0.12);color:#8B5CF6;border:1px solid #8B5CF6;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">👨‍👩‍👧 Caregiver</button>
         </div>
       </div>`).join('');
   }, 300);
@@ -1530,7 +2079,7 @@ async function loadEligibility(filter, page) {
   }
 
   const patName = r => r.korean_name && r.language === 'Korean'
-    ? `${r.first_name} ${r.last_name} <span style="color:#3D5A75;font-size:11px;">${r.korean_name}</span>`
+    ? `${r.first_name} ${r.last_name} <span style="color:var(--a-ink-4);font-size:11px;">${r.korean_name}</span>`
     : `${r.first_name||''} ${r.last_name||''}`;
 
   el.innerHTML = `
@@ -1540,7 +2089,7 @@ async function loadEligibility(filter, page) {
         <tr onclick="openPatient('${e.patient_id}')">
           <td><div class="patient-name">${patName(e)}</div><div class="patient-sub">${e.patient_id}</div></td>
           <td style="font-size:12px;">${e.payer_name||'—'}</td>
-          <td style="font-size:12px;color:#7A9AB8;">${e.plan_name||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${e.plan_name||'—'}</td>
           <td style="font-size:12px;font-weight:600;">${e.member_id||'—'}</td>
           <td style="font-size:12px;">${e.effective_date||'—'}</td>
           <td style="font-size:12px;">${e.term_date||'—'}</td>
@@ -1566,7 +2115,7 @@ async function loadClaims(filter, page) {
   }
 
   const patName = c => c.korean_name && c.language === 'Korean'
-    ? `${c.first_name||''} ${c.last_name||''} <span style="color:#3D5A75;font-size:11px;">${c.korean_name}</span>`
+    ? `${c.first_name||''} ${c.last_name||''} <span style="color:var(--a-ink-4);font-size:11px;">${c.korean_name}</span>`
     : `${c.first_name||''} ${c.last_name||''}`;
 
   el.innerHTML = `
@@ -1575,10 +2124,10 @@ async function loadClaims(filter, page) {
       <tbody>${data.claims.map(c => `
         <tr onclick="openPatient('${c.patient_id}')">
           <td><div class="patient-name">${patName(c)}</div><div class="patient-sub">${c.patient_id}</div></td>
-          <td style="font-size:12px;color:#7A9AB8;">${c.claim_number||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${c.claim_number||'—'}</td>
           <td style="font-size:12px;">${c.dos||'—'}</td>
           <td style="font-size:12px;font-weight:600;">${c.cpt_code||'—'}</td>
-          <td style="font-size:12px;color:#7A9AB8;">${c.provider_name||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${c.provider_name||'—'}</td>
           <td style="font-size:12px;">$${(c.billed_amount||0).toFixed(2)}</td>
           <td style="font-size:12px;color:#10B981;">$${(c.paid_amount||0).toFixed(2)}</td>
           <td><span class="alert-badge ${c.status==='Paid'||c.status==='Approved'?'normal':c.status==='Denied'?'critical':c.status==='Pending'?'pending':'high'}">${c.status}</span></td>
@@ -1604,7 +2153,7 @@ async function loadAuths(filter, page) {
   }
 
   const patName = a => a.korean_name && a.language === 'Korean'
-    ? `${a.first_name||''} ${a.last_name||''} <span style="color:#3D5A75;font-size:11px;">${a.korean_name}</span>`
+    ? `${a.first_name||''} ${a.last_name||''} <span style="color:var(--a-ink-4);font-size:11px;">${a.korean_name}</span>`
     : `${a.first_name||''} ${a.last_name||''}`;
 
   el.innerHTML = `
@@ -1616,7 +2165,7 @@ async function loadAuths(filter, page) {
           <td style="font-size:12px;">${a.auth_number||'—'}</td>
           <td style="font-size:12px;">${a.auth_type||'—'}</td>
           <td style="font-size:12px;">${a.service_type||'—'}</td>
-          <td style="font-size:12px;color:#7A9AB8;">${a.rendering_provider||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${a.rendering_provider||'—'}</td>
           <td style="font-size:12px;">${a.requested_date||'—'}</td>
           <td style="font-size:12px;">${a.used_units||0}/${a.approved_units||'—'}</td>
           <td><span class="alert-badge ${a.status==='Approved'?'normal':a.status==='Denied'?'critical':a.status==='Pending'?'pending':'high'}">${a.status}</span></td>
@@ -1642,7 +2191,7 @@ async function loadLabs(filter, page) {
   }
 
   const patName = l => l.korean_name && l.language === 'Korean'
-    ? `${l.first_name||''} ${l.last_name||''} <span style="color:#3D5A75;font-size:11px;">${l.korean_name}</span>`
+    ? `${l.first_name||''} ${l.last_name||''} <span style="color:var(--a-ink-4);font-size:11px;">${l.korean_name}</span>`
     : `${l.first_name||''} ${l.last_name||''}`;
 
   const flagClass = f => f === 'Critical' ? 'critical' : f === 'High' || f === 'Low' ? 'high' : f === 'Normal' ? 'normal' : 'pending';
@@ -1656,10 +2205,10 @@ async function loadLabs(filter, page) {
           <td><div class="patient-name">${patName(l)}</div><div class="patient-sub">${l.patient_id}</div></td>
           <td style="font-weight:600;font-size:13px;">${l.test_name||'—'}</td>
           <td style="font-weight:700;color:${valColor(l.flag)};">${l.result_value||'—'} ${l.unit||''}</td>
-          <td style="font-size:12px;color:#7A9AB8;">${l.reference_range||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${l.reference_range||'—'}</td>
           <td><span class="alert-badge ${flagClass(l.flag)}">${l.flag||'—'}</span></td>
-          <td style="font-size:12px;color:#7A9AB8;">${l.ordered_by||'—'}</td>
-          <td style="font-size:12px;color:#7A9AB8;">${l.lab_name||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${l.ordered_by||'—'}</td>
+          <td style="font-size:12px;color:var(--a-ink-3);">${l.lab_name||'—'}</td>
           <td style="font-size:12px;">${l.result_date||'—'}</td>
         </tr>
       `).join('')}</tbody>
@@ -1689,9 +2238,9 @@ async function loadPharmacy() {
         <div style="padding:10px 16px;border-bottom:1px solid #1C2F47;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
             <div style="font-size:13px;font-weight:600;">${m.medication_name}</div>
-            <div style="font-size:12px;color:#7A9AB8;">${m.count} patients</div>
+            <div style="font-size:12px;color:var(--a-ink-3);">${m.count} patients</div>
           </div>
-          <div style="height:3px;background:#1C2F47;border-radius:2px;">
+          <div style="height:3px;background:var(--a-rule);border-radius:2px;">
             <div style="height:100%;width:${(m.count/max*100).toFixed(0)}%;background:#8B5CF6;border-radius:2px;"></div>
           </div>
         </div>
@@ -1711,8 +2260,8 @@ async function loadPharmacy() {
               <div style="font-size:13px;font-weight:600;">${r.first_name} ${r.last_name}</div>
               ${isOverdue(r.refill_due_date) ? '<span class="alert-badge critical" style="font-size:9px;">OVERDUE</span>' : ''}
             </div>
-            <div style="font-size:11px;color:#7A9AB8;">${r.medication_name} · Due: ${r.refill_due_date}</div>
-            <div style="font-size:11px;color:#3D5A75;">${r.pharmacy_name||'—'} · ${r.phone||'—'}</div>
+            <div style="font-size:11px;color:var(--a-ink-3);">${r.medication_name} · Due: ${r.refill_due_date}</div>
+            <div style="font-size:11px;color:var(--a-ink-4);">${r.pharmacy_name||'—'} · ${r.phone||'—'}</div>
           </div>
           <button class="ph-action-btn" onclick="openPatient('${r.patient_id}')">View Patient →</button>
         </div>
@@ -2262,10 +2811,10 @@ async function loadPharmacyRequests(filter) {
                 <div class="patient-sub">${r.patient_id}</div>
               </td>
               <td style="font-size:12px;font-weight:600;">${r.medication_name||'—'}</td>
-              <td style="font-size:12px;color:#7A9AB8;">${r.pharmacy_name||'—'}</td>
+              <td style="font-size:12px;color:var(--a-ink-3);">${r.pharmacy_name||'—'}</td>
               <td><span class="alert-badge pending" style="font-size:10px;">${r.request_type}</span></td>
-              <td style="font-size:12px;color:#7A9AB8;">${r.requested_by||'—'}</td>
-              <td style="font-size:11px;color:#3D5A75;">${formatDate(r.requested_at)}</td>
+              <td style="font-size:12px;color:var(--a-ink-3);">${r.requested_by||'—'}</td>
+              <td style="font-size:11px;color:var(--a-ink-4);">${formatDate(r.requested_at)}</td>
               <td><span class="alert-badge ${stColor}">${r.status}</span></td>
               <td>
                 ${r.status === 'Processing' ? `
@@ -2273,13 +2822,13 @@ async function loadPharmacyRequests(filter) {
                     <button onclick="updatePharmacyRequest(${r.id},'Completed')" style="font-size:10px;padding:4px 8px;background:rgba(16,185,129,0.12);color:#10B981;border:1px solid #10B981;border-radius:4px;cursor:pointer;white-space:nowrap;">✓ Complete</button>
                     <button onclick="updatePharmacyRequest(${r.id},'Failed')" style="font-size:10px;padding:4px 8px;background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid #EF4444;border-radius:4px;cursor:pointer;">✗ Fail</button>
                   </div>
-                ` : `<span style="font-size:11px;color:#3D5A75;">${r.completed_at ? formatDate(r.completed_at) : '—'}</span>`}
+                ` : `<span style="font-size:11px;color:var(--a-ink-4);">${r.completed_at ? formatDate(r.completed_at) : '—'}</span>`}
               </td>
             </tr>`;
         }).join('')}
       </tbody>
     </table>
-    <div style="padding:10px 16px;font-size:12px;color:#3D5A75;">Showing ${data.requests.length} of ${data.total} requests</div>
+    <div style="padding:10px 16px;font-size:12px;color:var(--a-ink-4);">Showing ${data.requests.length} of ${data.total} requests</div>
   `;
 }
 
@@ -2403,8 +2952,13 @@ function connectSSE() {
 function setSync(state) {
   const dot = document.getElementById('syncDot');
   const status = document.getElementById('syncStatus');
-  dot.className = 'sync-dot' + (state === 'offline' ? ' offline' : state === 'syncing' ? ' syncing' : '');
-  status.textContent = state === 'connected' ? 'Live sync active' : state === 'syncing' ? 'Syncing...' : 'Offline';
+  if (dot) {
+    dot.style.background = state === 'offline' ? 'var(--a-danger)' : state === 'syncing' ? 'var(--a-warn)' : 'var(--a-good)';
+  }
+  if (status) {
+    status.textContent = state === 'connected' ? 'Live' : state === 'syncing' ? 'Syncing…' : 'Offline';
+    status.style.display = state !== 'connected' ? 'inline' : 'none';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2451,7 +3005,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const r = await fetch(API + '/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
       if (r.ok) {
         document.getElementById('login-overlay').classList.remove('active');
-        loadDashboard();
+        showPage('appointments');
         connectSSE();
         initDemoDataIfEmpty();
       } else {
@@ -2525,7 +3079,7 @@ function seedDemoData() {
 #demo-fab:hover { background:#4F46E5; }
 #demo-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9001; align-items:center; justify-content:center; }
 #demo-overlay.open { display:flex; }
-#demo-modal { background:#1A1A2E; border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:28px; max-width:480px; width:calc(100% - 40px); max-height:80vh; overflow-y:auto; color:#E2E8F0; font-family:inherit; }
+#demo-modal { background:#1A1A2E; border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:28px; max-width:480px; width:calc(100% - 40px); max-height:80vh; overflow-y:auto; color:var(--a-ink); font-family:inherit; }
 .demo-h { font-size:16px; font-weight:800; color:#fff; margin:0 0 4px; }
 .demo-sub { font-size:12px; color:#64748B; margin:0 0 20px; }
 .demo-section { margin-bottom:18px; }
