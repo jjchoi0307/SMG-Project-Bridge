@@ -1,6 +1,8 @@
 # SMG Bridge
 
-Healthcare data operations platform for SMG MSO (AMM) — unifies siloed patient data from eligibility files, PCP offices, and pharmacies into a single, role-scoped hub with six web portals, including a patient-facing mobile app with caregiver support.
+Healthcare data operations platform for **SMG MSO (AMM)** — unifies siloed patient data from eligibility files, PCP offices, and pharmacies into a single, role-scoped hub. Four purpose-built surfaces (Admin, Clinical, Patient, Caregiver) sit behind a common portal hub and staff sign-in, with supporting legacy portals for brokers and SMG operations.
+
+**Demo anchor date:** Friday, April 24, 2026. All calendars, headers, schedules, recent activity, claims, auths, labs, Rx last-fill dates, and upcoming visits read as if the app were running on that date.
 
 ---
 
@@ -8,17 +10,26 @@ Healthcare data operations platform for SMG MSO (AMM) — unifies siloed patient
 
 SMG Bridge solves a core problem in managed care: patient data lives in three separate silos (insurance eligibility files, PCP office systems, pharmacy records) and no one stakeholder has a unified view. Bridge imports, reconciles, and surfaces that data through purpose-built portals for each role.
 
+**Two design directions, one platform:**
+
+| Direction | Surfaces | Type system | Palette |
+|---|---|---|---|
+| **A · Clinical Calm** | Admin Portal, Clinical Portal, Sign-In | IBM Plex Sans / Serif / Mono | Paper `#F6F5F0`, navy `#1B3E7A` |
+| **B · Warm Human** | Patient App, Caregiver App | Pretendard + Fraunces | Warm paper `#FAF6EF`, emerald `#1C5430` |
+
 **Key capabilities:**
-- Bulk Excel/CSV import with automatic ETL and idempotent upserts
-- Real-time progress updates via Server-Sent Events
-- Multi-tenant data scoping — brokers see only their org, physicians see only their panel
-- Audit trail on all write operations
-- CSV exports for all data types
-- Prior auth, claims, lab result, and pharmacy refill tracking
-- Appointment calendar — 2-panel month view connecting confirmed appointments with pending requests; doctors and admins can confirm, reschedule, or cancel inline; backed by server-side SQLite for cross-device consistency
-- Server-persisted caregiver consent requests — patients submit from the mobile app; doctors and admins approve or decline from their portals; changes reflect immediately across all sessions
-- Care Gaps tab in the doctor patient drawer — auto-computed per patient from pending/denied authorizations, critical/elevated labs, annual wellness visit history, and expired authorizations
-- Patient-facing mobile app with caregiver view, dynamic after-visit summaries, and live appointment confirmation feedback
+- **Portal Hub** (`/`) — landing page with 4 cards; each click clears any stale session and crossfades into the target surface
+- **Staff sign-in SPA** — 7-screen flow (picker → form → MFA → SSO handoff → returning → locked → request-access); gates both admin and clinical portals; writes signed-in identity into `localStorage` so the name/email/role persist into the portal chrome
+- **Bulk Excel/CSV import** with automatic ETL and idempotent upserts
+- **Real-time progress** updates via Server-Sent Events
+- **Multi-tenant scoping** — brokers see only their org, physicians see only their panel
+- **Full-system audit trail** on every write operation, plus a per-user audit modal in the clinical portal
+- **CSV exports** for all data types
+- **Prior auth, claims, lab result, and pharmacy refill tracking** with working filter chips and search on every data page
+- **Appointment calendar** — 2-panel month view connecting confirmed appointments with pending requests; fully navigable (Prev / Today / Next / Month toggle); doctors and admins can confirm, reschedule, or cancel inline; backed by server-side SQLite
+- **Server-persisted caregiver consent requests** — patients submit from the mobile app; doctors and admins approve or decline from their portals; changes reflect immediately across all sessions
+- **Care Gaps tab** in the doctor patient drawer — auto-computed per patient from pending/denied authorizations, critical/elevated labs, annual wellness visit history, and expired authorizations
+- **Patient & caregiver phone apps** — separate 393×852 iPhone-frame SPAs with their own phone-number OTP sign-in flow; bilingual (patient supports EN/KO; caregiver EN/KO)
 
 ---
 
@@ -72,7 +83,7 @@ Wait for the terminal to say **`SMG Bridge running on http://localhost:3000`**
 
 Open Chrome or Safari and go to: **http://localhost:3000**
 
-The Admin Portal opens automatically — no login required.
+The Portal Hub opens — pick Admin, Clinical, Patient, or Caregiver.
 
 **To stop the server:** Press `Ctrl + C` in the Terminal window.
 
@@ -80,15 +91,25 @@ The Admin Portal opens automatically — no login required.
 
 ### Portal URLs
 
-| Portal | URL |
-|---|---|
-| Admin | http://localhost:3000 |
-| Doctor | http://localhost:3000/bridge-doctor.html |
-| Patient App | http://localhost:3000/bridge-members-v2.html |
+| Surface | URL | Auth |
+|---|---|---|
+| **Portal Hub** (landing) | http://localhost:3000 | None |
+| **Staff Sign-In** | http://localhost:3000/bridge-signin.html | — |
+| Admin Portal | http://localhost:3000/bridge-admin.html | Requires `smg-staff-authed === 'admin'` |
+| Clinical Portal | http://localhost:3000/bridge-doctor.html | Requires `smg-staff-authed === 'clinical'` |
+| Patient App | http://localhost:3000/bridge-patient.html | Phone OTP (demo: any digits) |
+| Caregiver App | http://localhost:3000/bridge-caregiver.html | Invite code + OTP |
+| Legacy member lookup | http://localhost:3000/bridge-members-v2.html | Public (SMG Member ID) |
 
-**Doctor login sample NPIs:** `4455667788` · `5544332211` · `0987654321`
+**Staff sign-in demo credentials** (used by the hub → sign-in → admin/clinical flow):
 
-**Patient App sample IDs:** `SMG-2047` · `SMG-2217` · `SMG-3868`
+- Email: anything ending in `@amm.cc` (admin) or `@smgmedical.net` (clinical). The display name on top of the portal is derived from the local part — `jordan.smith@amm.cc` → `Jordan Smith`.
+- Password: `demo` (instant success), any password ≥8 chars (success), `locked` (goes straight to the locked-out screen), any <8 chars (increments failed attempts, locks after 5).
+- MFA code: any 6 digits *except* `000000` (which rejects and clears).
+
+**Doctor login sample NPIs** (for the legacy per-doctor portal data, still used for data scoping): `4455667788` · `5544332211` · `0987654321`
+
+**Patient/Caregiver phone-app demo:** the sign-in is decorative — tap through welcome → phone → OTP → Face ID. The apps don't currently link to a specific member ID; they render the same sample family (Susan Park / 박수잔).
 
 ---
 
@@ -117,25 +138,93 @@ lsof -ti :3000 | xargs kill -9 && npm run dev
 
 ---
 
-## Six Portals
+## Surfaces
 
-Each portal is a self-contained static HTML file served from `/client/`.
+Each surface is a self-contained static HTML file served from `/client/`.
 
-| Portal | File | Role(s) | Access |
+**Primary surfaces** (linked from the hub):
+
+| Surface | File | Role(s) | Auth gate |
 |---|---|---|---|
-| Admin | `bridge-admin.html` | `admin` | All data, no filters |
-| SMG Internal | `bridge-smg.html` | `coordinator`, `ops`, `physrel`, `leadership`, `product` | All data |
-| Broker | `bridge-broker.html` | `broker` | Org-scoped patients only |
-| Doctor | `bridge-doctor.html` | `physician` | Own patient panel (by NPI) |
-| Member (Patient + Caregiver) | `bridge-members-v2.html` | `patient`, `caregiver` | Self-service, public endpoint |
+| Portal Hub | `index.html` | All users | None — landing page |
+| Staff Sign-In | `bridge-signin.html` | Staff | — |
+| Admin Portal | `bridge-admin.html` | `admin` | Redirects to sign-in unless `smg-staff-authed === 'admin'` |
+| Clinical Portal | `bridge-doctor.html` | `physician` | Redirects to sign-in unless `smg-staff-authed === 'clinical'` |
+| Patient App | `bridge-patient.html` | `patient` | Phone OTP (localStorage `smg-authed`) |
+| Caregiver App | `bridge-caregiver.html` | `caregiver` | Invite code + OTP (localStorage `smg-cg-authed`) |
+
+**Legacy / internal surfaces** (still served, not surfaced from the hub):
+
+| Surface | File | Purpose |
+|---|---|---|
+| SMG Internal | `bridge-smg.html` | Coordinator / ops / leadership view |
+| Broker | `bridge-broker.html` | Org-scoped broker dashboard |
+| Member lookup v2 | `bridge-members-v2.html` | Public SMG-ID lookup (submits appointment & consent requests to server) |
+| Member lookup v1 | `bridge-members.html` | Older patient lookup prototype |
 
 The server routes unknown paths to `bridge-admin.html` as the catch-all.
+
+### Navigation flow
+
+```
+      http://localhost:3000/
+              ↓
+         ┌─ Portal Hub (index.html) ─┐
+         ↓                            ↓
+    Staff card                Patient/Caregiver card
+         ↓                            ↓
+   bridge-signin.html          bridge-patient.html
+   (picker → form → MFA        bridge-caregiver.html
+    → biometric)               (direct to phone sign-in)
+         ↓
+   bridge-admin.html
+   bridge-doctor.html
+```
+
+Every hub card click clears the relevant `localStorage` keys and crossfades into the next page, so demos always start clean.
+
+---
+
+## Staff Sign-In
+
+`bridge-signin.html` implements the full staff sign-in contract (see `../SMG Bridge Portal Sign-In.html` spec) as a single-file SPA with 7 screens.
+
+| # | Screen | Path | Purpose |
+|---|---|---|---|
+| 1 | **Portal Picker** | `/bridge-signin.html` | Admin vs Clinical card picker + patient/caregiver nudge to App/Play store |
+| 2 | **Sign-In Form** | `?portal=admin` / `?portal=clinical` | "Continue with AMM Email" / "Continue with SMGMedical Email" SSO button, then email + password fallback; shows errors + attempt countdown; Shared-device toggle |
+| 3 | **MFA** | `?screen=mfa&portal=…` | 6-digit authenticator code with auto-advance, paste-to-fill, Backspace-back, 30-second resend countdown |
+| 4 | **SSO Handoff** | `?screen=sso&portal=…` | Brief "Redirecting to AMM/SMGMedical Email…" interstitial with animated dots and OIDC caption |
+| 5 | **Returning User** | `?screen=welcome&portal=…` | Time-of-day greeting, identity card, "Unlock with Touch ID" (gated on `navigator.credentials`), inactivity callout |
+| 6 | **Locked** | `?screen=locked&portal=…` | Lockout screen with incident card (incident ID, times, IP), IdP-reset + tel:IT CTAs, suspicious-activity report |
+| 7 | **Request Access** | `?screen=request&portal=…` | New-staff request form — admin has role chips (Operations / Eligibility / Claims / Billing / Compliance); clinical has NPI field + specialty chips |
+
+On success, the sign-in writes:
+
+```
+smg-staff-authed = 'admin' | 'clinical'
+smg-staff-email  = <typed email>
+smg-staff-name   = <derived from local part — e.g., jin.kim@amm.cc → Jin Kim>
+smg-staff-role   = Ops · Admin | PCP · SMG Koreatown
+```
+
+These values are read on every portal load by `applySessionIdentity()`, which updates the top-bar name/role/avatar, the user-menu popover card, and (admin only) the sidebar footer block — so the identity the user typed at sign-in persists consistently into the portal chrome.
+
+**Layout** — 1440×900 artboard split 624px brand pane (paper-deep, 48px grid lines, 56pt Fraunces headline, italic subtitle, meta strip with Version / Deployed / Status) + form shell (max-width 440/460/500px depending on screen, with top-bar host/help/English pill and mono legal footer).
 
 ---
 
 ## Admin Portal
 
 `bridge-admin.html` is the full-access operations hub for the SMG team.
+
+**Top bar** (clickable, with popovers):
+
+- **Workspace switcher** ("SMG MSO · Los Angeles ▾") — popover lets you switch to Orange County / San Diego
+- **Search** ("⌘K") — global cmdk palette over patients, claims, auths, Rx
+- **Environment pill** (`PROD`) — static chip
+- **Notifications bell** — popover with 5 sample items (upload finished, lab intake error, caregiver consent pending, monthly adherence report, prior auth approved); "Mark all read" clears the unread dot; clicking an item jumps to its home page
+- **User avatar** (Jin Kim → live-synced from sign-in) — popover with Profile & preferences (→ Settings), My audit log (→ Audit page), Switch portal…, Help & support (→ modal), Sign out (red)
 
 **Sidebar sections:**
 
@@ -146,14 +235,26 @@ The server routes unknown paths to `bridge-admin.html` as the catch-all.
 | Patient Portal | Today's Schedule, **Appointment Calendar**, Caregiver Consents |
 | Member Portals | Bridge v2 (patient app launcher) |
 
+The **sidebar footer** (avatar + name + role) also opens the same user popover — one source of truth for account actions.
+
+### Filter Chips + Search
+
+Every `.filter-bar` on every data page auto-wires on page render via `wireFilterChips()`. Chips are grouped automatically by the vertical spacers between them; clicking a chip makes it the sole active chip in its group, and active chips contribute case-insensitive substring queries AND'd across groups. The search input in the same bar ANDs with chip filters. Parenthetical counts ("Active (9,712)") and prefixes like `Plan:` / `PCP:` / `Segment:` are stripped before matching.
+
+**Live on:** Patient Registry (Active/Pending/Termed + Plan + PCP + Flagged), Eligibility, Claims (Paid/Pending/Denied/Appealed + Provider), Authorizations (Pending/Approved/Denied/Draft), Lab Results (Critical / HbA1c / Lipid / BMP-CMP), Meds (Overdue/Due/Refilled + Drug class), Schedule (Provider + Clinic), Caregiver Consents (status + scope), plus every panel/care-gap/labs/referrals filter in the Clinical portal.
+
 ### Appointment Calendar
 
-The appointment calendar replaces the old flat request queue. It provides a 2-panel view:
+Week-grid view with functional navigation:
 
-- **Left panel** — mini monthly grid with color-coded dot indicators per day (green = confirmed, amber = pending, purple = rescheduled) and a scrollable list of all pending requests sorted by date
-- **Right panel** — day detail showing time-sorted confirmed appointments, pending request cards with inline time-selector and confirm / reschedule / cancel actions, and rescheduled entries with their original date
+- **Prev / Next** — shift `CAL_STATE.weekOffset` by ±1 week, title and grid update ("April 27 — May 1, 2026", "April 13 — April 17, 2026", etc.)
+- **Today** — resets to offset 0 (the current anchor week, April 20 — 24, 2026), highlighted as primary
+- **Month** — toggles a real 7×N month grid with per-day appointment counts; today highlighted with navy border + accent fill; click any day to zoom back into its week
+- **+ New appointment** — opens modal
 
-Appointment requests are stored server-side in the `appointment_requests` table. Patients submit requests from the mobile app via `POST /api/patient-portal/appointments`; admin and doctor portals confirm/reschedule/cancel via `PUT /api/appointments/:id`. localStorage acts as a client-side cache synced from the server — all portals share the same live data regardless of device or browser.
+Each appointment tile now carries its own MRN (`SMG-00412`, `SMG-00587`, etc.) so clicking Yoon vs Park vs Lee opens the right patient chart. Previously all tiles hardcoded `SMG-00587`.
+
+Appointment requests are still stored server-side in the `appointment_requests` table. Patients submit requests from the mobile app via `POST /api/patient-portal/appointments`; admin and doctor portals confirm/reschedule/cancel via `PUT /api/appointments/:id`. localStorage acts as a client-side cache synced from the server — all portals share the same live data regardless of device or browser.
 
 ### Caregiver Consents
 
@@ -161,9 +262,16 @@ Patients grant caregivers access from the mobile app consent flow. Consent reque
 
 ---
 
-## Doctor Portal
+## Clinical Portal
 
-`bridge-doctor.html` is an NPI-scoped portal — a doctor enters their name and 10-digit NPI at login to access only their patient panel.
+`bridge-doctor.html` is an NPI-scoped clinical portal. Enter via the hub → sign-in → Clinical card. Signed-in identity derives from the entered email (e.g. `sarah.park@smgmedical.net` → Dr. Sarah Park).
+
+**Top bar:**
+
+- **Next patient** chip (`Next · 8 min · Kim, Soonja`) — click to jump to that chart
+- **? help icon** — opens the shortcut cheatsheet
+- **Notifications bell** popover — 5 clinical items (new lab result, caregiver message, care gap alert, prior auth approved, schedule confirmed); items jump to Labs / Messages / Gaps / Auths / Home
+- **User avatar** (Dr. Sarah Park → derived from sign-in email) — popover with Profile & preferences (→ Preferences page with Profile card + NPI + clinical defaults + MFA), **My audit log** (→ modal showing time · READ/WRITE/AUTH badge · action · patient · IP for the last 8 actions, with 7-year HIPAA retention note), Switch portal…, Help & support (→ modal with Clinical IT line, live chat, 5 clinical FAQs, shortcut cheat), Sign out
 
 **Sidebar sections:**
 
@@ -175,6 +283,12 @@ Patients grant caregivers access from the mobile app consent flow. Consent reque
 | Patient Portal | **Appointment Calendar**, Caregiver Consents, Launch Bridge App |
 
 All data queries are scoped to the doctor's NPI via `pcp_providers` JOINs. Appointment and consent data is server-persisted and synced in real time — changes made in the doctor portal are immediately visible in the admin portal and patient app.
+
+**Filter chips** — the same `wireFilterChips()` system runs on the clinical portal (panel / care gaps / labs / referrals). Escape closes both the nav popovers AND any open gap tooltip.
+
+**Voice dictation** — the visit-note editor supports ElevenLabs Scribe STT; set your API key in Preferences.
+
+**Drag-to-resize** — the patient chart's left and right rails can be dragged to resize; widths persist to localStorage.
 
 ### Care Gaps
 
@@ -199,50 +313,57 @@ Each gap is color-coded: red border for critical severity, amber for high. If no
 
 ---
 
-## Member App — Patient & Caregiver
+## Patient App
 
-`bridge-members-v2.html` is a bilingual (English/Korean) mobile-first app with two modes: **Patient** and **Caregiver**.
+`bridge-patient.html` is a bilingual (EN/KO) iPhone-frame SPA for SMG members. 393×852 phone frame on desktop, fills the viewport on real phones. Direction B "Warm Human" — Pretendard + Fraunces, warm paper `#FAF6EF`, emerald.
 
-### Patient View
+**Sign-in flow** (own, separate from staff sign-in):
+- Welcome role-picker — "저는 SMG 회원이에요 / I'm an SMG member" vs "부모님을 돌봐드려요 / I'm caring for a parent" (the latter redirects to `bridge-caregiver.html`)
+- Phone entry — **US-only** (Korean country option was removed — all SMG patients are US-based). Placeholder `(213) 555-0100`, formatter produces `(xxx) xxx-xxxx`.
+- OTP — 6-digit keypad, `000000` rejects for demo
+- Face ID — opt-in with fallback
 
-Accessed by entering an SMG Member ID (`SMG-XXXXXXX`) or insurance member ID — no login required.
+Sets `smg-authed` in localStorage; cleared by hub on demo restart.
 
-**Home tab**
-- Morning mood check-in (Good / OK / Down)
-- My Meds shortcut showing today's status
-- Upcoming appointment with PCP name
+**Home tab** — morning mood check-in (Good / OK / Down), meds shortcut, upcoming appointment with PCP name.
 
-**My Meds tab**
-- Full medication list pulled from `pharmacy_records` (falls back to `medication_requests`)
-- Expandable cards with dosage, pharmacy, refills remaining
-- "I've taken my meds" confirmation button — updates caregiver view in real time
+**My Meds tab** — full medication list from `pharmacy_records`; expandable cards with dosage, pharmacy, refills remaining; "I've taken my meds" confirmation.
 
 **My Visit tab**
-- **Action Needed** — dynamic alerts per patient (annual wellness overdue, pending/approved authorizations)
-- **Upcoming Visits** — confirmed appointment requests appear here as date-boxed cards (month, day, confirmed time, "Confirmed ✓" badge) alongside the static PCP and specialist referral cards. Confirmation flows directly from the admin or doctor portal — no manual step required.
-- **Awaiting Confirmation** — pending requests the patient has submitted show with amber styling and "Your care team will confirm soon." Once a doctor confirms and sets a time, the card moves up to Upcoming Visits automatically.
-- **Approvals & Authorizations** — three states only: **Approved** (shows provider + expiration date), **In Progress** (care team working on it), **Error** (denied/carved out/voided — never shown as raw denial; patient is directed to call PCP office)
-- **Transport** — tap to call PCP office or SMG at (562) 766-2000
+- **Action Needed** — dynamic alerts (annual wellness overdue, pending/approved auths)
+- **Upcoming Visits** — confirmed request cards with date box + "Confirmed ✓" badge; next annual wellness currently set to **May 8** (pushed forward from the old March 28 anchor)
+- **Awaiting Confirmation** — pending requests in amber; move to Upcoming once confirmed from the clinical portal
+- **Approvals & Authorizations** — three states only: **Approved** (provider + expiration), **In Progress**, **Error** (never raw denial; directs to PCP office)
+- **Transport** — tap to call PCP office or SMG
 
 **Records tab**
-- **Vitals** — blood pressure, BMI, weight from most recent doctor-confirmed visit
-- **Lab Results** — most recent signed results with last-3-visit comparison panel and neutral contextual message. No alarming Critical/High/Low flags shown to patients — raw flags are for clinical use only.
-- **Prescriptions** — active medications with prescriber and refill info
+- **Vitals** — BP, BMI, weight from most recent doctor-confirmed visit
+- **Lab Results** — latest signed results with last-3-visit comparison, neutral contextual message. Lab cards show `APR 22` / `APR 20` as the latest dates. No Critical/High/Low flags shown to patients.
+- **Prescriptions** — active meds with prescriber and refill info
 
-> **Note:** After Visit Summaries are not shown to patients or caregivers. Doctor notes contain billing/coding shorthand that is not appropriate for patient-facing display (compliance requirement from Dr. Chang's office, April 2026).
+> **Compliance**: After-Visit Summaries are never shown to patients or caregivers. Doctor notes contain billing/coding shorthand inappropriate for patient display (Dr. Chang's office, April 2026).
 
-### Caregiver View
+## Caregiver App
 
-Caregivers connect to a family member's account using the member's SMG ID.
+`bridge-caregiver.html` is the parallel iPhone-frame app for family caregivers. Same Warm Human direction, caregiver-specific warm-peach accents (`--cg-ok` / `--cg-watch` / `--cg-attn`).
 
-**Today's Update card**
-- MOOD (left) and MEDS (right) signal pills — update live as the patient checks in
-- Dynamic status message:
-  - Score ≥ 80: *Everything looks good 💚*
-  - Score 60–79: *A little check-in would be nice*
-  - Score < 60: *She'd love to hear from you today 💛*
-- "Remind Mom" button sends an in-app nudge
-- Quiet state shown when patient is fully checked in
+**Sign-in flow**:
+- Welcome role-picker (mirrors patient app — "SMG member" card redirects to the patient app; "caring for a parent" continues)
+- Invite code — 6-character alphanumeric from Mom's phone. Input is a full-overlay transparent field; the styled slots are purely visual. (Was previously a broken 1×1 hidden input — fixed.)
+- OTP
+- Face ID
+
+Sets `smg-cg-authed` in localStorage.
+
+**Home tab** — three moods for Mom (ok / watch / attn) with status chips, mood quote card, action panel (e.g., "Call Mom now" / "Remind to take meds"), and today's activity timeline.
+
+**Meds tab** — weekly adherence strip, AM/PM/Night medication groups with taken/missed state, refill alert (Lisinopril 3 days left with inline "Request refill" button), persistent "Remind Mom" CTA.
+
+**Visits tab** — next upcoming visit (currently **May 8** annual wellness with Dr. Park), "I'll be there" / "Join by video" / "Mom need a ride?" quick actions, prep-for-visit flow, and past-visit list (MAR 21 A1C follow-up / FEB 12 flu shot / JAN 15 annual wellness).
+
+**Labs tab** — A1C trend card (5-month bar chart, trending down from 7.8 → 7.2), recent result list with plain-language explanations, "Ask the doctor" prompt.
+
+**Mom tab** — profile hero, unread messages from care team, care team contact list (Dr. Park, Nurse Lee, CVS, co-caregiver), compose-message flow.
 
 **Caregiver data access — compliance boundaries**
 
@@ -252,7 +373,11 @@ Caregivers can be granted access to: appointments, medications, and lab results 
 - After Visit Summaries and doctor notes
 - Insurance plan details and member ID
 
-The caregiver Account tab shows only the patient's PCP name and practice, plus referral/authorization status using the same Approved / In Progress / Error display as the patient view.
+The Mom tab shows only the patient's PCP name + practice and referral/auth status using the same Approved / In Progress / Error display as the patient app.
+
+## Legacy member lookup (v2)
+
+`bridge-members-v2.html` is the older web-based patient lookup that's still served at its URL. It's not surfaced from the hub but remains the endpoint used by the server's appointment- and consent-request POST flows. Patients can submit from this surface using an SMG Member ID (`SMG-XXXXXXX`) and the server persists to `appointment_requests` / `caregiver_consents` for the admin and clinical portals to consume.
 
 ---
 
@@ -283,7 +408,16 @@ SMG - Project Bridge/
 │       ├── audit.js              # Automatic write-op audit middleware
 │       ├── watcher.js            # Chokidar watcher for /uploads auto-import
 │       └── auth.js               # scrypt hashing, session creation/verification
-├── client/                       # Static HTML portal files
+├── client/
+│   ├── index.html                # Portal Hub (landing)
+│   ├── bridge-signin.html        # Staff sign-in SPA (7 screens)
+│   ├── bridge-admin.html         # Admin portal (Direction A · Clinical Calm)
+│   ├── bridge-doctor.html        # Clinical portal (Direction A)
+│   ├── bridge-patient.html       # Patient phone app (Direction B · Warm Human)
+│   ├── bridge-caregiver.html     # Caregiver phone app (Direction B)
+│   ├── bridge-members-v2.html    # Legacy public member lookup
+│   ├── bridge-smg.html           # SMG internal (legacy)
+│   └── bridge-broker.html        # Broker (legacy)
 ├── dummy-data/                   # XLSX seed files (tracked in git)
 ├── docs/
 │   └── SMG_BRIDGE_DOCUMENTATION.md   # Full technical reference
@@ -412,6 +546,11 @@ The seed process loads ~10,000 synthetic patients from `dummy-data/*.xlsx`. `see
 ## Development Notes
 
 - **No build step** for the frontend — edit `.html` files in `client/` directly
+- **Demo date anchor**: Friday, April 24, 2026. Week-view calendar is Apr 20–24, upcoming annual wellness is May 8, recent activity is mid-April, past visits are Mar 21 / Feb 12 / Jan 15. To re-anchor, edit `/tmp/update-dates.js` (kept as a reference mapping) and re-run it over the HTMLs.
+- **Page transitions**: every portal has `html { background: <paper> }` so there's no white flash during navigation, plus a `body { animation: pageIn 220ms }` fade-in. Hub cards fade out on click (`body.leaving { opacity: 0 }`) before navigating, producing a crossfade. `prefers-reduced-motion` disables all motion.
+- **Staff auth gate** — `bridge-admin.html` and `bridge-doctor.html` each have a head-script that checks `localStorage.smg-staff-authed`. If the value doesn't match the portal, the gate clears any stale session and redirects to `/bridge-signin.html`. To bypass during development, add `?bypass-auth` to the URL.
+- **Filter chip system** — `wireFilterChips()` in both admin and clinical auto-attaches click handlers to every `.chip` inside every `.filter-bar` after a page renders. One chip active per auto-detected group; "All …" chips match everything; search input ANDs with chip filters. Adding a new filter-bar needs zero JS — just the markup.
+- **Calendar navigation** — `CAL_STATE.weekOffset` drives Prev/Today/Next; `CAL_STATE.mode` toggles between week and month grids; sample data lives only on offset 0 so other weeks render as an empty calendar.
 - **Schema auto-migrates** on every server startup — `server/database.js` handles missing columns from older versions, including the `visit_notes` table
 - **Drop-and-import** — drop any `.xlsx` file into `/uploads/` and Chokidar picks it up automatically
 - **Appointment and consent data** — persisted server-side in `appointment_requests` and `caregiver_consents` SQLite tables. localStorage serves as a read-through cache (`syncPortalCaches()` hydrates it from the API on every calendar/consent load). All portals write through the API so data is consistent across devices and browsers.
@@ -420,7 +559,11 @@ The seed process loads ~10,000 synthetic patients from `dummy-data/*.xlsx`. `see
   - Pharmacy route broadcasts refill request status updates
   - 25-second heartbeat keeps connections alive
 - **Dashboard caching** — expensive aggregate queries are cached in memory for 30–60 seconds, scoped by `org_id` or `npi`
-- **Language support** — the member app supports English and Korean throughout; toggle with the EN / 한국어 button
+- **Language support** — the patient and caregiver apps are bilingual EN/KO; toggle with the EN / 한국어 button. The admin, clinical, and sign-in surfaces are English-only (staff-facing per spec).
+- **Audits** — run the in-repo jsdom tests:
+  - `node /tmp/audit-signin.js` — 44 sign-in flow assertions
+  - `node /tmp/audit-caregiver.js` — 90 caregiver interaction assertions
+  - `node /tmp/test-filter-real.js` — 18 filter-chip + calendar-nav assertions (requires `jsdom` in node_modules)
 
 ---
 
