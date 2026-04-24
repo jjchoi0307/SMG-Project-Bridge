@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1024, initial-scale=1">
+<title>SMG Bridge — Portal sign-in</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   TOKENS — Direction A · Clinical Calm
+══════════════════════════════════════════════════════════════ */
+:root {
+  --a-paper:         #F6F5F0;
+  --a-paper-deep:    #EEECE4;
+  --a-paper-deeper:  #E8E6DE;
+  --a-card:          #FFFFFF;
+  --a-ink:           #101418;
+  --a-ink-2:         #2A2E35;
+  --a-ink-3:         #5B6069;
+  --a-ink-4:         #8A8F98;
+  --a-rule:          #D8D5CB;
+  --a-rule-soft:     #E5E2D8;
+  --a-accent:        #1B3E7A;
+  --a-accent-soft:   #DDE5F2;
+  --a-warn:          #B8860B;
+  --a-warn-soft:     #F5EACB;
+  --a-warn-border:   #E6D39A;
+  --a-danger:        #A13525;
+  --a-danger-soft:   #F2DCD5;
+
+  --smg-navy:        #1B3E7A;
+  --smg-navy-deep:   #0E2449;
+  --smg-emerald:     #1F8A4C;
+  --smg-emerald-deep:#146837;
+  --smg-emerald-soft:#E6F3EB;
+
+  --font-sans-a:  'IBM Plex Sans', -apple-system, sans-serif;
+  --font-serif-a: 'IBM Plex Serif', Georgia, serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; min-width: 1024px; }
+html { background: var(--a-paper-deep); }
+body {
+  font-family: var(--font-sans-a);
+  font-size: 13.5px;
+  color: var(--a-ink);
+  background: var(--a-paper);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: auto;
+  animation: pageIn 220ms ease-out;
+}
+@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { body { animation: none; } }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; background: none; border: none; color: inherit; }
+
+.tt-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.mono { font-family: var(--font-mono); }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PORTAL FRAME
+══════════════════════════════════════════════════════════════ */
+.frame {
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 624px minmax(0, 1fr);
+  background: var(--a-paper);
+}
+/* Split the body background so any scroll/overflow shows the correct tone. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to right, var(--a-paper-deep) 0 624px, var(--a-paper) 624px 100%);
+  z-index: -1;
+}
+
+/* ── Brand pane ─────────────────────────────────────────── */
+.brand {
+  background: var(--a-paper-deep);
+  border-right: 1px solid var(--a-rule);
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.brand-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right,  var(--a-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--a-rule) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+.brand > * { position: relative; z-index: 1; }
+.monogram {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  background: var(--smg-navy);
+  color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--font-sans-a);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.monogram.clinical { background: var(--smg-navy-deep); }
+.brand-eyebrow {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--smg-navy);
+}
+.brand-head {
+  margin-top: 48px;
+  font-family: var(--font-serif-a);
+  font-size: 56px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--a-ink);
+  max-width: 480px;
+  white-space: pre-line;
+}
+.brand-sub {
+  margin-top: 20px;
+  font-family: var(--font-serif-a);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--a-ink-3);
+  max-width: 440px;
+}
+.brand-meta {
+  position: absolute;
+  left: 48px; right: 48px; bottom: 40px;
+  z-index: 1;
+}
+.brand-meta-rule {
+  height: 1px;
+  background: var(--a-rule);
+  margin-bottom: 18px;
+}
+.meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.meta-stat { display: flex; flex-direction: column; gap: 4px; }
+.meta-stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.meta-stat-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--a-ink-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.meta-stat-val .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--smg-emerald);
+  box-shadow: 0 0 0 3px var(--smg-emerald-soft);
+}
+.brand-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--a-ink-4);
+}
+
+/* ── Form shell ─────────────────────────────────────────── */
+.shell {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 40px 40px;
+  min-height: 100vh;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.topbar-host {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.topbar-right { display: flex; gap: 8px; }
+.pill-btn {
+  padding: 7px 12px;
+  border: 1px solid var(--a-rule);
+  border-radius: 6px;
+  background: var(--a-card);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--a-ink-2);
+  text-transform: uppercase;
+  transition: border-color 120ms, background 120ms;
+}
+.pill-btn:hover { border-color: var(--a-ink-4); }
+
+.form-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.form-inner {
+  width: 100%;
+  max-width: 440px;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 0;
+}
+.form-inner.w-460 { max-width: 460px; }
+.form-inner.w-500 { max-width: 500px; }
+
+/* Back row */
+.backrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.back-link {
+  font-size: 12px;
+  color: var(--a-ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.back-link:hover { color: var(--a-ink-2); text-decoration: underline; text-underline-offset: 3px; }
+.back-link .glyph {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--a-rule);
+  background: var(--a-card);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-2);
+}
+.badge.navy   { background: var(--a-accent-soft); border-color: var(--a-accent-soft); color: var(--smg-navy); }
+.badge.emerald{ background: var(--smg-emerald-soft); border-color: var(--smg-emerald-soft); color: var(--smg-emerald-deep); }
+.badge.warn   { background: var(--a-warn-soft); border-color: var(--a-warn-border); color: var(--a-warn); }
+.badge.danger { background: var(--a-danger-soft); border-color: var(--a-danger-soft); color: var(--a-danger); }
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+
+/* Headlines */
+.h-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--smg-navy);
+  margin-bottom: 10px;
+}
+.h-eyebrow.emerald { color: var(--smg-emerald-deep); }
+.h-head {
+  font-family: var(--font-serif-a);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--a-ink);
+  outline: none;
+}
+.h-head:focus, .h-head:focus-visible { outline: none; }
+.h-head.size-30 { font-size: 30px; }
+.h-sub {
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--a-ink-3);
+  max-width: 440px;
+}
+
+.section-gap { height: 28px; }
+
+/* Fields */
+.field { margin-bottom: 18px; }
+.field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.field-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.field-meta a, .field-meta .link {
+  color: var(--smg-navy);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 11px;
+  cursor: pointer;
+}
+.field-meta a:hover, .field-meta .link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.field-meta.emerald { color: var(--smg-emerald-deep); }
+.input-wrap {
+  display: flex; align-items: center;
+  background: var(--a-card);
+  border: 1px solid var(--a-rule);
+  border-radius: 6px;
+  height: 44px;
+  padding: 0 14px;
+  transition: border-color 80ms;
+}
+.input-wrap.filled { border-color: var(--a-ink-2); }
+.input-wrap.err { border-color: var(--a-danger); }
+.input-wrap:focus-within { border-color: var(--a-ink-2); }
+.input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  height: 100%;
+  color: var(--a-ink-2);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  min-width: 0;
+}
+.input-wrap input::placeholder { color: var(--a-ink-4); }
+.input-right {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--a-ink-4);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+}
+.input-right:hover { color: var(--a-ink-2); }
+.input-right[aria-pressed="true"] { color: var(--a-ink-2); }
+.input-err {
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--a-danger);
+  line-height: 1.45;
+}
+.input-warn {
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--a-warn);
+  line-height: 1.45;
+}
+
+/* Buttons */
+.bigbtn {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid var(--a-rule);
+  background: var(--a-card);
+  color: var(--a-ink);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans-a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: border-color 80ms, background 80ms, color 80ms;
+}
+.bigbtn:hover { border-color: var(--a-ink-3); }
+.bigbtn.primary {
+  background: var(--smg-navy);
+  border-color: var(--smg-navy);
+  color: #fff;
+}
+.bigbtn.primary:hover { background: var(--smg-navy-deep); border-color: var(--smg-navy-deep); }
+.bigbtn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--smg-navy);
+}
+.bigbtn.ghost:hover { color: var(--smg-navy-deep); text-decoration: underline; text-underline-offset: 3px; }
+.bigbtn:disabled, .bigbtn[disabled] {
+  background: var(--a-paper-deeper);
+  color: var(--a-ink-4);
+  border-color: var(--a-paper-deeper);
+  cursor: not-allowed;
+}
+.bigbtn .enter-glyph {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Or rule */
+.or-rule {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+}
+.or-rule hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--a-rule);
+}
+.or-rule span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  color: var(--a-ink-4);
+  text-transform: uppercase;
+}
+
+/* Portal cards (picker) */
+.portal-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  background: var(--a-card);
+  border: 1px solid var(--a-rule);
+  border-radius: 10px;
+  box-shadow: 0 1px 0 var(--a-rule-soft);
+  transition: box-shadow 120ms;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+.portal-card:hover {
+  box-shadow: 0 2px 8px rgba(16, 20, 24, 0.06);
+}
+.portal-tile {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--smg-navy);
+  color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--font-serif-a);
+  font-weight: 500;
+  font-size: 20px;
+}
+.portal-tile.clinical { background: var(--smg-navy-deep); }
+.portal-body { flex: 1; min-width: 0; }
+.portal-title-row {
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 4px;
+}
+.portal-title {
+  font-family: var(--font-serif-a);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--a-ink);
+}
+.portal-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--a-ink-3);
+}
+.portal-chev {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--a-ink-4);
+}
+
+/* Picker patient callout */
+.callout {
+  background: var(--a-paper-deep);
+  border: 1px solid var(--a-rule);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--a-ink-2);
+  line-height: 1.55;
+}
+.callout-title {
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: var(--a-ink);
+}
+.callout a {
+  color: var(--smg-navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Remember / shared-device row */
+.remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 18px;
+  font-size: 12.5px;
+}
+.remember-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--a-ink-2);
+  cursor: pointer;
+}
+.remember-row input {
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--a-rule);
+  background: var(--a-card);
+  position: relative;
+}
+.remember-row input:checked {
+  background: var(--smg-navy);
+  border-color: var(--smg-navy);
+}
+.remember-row input:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 0px;
+  width: 4px; height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.shared-toggle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+  cursor: pointer;
+}
+.shared-toggle:hover { color: var(--a-ink-2); }
+.shared-toggle.on { color: var(--a-warn); }
+
+/* Request footer link */
+.request-link {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--a-ink-3);
+}
+.request-link a { color: var(--smg-navy); text-decoration: underline; text-underline-offset: 3px; }
+
+/* MFA cells */
+.mfa-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+.mfa-cell {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--a-rule);
+  background: var(--a-card);
+  border-radius: 6px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  color: var(--a-ink-2);
+  outline: none;
+  transition: border-color 80ms;
+  caret-color: var(--smg-navy);
+}
+.mfa-cell:focus, .mfa-cell.active { border-color: var(--a-ink-2); }
+.mfa-cell.err { border-color: var(--a-danger); }
+.mfa-resend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+.mfa-resend-row a, .mfa-resend-row .link {
+  color: var(--smg-navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.mfa-resend-row a:hover { color: var(--smg-navy-deep); }
+.audit-callout {
+  margin-top: 22px;
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--a-warn-soft);
+  border: 1px solid var(--a-warn-border);
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--a-ink-2);
+}
+.audit-callout .glyph {
+  color: var(--a-warn);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Identity card (MFA + returning) */
+.id-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--a-paper-deep);
+  border-radius: 8px;
+  margin-bottom: 26px;
+}
+.id-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--a-accent-soft);
+  color: var(--smg-navy-deep);
+  font-family: var(--font-sans-a);
+  font-weight: 600;
+  font-size: 12px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.id-avatar.big { width: 48px; height: 48px; font-size: 16px; }
+.id-body { flex: 1; min-width: 0; }
+.id-name { font-size: 13px; font-weight: 500; color: var(--a-ink); }
+.id-name.big { font-size: 14px; font-weight: 600; }
+.id-email {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--a-ink-4);
+  margin-top: 2px;
+}
+.id-right {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+  cursor: pointer;
+}
+.id-right:hover { color: var(--a-ink-2); }
+
+/* Returning card variation */
+.id-card.card {
+  background: var(--a-card);
+  border: 1px solid var(--a-rule);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 22px;
+}
+.id-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+  margin-top: 2px;
+}
+
+/* SSO handoff */
+.sso-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+.sso-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 32px 0 28px;
+}
+.sso-tile {
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-family: var(--font-serif-a);
+  font-size: 22px;
+  font-weight: 500;
+  color: #fff;
+}
+.sso-tile.navy { background: var(--smg-navy); }
+.sso-tile.recipient {
+  background: var(--a-card);
+  border: 1px solid var(--a-rule);
+  color: var(--smg-navy);
+}
+.sso-dots { display: flex; gap: 8px; }
+.sso-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--a-ink-4);
+  animation: ssoBlink 1.2s ease-in-out infinite;
+}
+.sso-dot:nth-child(2) { animation-delay: 0.15s; }
+.sso-dot:nth-child(3) { animation-delay: 0.30s; }
+.sso-dot:nth-child(4) { animation-delay: 0.45s; }
+@keyframes ssoBlink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+.sso-progress-wrap {
+  width: 100%;
+  max-width: 300px;
+  height: 3px;
+  background: var(--a-paper-deep);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.sso-progress-fill {
+  width: 62%;
+  height: 100%;
+  background: var(--smg-navy);
+}
+.sso-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+  margin-bottom: 22px;
+}
+.sso-escape {
+  font-size: 12px;
+  color: var(--a-ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.sso-escape:hover { color: var(--a-ink-2); }
+
+/* Locked incident card */
+.incident-card {
+  background: var(--a-card);
+  border: 1px solid var(--a-rule);
+  border-radius: 10px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.incident-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--a-rule-soft);
+}
+.incident-strip-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.incident-strip-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--a-ink-2);
+}
+.incident-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px 6px;
+}
+.incident-cell {
+  padding: 10px 12px;
+}
+.incident-cell .l {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+  margin-bottom: 4px;
+}
+.incident-cell .v {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--a-ink-2);
+}
+.locked-report {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--a-ink-3);
+}
+.locked-report a {
+  color: var(--a-danger);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Chip groups (request) */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  padding: 7px 12px;
+  border-radius: 18px;
+  border: 1px solid var(--a-rule);
+  background: var(--a-card);
+  font-size: 12.5px;
+  color: var(--a-ink-2);
+  cursor: pointer;
+  transition: border-color 80ms, background 80ms, color 80ms;
+}
+.chip:hover { border-color: var(--a-ink-4); }
+.chip.active {
+  border-color: var(--smg-navy);
+  background: var(--a-accent-soft);
+  color: var(--smg-navy-deep);
+  font-weight: 500;
+}
+
+/* 2-column grid used in request form */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* SLA callout */
+.sla-callout {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--a-paper-deep);
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--a-ink-2);
+  margin-bottom: 18px;
+}
+.sla-callout .glyph {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--smg-navy);
+  flex-shrink: 0;
+}
+
+/* Inactivity callout on returning */
+.inactivity {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--a-paper-deep);
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--a-ink-2);
+  margin-top: 22px;
+}
+.inactivity .glyph {
+  font-family: var(--font-mono);
+  color: var(--smg-navy);
+  font-weight: 700;
+}
+.inactivity a {
+  color: var(--smg-navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Foot bar */
+.foot {
+  border-top: 1px solid var(--a-rule-soft);
+  padding: 16px 0 0;
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--a-ink-4);
+}
+.foot-links { display: flex; gap: 18px; }
+.foot-links a { color: var(--a-ink-4); }
+.foot-links a:hover { color: var(--a-ink-2); }
+
+/* Caret blink */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sso-dot { animation: none; opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="frame" id="frame"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════════════════ */
+const PORTALS = {
+  admin: {
+    label: 'ADMIN PORTAL',
+    tile: 'A',
+    head: 'Bridge.\nFor the people\nhandling the data.',
+    sub: 'Operations, eligibility, claims, and consents — kept in order so the clinicians can keep people healthy.',
+    host: 'BRIDGE.SMGMSO.COM',
+    ssoName: 'AMM Email',
+    ssoKind: 'amm',
+    domain: 'amm.cc',
+    staffType: 'SMG staff',
+    helpPhoneLabel: 'IT',
+    phone: '201-555-0142',
+    signInSub: "Use your SMG staff email. IT can reset access if you're locked out.",
+    footerCTA: 'Don\u2019t have SMG staff credentials? Request portal access from your manager',
+    footerHref: '?screen=request&portal=admin',
+    roles: ['Operations', 'Eligibility', 'Claims', 'Billing', 'Compliance'],
+    pickerTitle: 'SMG MSO (AMM)',
+    pickerDesc: 'Patient registry, eligibility, claims, lab intake, caregiver consents.',
+    pickerBadge: { label: 'ADMIN', tone: 'navy' },
+    placeholder: 'jsmith@amm.cc',
+    managerPlaceholder: 'manager@amm.cc',
+    home: '/bridge-admin.html',
+    requestSub: "New to SMG operations? Your manager provisions access. We'll email them for you.",
+  },
+  clinical: {
+    label: 'CLINICAL PORTAL',
+    tile: 'C',
+    head: 'Bridge.\nFor the people\nseeing patients.',
+    sub: 'Schedules, care gaps, labs, and family messages — organized so the hour-in-the-room goes to the patient.',
+    host: 'BRIDGE.SMGCLINIC.COM',
+    ssoName: 'SMGMedical Email',
+    ssoKind: 'smg',
+    domain: 'smgmedical.net',
+    staffType: 'AMM staff',
+    helpPhoneLabel: 'Clinical IT',
+    phone: '201-555-0142',
+    signInSub: 'Use your AMM email. Sessions are tied to your NPI.',
+    footerCTA: "Credentialed at SMG but can't sign in? Contact Clinical IT \u00b7 201-555-0142",
+    footerHref: 'tel:+12015550142',
+    roles: null,
+    specialties: ['Primary care', 'Nephrology', 'Endocrinology', 'Cardiology', 'Behavioral health'],
+    pickerTitle: 'SMG Clinical',
+    pickerDesc: 'Schedule, patient roster, messages from patients and family, visit prep.',
+    pickerBadge: { label: 'DOCTOR', tone: 'emerald' },
+    placeholder: 'epark@smgmedical.net',
+    managerPlaceholder: 'credentialing@smgmedical.net',
+    home: '/bridge-doctor.html',
+    requestSub: 'Credentialed at SMG but new to Bridge? Credentialing will link your NPI and grant access.',
+  },
+};
+
+const COPY = {
+  pickerEyebrow: 'WHERE ARE YOU GOING?',
+  pickerHead: 'Pick a portal',
+  pickerSub: 'SMG Bridge has separate surfaces for operations and clinical. Sign in with the one you use day-to-day — your account may have access to both.',
+  patientNudgeTitle: 'Patient or caregiver?',
+  patientNudgeBody: 'Those apps live on your phone — download them from the App Store or Play Store.',
+  signInHead: 'Sign in',
+  mfaHead: 'Two-factor',
+  mfaSub: 'We sent a 6-digit code to the authenticator app on your phone. It expires in 30 seconds.',
+  auditBody: 'Every staff session requires MFA. PHI access is logged to the audit trail.',
+  returningEyebrow: 'WELCOME BACK',
+  inactivity: 'Session will auto-lock after 12 minutes of inactivity per SMG policy.',
+  lockedHead: "Let's get you back in.",
+  lockedSub: 'Your account is temporarily locked after 5 failed sign-in attempts. This is standard for accounts that touch patient records.',
+  requestHead: 'Request portal access',
+  requestSLA: "Requests are reviewed within one business day. You'll get an email with next steps — usually a link to set up MFA.",
+};
+
+/* ══════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════ */
+const params = new URLSearchParams(location.search);
+const initialScreen = params.get('screen') || null;
+const initialPortal = params.get('portal') === 'clinical' ? 'clinical'
+                    : params.get('portal') === 'admin' ? 'admin' : null;
+
+const STATE = {
+  screen: 'picker',
+  portal: null,
+  form: {
+    email: '', password: '',
+    showPassword: false,
+    keepSignedIn: true,
+    sharedDevice: localStorage.getItem('smg-staff-shared-device') === '1',
+    error: null,
+    attempts: 0,
+  },
+  mfa: { code: '', countdown: 30, tickInt: null, err: false, activeIndex: 0 },
+  request: { first: '', last: '', email: '', role: 'Operations', npi: '', specialty: 'Primary care', manager: '' },
+  user: null,
+};
+
+/* Already authenticated? */
+const activeSession = localStorage.getItem('smg-staff-authed');
+if (activeSession === 'admin' || activeSession === 'clinical') {
+  window.location.replace(PORTALS[activeSession].home);
+}
+
+/* Returning user? */
+const rememberedPortal = localStorage.getItem('smg-staff-remembered-portal');
+const rememberedEmail = localStorage.getItem('smg-staff-remembered-email');
+const rememberedName  = localStorage.getItem('smg-staff-remembered-name');
+
+/* Resolve initial route — per spec §2 rule 1: default to picker when no remembered session */
+if (initialScreen === 'request')  { STATE.screen = 'request'; STATE.portal = initialPortal || 'admin'; }
+else if (initialScreen === 'locked') { STATE.screen = 'locked'; STATE.portal = initialPortal || 'admin'; }
+else if (initialScreen === 'mfa')    { STATE.screen = 'mfa';    STATE.portal = initialPortal || 'admin'; }
+else if (initialScreen === 'welcome'){ STATE.screen = 'returning'; STATE.portal = initialPortal || rememberedPortal || 'admin'; }
+else if (initialPortal && rememberedEmail && rememberedPortal === initialPortal) {
+  STATE.screen = 'returning';
+  STATE.portal = initialPortal;
+} else {
+  STATE.screen = 'picker';
+}
+
+/* Prefill returning user */
+if (rememberedEmail && (STATE.screen === 'returning' || STATE.screen === 'form')) {
+  STATE.form.email = rememberedEmail;
+  STATE.user = {
+    email: rememberedEmail,
+    firstName: (rememberedName || '').split(' ')[0] || '',
+    lastName: (rememberedName || '').split(' ').slice(1).join(' '),
+    role: rememberedPortal === 'clinical' ? 'PCP · SMG Koreatown' : 'Ops · Admin',
+  };
+}
+if (rememberedPortal && STATE.portal == null) STATE.portal = rememberedPortal;
+
+/* ══════════════════════════════════════════════════════════════
+   UTIL
+══════════════════════════════════════════════════════════════ */
+function escape(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function emit(event, props) {
+  // Telemetry stub — the host app wires up the real analytics client.
+  try {
+    (window.smgAnalytics || function(){}).call(null, event, props || {});
+  } catch (e) {}
+}
+function timeOfDay() {
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 17) return 'afternoon';
+  return 'evening';
+}
+function initials(name) {
+  if (!name) return '··';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0] || '')[0] || '') + ((parts[1] || '')[0] || '');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SHARED SHELL — brand pane + form shell
+══════════════════════════════════════════════════════════════ */
+function ssoEnvelopeSvg(kind, override) {
+  const color = override || (kind === 'amm' ? 'var(--smg-navy-deep)' : 'var(--smg-navy)');
+  return `
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="1" y="1" width="16" height="12" rx="1.5"/>
+      <path d="M1.5 2 L9 8 L16.5 2"/>
+    </svg>
+  `;
+}
+
+function renderBrand(portal) {
+  const p = PORTALS[portal] || PORTALS.admin;
+  const monoCls = portal === 'clinical' ? 'monogram clinical' : 'monogram';
+  return `
+    <aside class="brand" aria-label="${escape(p.label)} brand pane">
+      <div class="brand-grid" aria-hidden="true"></div>
+      <div class="${monoCls}" aria-hidden="true">S</div>
+      <div class="brand-eyebrow">${escape(p.label)}</div>
+      <h1 class="brand-head">${escape(p.head)}</h1>
+      <p class="brand-sub">${escape(p.sub)}</p>
+
+      <div class="brand-meta">
+        <div class="brand-meta-rule"></div>
+        <div class="meta-row">
+          <div class="meta-stat">
+            <span class="meta-stat-label">Version</span>
+            <span class="meta-stat-val">2026.04.24</span>
+          </div>
+          <div class="meta-stat">
+            <span class="meta-stat-label">Deployed</span>
+            <span class="meta-stat-val">2h ago</span>
+          </div>
+          <div class="meta-stat">
+            <span class="meta-stat-label">Status</span>
+            <span class="meta-stat-val"><span class="dot"></span>Operational</span>
+          </div>
+        </div>
+        <div class="brand-caption">HIPAA &middot; SOC 2 TYPE II &middot; HITRUST CSF</div>
+      </div>
+    </aside>
+  `;
+}
+
+function renderShellOpen(portal, { maxWidth = 440 } = {}) {
+  const host = (PORTALS[portal] || PORTALS.admin).host;
+  const cls = maxWidth === 500 ? 'form-inner w-500' : maxWidth === 460 ? 'form-inner w-460' : 'form-inner';
+  return `
+    <section class="shell" aria-label="Sign-in form">
+      <div class="topbar">
+        <span class="topbar-host">${escape(host)}</span>
+        <div class="topbar-right">
+          <button class="pill-btn" type="button" onclick="openHelp()">? Help</button>
+          <button class="pill-btn" type="button" onclick="onLangClick()">English &#9662;</button>
+        </div>
+      </div>
+      <div class="form-body">
+        <div class="${cls}">
+  `;
+}
+function renderShellClose() {
+  return `
+        </div>
+        <footer class="foot">
+          <div>&copy; 2026 SMG &middot; Specialty Medical Group</div>
+          <div class="foot-links">
+            <a href="#" onclick="event.preventDefault();">Terms</a>
+            <a href="#" onclick="event.preventDefault();">Privacy</a>
+            <a href="#" onclick="event.preventDefault();">Security</a>
+            <a href="mailto:it@smgmso.com">IT support</a>
+          </div>
+        </footer>
+      </div>
+    </section>
+  `;
+}
+
+function backRow(portal) {
+  const p = PORTALS[portal] || PORTALS.admin;
+  const tone = portal === 'clinical' ? 'emerald' : 'navy';
+  return `
+    <div class="backrow">
+      <a class="back-link" href="?" onclick="return pickDifferentPortal(event)">
+        <span class="glyph">&larr;</span> Pick a different portal
+      </a>
+      <span class="badge ${tone}">${escape(p.label)}</span>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 1 · Portal picker
+══════════════════════════════════════════════════════════════ */
+function renderPicker() {
+  emit('signin.picker.viewed');
+  return `
+    ${renderBrand('admin')}
+    ${renderShellOpen('admin', { maxWidth: 500 })}
+      <div class="h-eyebrow">${escape(COPY.pickerEyebrow)}</div>
+      <h2 class="h-head size-30">${escape(COPY.pickerHead)}</h2>
+      <p class="h-sub">${escape(COPY.pickerSub)}</p>
+
+      <div class="section-gap"></div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="portal-card" type="button" onclick="pickPortal('admin')">
+          <div class="portal-tile">A</div>
+          <div class="portal-body">
+            <div class="portal-title-row">
+              <span class="portal-title">${escape(PORTALS.admin.pickerTitle)}</span>
+              <span class="badge ${PORTALS.admin.pickerBadge.tone}">${escape(PORTALS.admin.pickerBadge.label)}</span>
+            </div>
+            <div class="portal-desc">${escape(PORTALS.admin.pickerDesc)}</div>
+          </div>
+          <div class="portal-chev">&rarr;</div>
+        </button>
+        <button class="portal-card" type="button" onclick="pickPortal('clinical')">
+          <div class="portal-tile clinical">C</div>
+          <div class="portal-body">
+            <div class="portal-title-row">
+              <span class="portal-title">${escape(PORTALS.clinical.pickerTitle)}</span>
+              <span class="badge ${PORTALS.clinical.pickerBadge.tone}">${escape(PORTALS.clinical.pickerBadge.label)}</span>
+            </div>
+            <div class="portal-desc">${escape(PORTALS.clinical.pickerDesc)}</div>
+          </div>
+          <div class="portal-chev">&rarr;</div>
+        </button>
+      </div>
+
+      <div class="callout">
+        <div class="callout-title">${escape(COPY.patientNudgeTitle)}</div>
+        <div>${escape(COPY.patientNudgeBody.split('App Store')[0])}<a href="https://apps.apple.com/" target="_blank" rel="noopener">App Store</a> or <a href="https://play.google.com/" target="_blank" rel="noopener">Play Store</a>.</div>
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 2 · Sign-in form
+══════════════════════════════════════════════════════════════ */
+function renderForm() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  emit('signin.form.viewed', { portal });
+  const email = STATE.form.email;
+  const password = STATE.form.password;
+  const filled = email.length > 3 && password.length > 0;
+  const err = STATE.form.error;
+  const domainHint = '@' + p.domain;
+  const inputWrapCls = (v) => 'input-wrap' + (err ? ' err' : v ? ' filled' : '');
+  const passType = STATE.form.showPassword ? 'text' : 'password';
+  const passBtnLabel = STATE.form.showPassword ? 'HIDE' : 'SHOW';
+  const passBtnAria  = STATE.form.showPassword ? 'Hide password' : 'Show password';
+  const sharedOn = STATE.form.sharedDevice;
+  const attemptsLeft = Math.max(0, 5 - (STATE.form.attempts || 0));
+  const domainWarn = email && !email.endsWith(domainHint) && email.includes('@');
+
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal)}
+      ${backRow(portal)}
+
+      <h2 class="h-head">${escape(COPY.signInHead)}</h2>
+      <p class="h-sub">${escape(p.signInSub)}</p>
+
+      <div class="section-gap"></div>
+
+      <button class="bigbtn primary" type="button" onclick="onSSOClick()" aria-label="Continue with ${escape(p.ssoName)}">
+        ${ssoEnvelopeSvg(p.ssoKind, '#fff')}
+        <span>Continue with ${escape(p.ssoName)}</span>
+      </button>
+
+      <div class="or-rule" role="separator"><hr><span>OR CONTINUE WITH</span><hr></div>
+
+      <form id="signinForm" onsubmit="return onPasswordSubmit(event)" novalidate>
+        <div class="field">
+          <div class="field-head">
+            <label class="tt-label" for="emailField">STAFF EMAIL</label>
+            <span class="field-meta">${escape(domainHint)}</span>
+          </div>
+          <div class="${inputWrapCls(!!email)}">
+            <input id="emailField" type="email" autocomplete="username" autocapitalize="off" spellcheck="false"
+                   placeholder="${escape(p.placeholder)}" value="${escape(email)}"
+                   oninput="onEmailInput(this.value)"
+                   aria-invalid="${!!err}" aria-describedby="emailWarn" />
+          </div>
+          <div id="emailWarn" aria-live="polite">
+            ${domainWarn ? `<div class="input-warn">Staff accounts use ${escape(domainHint)} &mdash; double-check the address before signing in.</div>` : ''}
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <label class="tt-label" for="passwordField">PASSWORD</label>
+            <span class="field-meta"><a class="link" href="#" onclick="return onForgot(event)">Forgot?</a></span>
+          </div>
+          <div class="${inputWrapCls(!!password)}">
+            <input id="passwordField" type="${passType}" autocomplete="current-password"
+                   placeholder="" value="${escape(password)}"
+                   oninput="onPasswordInput(this.value)" />
+            <button type="button" class="input-right" onclick="togglePasswordVisibility()"
+                    aria-pressed="${STATE.form.showPassword}" aria-label="${escape(passBtnAria)}">${passBtnLabel}</button>
+          </div>
+          <div id="passwordErr" aria-live="polite">
+            ${err ? `<div class="input-err">That email / password combination didn\u2019t match. ${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} left before lockout.</div>` : ''}
+          </div>
+        </div>
+
+        <div class="remember-row">
+          ${sharedOn ? '<span style="color:var(--a-ink-4);font-size:12px;">Sign-in will not be remembered on this device.</span>' : `
+            <label>
+              <input type="checkbox" ${STATE.form.keepSignedIn ? 'checked' : ''} onchange="onKeepSignedIn(this.checked)" />
+              <span>Keep me signed in on this device</span>
+            </label>
+          `}
+          <span class="shared-toggle ${sharedOn ? 'on' : ''}" onclick="toggleSharedDevice()" role="button" tabindex="0" aria-pressed="${sharedOn}">
+            Shared device? ${sharedOn ? 'YES' : 'NO'}
+          </span>
+        </div>
+
+        <button class="bigbtn primary" type="submit" ${filled ? '' : 'disabled'}>
+          <span>Sign in</span>${filled ? '<span class="enter-glyph">&#8629;</span>' : ''}
+        </button>
+      </form>
+
+      <div class="request-link">
+        ${portal === 'admin'
+          ? `Don\u2019t have SMG staff credentials? <a href="?screen=request&portal=admin" onclick="return goRequest(event,'admin')">Request portal access from your manager</a>`
+          : `Credentialed at SMG but can\u2019t sign in? <a href="${escape(p.footerHref)}">Contact Clinical IT &middot; ${escape(p.phone)}</a>`}
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 3 · MFA
+══════════════════════════════════════════════════════════════ */
+function renderMFA() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  emit('signin.mfa.viewed', { portal });
+  const code = STATE.mfa.code;
+  const remaining = STATE.mfa.countdown;
+  const min = Math.floor(remaining / 60);
+  const sec = String(remaining % 60).padStart(2, '0');
+  const cells = Array.from({ length: 6 }, (_, i) => {
+    const v = code[i] || '';
+    return `<input class="mfa-cell ${STATE.mfa.err ? 'err' : ''}" type="text" inputmode="numeric" pattern="[0-9]*"
+              autocomplete="one-time-code" maxlength="1" data-idx="${i}"
+              value="${escape(v)}" onpaste="onMfaPaste(event)" oninput="onMfaInput(event)" onkeydown="onMfaKey(event)"
+              aria-label="Digit ${i + 1} of 6" />`;
+  }).join('');
+  const name = (STATE.user && (STATE.user.firstName + ' ' + STATE.user.lastName).trim()) || 'Staff member';
+  const email = (STATE.user && STATE.user.email) || STATE.form.email || '';
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal)}
+      ${backRow(portal)}
+
+      <h2 class="h-head">${escape(COPY.mfaHead)}</h2>
+      <p class="h-sub">${escape(COPY.mfaSub)}</p>
+
+      <div class="section-gap"></div>
+
+      <div class="id-card">
+        <div class="id-avatar">${escape(initials(name))}</div>
+        <div class="id-body">
+          <div class="id-name">${escape(name)}</div>
+          <div class="id-email">${escape(email)}</div>
+        </div>
+        <span class="id-right" onclick="onNotYou()" role="button" tabindex="0">NOT YOU?</span>
+      </div>
+
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend class="visually-hidden">6-digit verification code</legend>
+        <div class="field">
+          <div class="field-head">
+            <label class="tt-label">6-DIGIT CODE</label>
+            <span class="field-meta emerald"><span class="mono">&#9201;</span> ${min}:${sec} remaining</span>
+          </div>
+          <div class="mfa-grid" id="mfaGrid">${cells}</div>
+        </div>
+      </fieldset>
+
+      <div class="mfa-resend-row">
+        <span><a href="#" onclick="return onResend(event)">Resend code</a></span>
+        <span id="mfaSecurityKey" style="display:none;"><a href="#" onclick="return onSecurityKey(event)">Use a security key instead</a></span>
+      </div>
+
+      <button class="bigbtn primary" type="button" ${code.length === 6 ? '' : 'disabled'} onclick="onMfaSubmit()">
+        Verify and continue
+      </button>
+
+      <div class="audit-callout" role="note">
+        <span class="glyph">!</span>
+        <span>${escape(COPY.auditBody)}</span>
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 4 · SSO Handoff
+══════════════════════════════════════════════════════════════ */
+function renderSSO() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal)}
+      ${backRow(portal)}
+      <h2 class="h-head">Redirecting to ${escape(p.ssoName)}&hellip;</h2>
+      <p class="h-sub">You&rsquo;ll approve the sign-in there and come right back. This takes a couple of seconds.</p>
+
+      <div class="sso-center">
+        <div class="sso-row" aria-hidden="true">
+          <div class="sso-tile navy">S</div>
+          <div class="sso-dots"><span class="sso-dot"></span><span class="sso-dot"></span><span class="sso-dot"></span><span class="sso-dot"></span></div>
+          <div class="sso-tile recipient">${ssoEnvelopeSvg(p.ssoKind)}</div>
+        </div>
+        <div class="sso-progress-wrap" aria-hidden="true"><div class="sso-progress-fill"></div></div>
+        <div class="sso-caption">ESTABLISHING SECURE CHANNEL &middot; OIDC 1.0</div>
+        <a href="?portal=${portal}" class="sso-escape" onclick="return onSSOEscape(event)">Not working? Sign in with email + password instead</a>
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 5 · Returning user
+══════════════════════════════════════════════════════════════ */
+function renderReturning() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  // If there's no real remembered user, don't show a half-populated returning screen —
+  // fall back to the picker so the flow starts clean.
+  if (!STATE.user || !(STATE.user.firstName || STATE.user.email)) {
+    STATE.screen = 'picker';
+    STATE.portal = null;
+    return renderPicker();
+  }
+  const u = STATE.user;
+  const tod = timeOfDay();
+  const stats = portal === 'admin'
+    ? { n: 3, m: 12, body: `You have ${3} pending uploads and ${12} caregiver consents to review.` }
+    : { n: 14, m: 4, body: `You have ${14} patients on today\u2019s schedule and ${4} unread messages from families.` };
+  const touchIdAvailable = typeof navigator !== 'undefined' && navigator.credentials && typeof navigator.credentials.get === 'function';
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal)}
+      ${backRow(portal)}
+
+      <div class="h-eyebrow emerald">${escape(COPY.returningEyebrow)}</div>
+      <h2 class="h-head">Good ${escape(tod)}, ${escape(u.firstName || 'Colleague')}.</h2>
+      <p class="h-sub">${escape(stats.body)}</p>
+
+      <div class="id-card card">
+        <div class="id-avatar big">${escape(initials((u.firstName||'') + ' ' + (u.lastName||'')))}</div>
+        <div class="id-body">
+          <div class="id-name big">${escape(((u.firstName||'') + ' ' + (u.lastName||'')).trim() || 'Staff member')}</div>
+          <div class="id-role">${escape(u.role || '')}</div>
+        </div>
+        <span class="badge emerald"><span class="badge-dot"></span>SESSION ACTIVE</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${touchIdAvailable ? `<button class="bigbtn primary" type="button" onclick="onTouchId()">Unlock with Touch ID</button>` : ''}
+        <button class="bigbtn ${touchIdAvailable ? '' : 'primary'}" type="button" onclick="onUsePassword()">Use password instead</button>
+      </div>
+
+      <div class="inactivity">
+        <span class="glyph">i</span>
+        <div>
+          ${escape(COPY.inactivity)}
+          <a href="#" onclick="return onSignOutDevice(event)">Sign out of this device</a>.
+        </div>
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 6 · Locked
+══════════════════════════════════════════════════════════════ */
+function renderLocked() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  emit('signin.locked.viewed', { portal, attempts: STATE.form.attempts });
+  const incidentId = 'LOCK-2026-' + String(Math.floor(Math.random() * 90000) + 10000);
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal)}
+      ${backRow(portal)}
+
+      <div style="margin-bottom:12px;"><span class="badge danger"><span class="badge-dot"></span>ACCOUNT LOCKED</span></div>
+      <h2 class="h-head">${escape(COPY.lockedHead)}</h2>
+      <p class="h-sub">${escape(COPY.lockedSub)}</p>
+
+      <div class="incident-card">
+        <div class="incident-strip">
+          <span class="incident-strip-label">Incident ID</span>
+          <span class="incident-strip-val">${escape(incidentId)}</span>
+        </div>
+        <div class="incident-grid">
+          <div class="incident-cell"><div class="l">Locked</div><div class="v">2 min ago</div></div>
+          <div class="incident-cell"><div class="l">Auto-unlock</div><div class="v">in 28 min</div></div>
+          <div class="incident-cell"><div class="l">Account</div><div class="v">${escape(STATE.form.email || (STATE.user && STATE.user.email) || '&mdash;')}</div></div>
+          <div class="incident-cell"><div class="l">IP</div><div class="v">73.108.xx.xx &middot; NJ</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="bigbtn primary" type="button" onclick="onIdPReset()">Reset password via ${escape(p.ssoName)}</button>
+        <a class="bigbtn" href="tel:+12015550142">Call ${escape(p.helpPhoneLabel)} &middot; ${escape(p.phone)}</a>
+      </div>
+
+      <div class="locked-report">
+        Wasn&rsquo;t you? <a href="/security/report" onclick="return onReport(event)">Report suspicious activity</a>
+      </div>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 7 · Request access
+══════════════════════════════════════════════════════════════ */
+function renderRequest() {
+  const portal = STATE.portal || 'admin';
+  const p = PORTALS[portal];
+  const r = STATE.request;
+  const emailHint = '@' + p.domain + ' only';
+  const domainWarn = r.email && r.email.includes('@') && !r.email.endsWith('@' + p.domain);
+  const npiValid = r.npi.length === 10;
+  const npiWarn = r.npi.length > 0 && (r.npi.length !== 10 || !/^\d{10}$/.test(r.npi));
+  const canSubmit = r.first.trim() && r.last.trim() && r.email.includes('@') && r.manager.includes('@')
+                    && (portal === 'admin' ? !!r.role : (npiValid && !!r.specialty));
+  return `
+    ${renderBrand(portal)}
+    ${renderShellOpen(portal, { maxWidth: 460 })}
+      ${backRow(portal)}
+
+      <h2 class="h-head">${escape(COPY.requestHead)}</h2>
+      <p class="h-sub">${escape(p.requestSub)}</p>
+
+      <div class="section-gap"></div>
+
+      <form id="requestForm" onsubmit="return onRequestSubmit(event)" novalidate>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div>
+            <div class="field-head"><label class="tt-label" for="firstName">FIRST NAME</label></div>
+            <div class="input-wrap ${r.first?'filled':''}"><input id="firstName" type="text" value="${escape(r.first)}" oninput="onReqInput('first', this.value)" autocomplete="given-name" /></div>
+          </div>
+          <div>
+            <div class="field-head"><label class="tt-label" for="lastName">LAST NAME</label></div>
+            <div class="input-wrap ${r.last?'filled':''}"><input id="lastName" type="text" value="${escape(r.last)}" oninput="onReqInput('last', this.value)" autocomplete="family-name" /></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <label class="tt-label" for="reqEmail">WORK EMAIL</label>
+            <span class="field-meta">${escape(emailHint)}</span>
+          </div>
+          <div class="input-wrap ${r.email?'filled':''}"><input id="reqEmail" type="email" value="${escape(r.email)}"
+              oninput="onReqInput('email', this.value)" onblur="renderCurrent()"
+              placeholder="${escape(p.placeholder)}" autocomplete="email" /></div>
+          <div aria-live="polite">${domainWarn ? `<div class="input-warn">Only ${escape('@'+p.domain)} addresses are eligible.</div>` : ''}</div>
+        </div>
+
+        ${portal === 'admin' ? `
+          <div class="field">
+            <div class="field-head"><label class="tt-label">ROLE</label></div>
+            <div class="chip-row">
+              ${p.roles.map(role => `<button type="button" class="chip ${r.role===role?'active':''}" onclick="setReqRole('${escape(role)}')" aria-pressed="${r.role===role}">${escape(role)}</button>`).join('')}
+            </div>
+          </div>
+        ` : `
+          <div class="field">
+            <div class="field-head">
+              <label class="tt-label" for="npi">NPI</label>
+              <span class="field-meta">10 DIGITS</span>
+            </div>
+            <div class="input-wrap ${r.npi?'filled':''} ${npiWarn?'err':''}"><input id="npi" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10"
+                value="${escape(r.npi)}" oninput="onReqInput('npi', this.value.replace(/[^0-9]/g,''))" onblur="renderCurrent()" /></div>
+            <div aria-live="polite">${npiWarn ? `<div class="input-warn">NPI must be a 10-digit number.</div>` : ''}</div>
+          </div>
+          <div class="field">
+            <div class="field-head"><label class="tt-label">SPECIALTY</label></div>
+            <div class="chip-row">
+              ${p.specialties.map(s => `<button type="button" class="chip ${r.specialty===s?'active':''}" onclick="setReqSpecialty('${escape(s)}')" aria-pressed="${r.specialty===s}">${escape(s)}</button>`).join('')}
+            </div>
+          </div>
+        `}
+
+        <div class="field">
+          <div class="field-head"><label class="tt-label" for="reqManager">${portal === 'admin' ? 'MANAGER' : 'CREDENTIALING CONTACT'} EMAIL</label></div>
+          <div class="input-wrap ${r.manager?'filled':''}"><input id="reqManager" type="email" value="${escape(r.manager)}"
+              placeholder="${escape(p.managerPlaceholder)}" oninput="onReqInput('manager', this.value)" autocomplete="email" /></div>
+        </div>
+
+        <div class="sla-callout"><span class="glyph">i</span><span>${escape(COPY.requestSLA)}</span></div>
+
+        <button class="bigbtn primary" type="submit" ${canSubmit ? '' : 'disabled'}>Send request</button>
+      </form>
+    ${renderShellClose()}
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ROUTER / RENDERER
+══════════════════════════════════════════════════════════════ */
+function renderCurrent() {
+  const frame = document.getElementById('frame');
+  let html = '';
+  switch (STATE.screen) {
+    case 'picker':     html = renderPicker(); break;
+    case 'form':       html = renderForm(); break;
+    case 'mfa':        html = renderMFA(); break;
+    case 'sso':        html = renderSSO(); break;
+    case 'returning':  html = renderReturning(); break;
+    case 'locked':     html = renderLocked(); break;
+    case 'request':    html = renderRequest(); break;
+    default:           html = renderPicker();
+  }
+  frame.innerHTML = html;
+  // Move focus to the headline so screen readers announce on route change
+  const head = frame.querySelector('.h-head');
+  if (head) {
+    head.setAttribute('tabindex', '-1');
+    try { head.focus({ preventScroll: true }); } catch (e) {}
+  }
+  // MFA: auto-focus first empty cell
+  if (STATE.screen === 'mfa') {
+    const cells = frame.querySelectorAll('.mfa-cell');
+    const idx = Math.min(STATE.mfa.code.length, 5);
+    if (cells[idx]) try { cells[idx].focus(); } catch (e) {}
+    if (cells[idx]) cells[idx].classList.add('active');
+  }
+}
+
+function setScreen(screen, patchUrl) {
+  STATE.screen = screen;
+  if (patchUrl !== false) {
+    const p = new URLSearchParams();
+    if (STATE.portal) p.set('portal', STATE.portal);
+    if (screen === 'request') p.set('screen', 'request');
+    else if (screen === 'locked') p.set('screen', 'locked');
+    else if (screen === 'mfa') p.set('screen', 'mfa');
+    else if (screen === 'sso') p.set('screen', 'sso');
+    else if (screen === 'returning') p.set('screen', 'welcome');
+    const qs = p.toString();
+    history.replaceState({}, '', location.pathname + (qs ? '?' + qs : ''));
+  }
+  renderCurrent();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HANDLERS
+══════════════════════════════════════════════════════════════ */
+function openHelp() {
+  alert('Need help signing in? Contact IT at 201-555-0142 or it@smgmso.com.');
+}
+function onLangClick() {
+  // English only per spec — noop with guidance
+  alert('These staff portals are English-only. Patient and caregiver apps support Korean.');
+}
+
+function pickPortal(portal) {
+  STATE.portal = portal;
+  emit('signin.picker.selected', { portal });
+  // Returning user?
+  if (rememberedEmail && rememberedPortal === portal) {
+    setScreen('returning');
+  } else {
+    setScreen('form');
+  }
+}
+function pickDifferentPortal(event) {
+  if (event) event.preventDefault();
+  // Clear the remembered email for whichever portal we're looking at
+  if (STATE.portal) {
+    localStorage.removeItem('smg-staff-remembered-portal');
+    localStorage.removeItem('smg-staff-remembered-email');
+    localStorage.removeItem('smg-staff-remembered-name');
+  }
+  STATE.portal = null;
+  STATE.form.error = null;
+  STATE.form.email = '';
+  STATE.form.password = '';
+  STATE.mfa.code = '';
+  setScreen('picker');
+  return false;
+}
+
+function onEmailInput(v) {
+  STATE.form.email = v;
+  STATE.form.error = null;
+  const btn = document.querySelector('.bigbtn.primary[type="submit"]');
+  if (btn) btn.disabled = !(STATE.form.email.length > 3 && STATE.form.password.length > 0);
+  // Update domain warning reactively without a full re-render
+  const p = PORTALS[STATE.portal];
+  const warn = document.getElementById('emailWarn');
+  if (warn && p) {
+    const bad = v && v.includes('@') && !v.endsWith('@' + p.domain);
+    warn.innerHTML = bad ? `<div class="input-warn">Staff accounts use @${escape(p.domain)} &mdash; double-check the address before signing in.</div>` : '';
+  }
+}
+function onPasswordInput(v) {
+  STATE.form.password = v;
+  STATE.form.error = null;
+  const btn = document.querySelector('.bigbtn.primary[type="submit"]');
+  if (btn) btn.disabled = !(STATE.form.email.length > 3 && STATE.form.password.length > 0);
+  const errBox = document.getElementById('passwordErr');
+  if (errBox) errBox.innerHTML = '';
+  const wrap = document.querySelector('#passwordField') && document.querySelector('#passwordField').parentNode;
+  if (wrap) wrap.classList.remove('err');
+}
+function togglePasswordVisibility() {
+  STATE.form.showPassword = !STATE.form.showPassword;
+  renderCurrent();
+  setTimeout(() => { const f = document.getElementById('passwordField'); if (f) f.focus(); }, 10);
+}
+function onKeepSignedIn(v) { STATE.form.keepSignedIn = !!v; }
+function toggleSharedDevice() {
+  STATE.form.sharedDevice = !STATE.form.sharedDevice;
+  if (STATE.form.sharedDevice) {
+    STATE.form.keepSignedIn = false;
+    localStorage.setItem('smg-staff-shared-device', '1');
+  } else {
+    localStorage.removeItem('smg-staff-shared-device');
+  }
+  renderCurrent();
+}
+function onForgot(event) {
+  event.preventDefault();
+  const p = PORTALS[STATE.portal] || PORTALS.admin;
+  window.open('https://login.microsoftonline.com/reset?hint=' + encodeURIComponent(p.domain), '_blank');
+  return false;
+}
+
+function onSSOClick() {
+  emit('signin.sso.clicked', { portal: STATE.portal });
+  setScreen('sso');
+  // Simulate a handshake: after ~1.6s, drop into the MFA step with a user derived from their entered email
+  setTimeout(() => {
+    const portal = STATE.portal;
+    const email = STATE.form.email || (portal === 'clinical' ? 'epark@smgmedical.net' : 'jsmith@amm.cc');
+    STATE.user = userFromEmail(email, portal);
+    beginMfa();
+  }, 1600);
+}
+
+/* Derive firstName / lastName / role from the entered email so the portal chrome
+   matches what the user typed at sign-in. */
+function userFromEmail(email, portal) {
+  const local = (email || '').split('@')[0] || 'staff';
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  const cap = (s) => s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : '';
+  const firstName = cap(parts[0] || 'Staff');
+  const lastName  = cap(parts[1] || '');
+  const role = portal === 'clinical'
+    ? 'PCP · SMG Koreatown'
+    : 'Ops · Admin';
+  return { email, firstName, lastName, role };
+}
+function onSSOEscape(event) {
+  if (event) event.preventDefault();
+  setScreen('form');
+  return false;
+}
+
+function onPasswordSubmit(event) {
+  event.preventDefault();
+  const portal = STATE.portal;
+  const p = PORTALS[portal];
+  const { email, password } = STATE.form;
+  // Stubbed credential check: password "demo" always succeeds. "locked" triggers the locked screen immediately.
+  if (password === 'locked') {
+    STATE.form.attempts = 5;
+    emit('signin.password.submitted', { portal, success: false });
+    setScreen('locked');
+    return false;
+  }
+  const ok = password === 'demo' || password.length >= 8;
+  emit('signin.password.submitted', { portal, success: ok });
+  if (!ok) {
+    STATE.form.error = true;
+    STATE.form.attempts = (STATE.form.attempts || 0) + 1;
+    if (STATE.form.attempts >= 5) { setScreen('locked'); return false; }
+    renderCurrent();
+    return false;
+  }
+  STATE.user = userFromEmail(email, portal);
+  STATE.form.error = null;
+  beginMfa();
+  return false;
+}
+
+function beginMfa() {
+  STATE.mfa.code = '';
+  STATE.mfa.countdown = 30;
+  STATE.mfa.err = false;
+  if (STATE.mfa.tickInt) clearInterval(STATE.mfa.tickInt);
+  STATE.mfa.tickInt = setInterval(() => {
+    if (STATE.mfa.countdown > 0) STATE.mfa.countdown--;
+    const meta = document.querySelector('.field-meta.emerald');
+    if (meta) {
+      const m = Math.floor(STATE.mfa.countdown / 60);
+      const s = String(STATE.mfa.countdown % 60).padStart(2, '0');
+      meta.innerHTML = `<span class="mono">&#9201;</span> ${m}:${s} remaining`;
+    }
+    if (STATE.mfa.countdown === 0) {
+      clearInterval(STATE.mfa.tickInt);
+      STATE.mfa.tickInt = null;
+    }
+  }, 1000);
+  setScreen('mfa');
+}
+
+function onMfaInput(e) {
+  const inp = e.target;
+  const idx = Number(inp.dataset.idx);
+  let d = (inp.value || '').replace(/[^0-9]/g, '').slice(0, 1);
+  inp.value = d;
+  const arr = STATE.mfa.code.split('');
+  arr[idx] = d || '';
+  STATE.mfa.code = arr.join('').slice(0, 6);
+  if (d) {
+    const next = document.querySelector(`.mfa-cell[data-idx="${idx + 1}"]`);
+    if (next) next.focus();
+  }
+  // Enable verify button
+  const btn = document.querySelector('.bigbtn.primary[type="button"]');
+  if (btn) btn.disabled = STATE.mfa.code.length !== 6;
+  if (STATE.mfa.code.length === 6) onMfaSubmit();
+}
+function onMfaKey(e) {
+  const inp = e.target;
+  const idx = Number(inp.dataset.idx);
+  if (e.key === 'Backspace' && !inp.value && idx > 0) {
+    const prev = document.querySelector(`.mfa-cell[data-idx="${idx - 1}"]`);
+    if (prev) { prev.focus(); prev.value = ''; const a = STATE.mfa.code.split(''); a[idx - 1] = ''; STATE.mfa.code = a.join(''); }
+  }
+  if (e.key === 'Enter' && STATE.mfa.code.length === 6) onMfaSubmit();
+}
+function onMfaPaste(e) {
+  const text = (e.clipboardData || window.clipboardData).getData('text');
+  const digits = (text || '').replace(/[^0-9]/g, '').slice(0, 6);
+  if (!digits) return;
+  e.preventDefault();
+  STATE.mfa.code = digits;
+  const cells = document.querySelectorAll('.mfa-cell');
+  cells.forEach((c, i) => { c.value = digits[i] || ''; });
+  if (digits.length === 6) onMfaSubmit();
+  else if (cells[digits.length]) cells[digits.length].focus();
+}
+function onResend(event) {
+  if (event) event.preventDefault();
+  emit('signin.mfa.resent', { portal: STATE.portal });
+  beginMfa();
+  return false;
+}
+function onSecurityKey(event) {
+  if (event) event.preventDefault();
+  alert('Security-key flow will open your OS prompt. (Stubbed for demo.)');
+  return false;
+}
+function onNotYou() {
+  STATE.user = null;
+  STATE.form.email = '';
+  STATE.form.password = '';
+  STATE.mfa.code = '';
+  if (STATE.mfa.tickInt) clearInterval(STATE.mfa.tickInt);
+  setScreen('form');
+}
+function onMfaSubmit() {
+  const code = STATE.mfa.code;
+  const success = code.length === 6 && code !== '000000';
+  emit('signin.mfa.submitted', { portal: STATE.portal, success });
+  if (!success) {
+    STATE.mfa.err = true;
+    STATE.mfa.code = '';
+    renderCurrent();
+    return;
+  }
+  completeSignIn();
+}
+
+function completeSignIn() {
+  const portal = STATE.portal;
+  localStorage.setItem('smg-staff-authed', portal);
+  if (STATE.user) {
+    localStorage.setItem('smg-staff-email', STATE.user.email);
+    localStorage.setItem('smg-staff-name', ((STATE.user.firstName||'') + ' ' + (STATE.user.lastName||'')).trim());
+    localStorage.setItem('smg-staff-role', STATE.user.role || '');
+  }
+  if (STATE.form.keepSignedIn && !STATE.form.sharedDevice) {
+    localStorage.setItem('smg-staff-remembered-portal', portal);
+    localStorage.setItem('smg-staff-remembered-email', STATE.user.email);
+    localStorage.setItem('smg-staff-remembered-name', ((STATE.user.firstName||'') + ' ' + (STATE.user.lastName||'')).trim());
+  }
+  window.location.href = PORTALS[portal].home;
+}
+
+function onTouchId() {
+  // Stub: in a real impl, call navigator.credentials.get(...) then continue
+  completeSignIn();
+}
+function onUsePassword() {
+  STATE.screen = 'form';
+  if (STATE.user) STATE.form.email = STATE.user.email || '';
+  setScreen('form');
+}
+function onSignOutDevice(event) {
+  if (event) event.preventDefault();
+  localStorage.removeItem('smg-staff-remembered-portal');
+  localStorage.removeItem('smg-staff-remembered-email');
+  localStorage.removeItem('smg-staff-remembered-name');
+  STATE.form.email = '';
+  STATE.user = null;
+  STATE.portal = null;
+  setScreen('picker');
+  return false;
+}
+
+function onIdPReset() {
+  const p = PORTALS[STATE.portal] || PORTALS.admin;
+  window.open('https://login.microsoftonline.com/reset?hint=' + encodeURIComponent(p.domain), '_blank');
+}
+function onReport(event) {
+  if (event) event.preventDefault();
+  alert('Opening the suspicious-activity report… (stubbed endpoint: /security/report)');
+  return false;
+}
+
+function goRequest(event, portal) {
+  if (event) event.preventDefault();
+  STATE.portal = portal;
+  setScreen('request');
+  return false;
+}
+
+function onReqInput(key, value) {
+  STATE.request[key] = value;
+  // Live-update submit button without full re-render
+  const btn = document.querySelector('#requestForm .bigbtn.primary');
+  if (!btn) return;
+  const r = STATE.request;
+  const portal = STATE.portal;
+  const p = PORTALS[portal];
+  const npiValid = r.npi.length === 10 && /^\d{10}$/.test(r.npi);
+  const canSubmit = r.first.trim() && r.last.trim() && r.email.includes('@') && r.manager.includes('@')
+                    && (portal === 'admin' ? !!r.role : (npiValid && !!r.specialty));
+  btn.disabled = !canSubmit;
+}
+function setReqRole(role) {
+  STATE.request.role = role;
+  renderCurrent();
+}
+function setReqSpecialty(s) {
+  STATE.request.specialty = s;
+  renderCurrent();
+}
+function onRequestSubmit(event) {
+  event.preventDefault();
+  emit('signin.request.submitted', { portal: STATE.portal, role: STATE.request.role || STATE.request.specialty });
+  // Stub confirmation — show alert, then bounce back to picker.
+  const p = PORTALS[STATE.portal] || PORTALS.admin;
+  alert(`Request sent. We'll email ${STATE.request.manager || 'your manager'} and get back to you within one business day.`);
+  STATE.portal = null;
+  setScreen('picker');
+  return false;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════ */
+renderCurrent();
+
+/* Keep MFA countdown ticking on route changes */
+window.addEventListener('beforeunload', () => {
+  if (STATE.mfa.tickInt) clearInterval(STATE.mfa.tickInt);
+});
+</script>
+</body>
+</html>

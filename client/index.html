@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMG Bridge — Portal Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css');
+
+  :root {
+    --a-paper: #F6F5F0;
+    --a-paper-deep: #EEECE4;
+    --a-ink: #101418;
+    --a-ink-2: #2A2E35;
+    --a-ink-3: #5B6069;
+    --a-ink-4: #8A8F98;
+    --a-rule: #D8D5CB;
+    --smg-navy: #1B3E7A;
+    --smg-navy-deep: #0E2449;
+    --smg-emerald: #1F8A4C;
+    --smg-emerald-deep: #146837;
+    --smg-emerald-soft: #E6F3EB;
+    --font-sans-a: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-serif-a: 'IBM Plex Serif', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --b-paper: #FAF6EF;
+    --b-emerald: #1C5430;
+    --b-peach: #E8A87C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { background: var(--a-paper); }
+  body {
+    font-family: var(--font-sans-a);
+    background: var(--a-paper);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    animation: pageIn 220ms ease-out;
+    transition: opacity 180ms ease-out;
+  }
+  body.leaving { opacity: 0; }
+  @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    body, body.leaving { animation: none; transition: none; opacity: 1; }
+  }
+
+  /* ── Header ── */
+  .hub-header {
+    background: var(--smg-navy-deep);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .hub-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hub-logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--smg-emerald);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-serif-a);
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .hub-logo-text {
+    color: #fff;
+  }
+  .hub-logo-name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .hub-logo-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 3px;
+  }
+  .hub-header-right {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ── Hero ── */
+  .hub-hero {
+    background: linear-gradient(135deg, var(--smg-navy-deep) 0%, var(--smg-navy) 60%, #254E9A 100%);
+    padding: 60px 40px 52px;
+    color: #fff;
+  }
+  .hub-hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 12px;
+  }
+  .hub-hero-title {
+    font-family: var(--font-serif-a);
+    font-size: 44px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .hub-hero-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    max-width: 560px;
+    margin-bottom: 28px;
+  }
+  .hub-status-strip {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .hub-status-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+  .hub-status-dot .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ADE80;
+  }
+
+  /* ── Portal grid ── */
+  .hub-body {
+    flex: 1;
+    padding: 40px;
+  }
+  .hub-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--a-ink-4);
+    margin-bottom: 16px;
+  }
+  .portal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  @media (min-width: 1200px) {
+    .portal-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .portal-card {
+    background: #fff;
+    border: 1px solid var(--a-rule);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: pointer;
+  }
+  .portal-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+  .portal-card-header {
+    padding: 24px 24px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .portal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    font-family: var(--font-serif-a);
+    font-weight: 600;
+    color: #fff;
+  }
+  .portal-icon.admin   { background: var(--smg-navy); }
+  .portal-icon.doctor  { background: var(--smg-emerald-deep); }
+  .portal-icon.patient { background: var(--b-emerald); }
+  .portal-icon.caregiver { background: #C68A3D; }
+
+  .portal-title {
+    font-family: var(--font-serif-a);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--a-ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .portal-subtitle {
+    font-size: 12px;
+    color: var(--a-ink-3);
+    margin-top: 3px;
+  }
+  .portal-card-body {
+    padding: 0 24px 20px;
+    flex: 1;
+  }
+  .portal-desc {
+    font-size: 13px;
+    color: var(--a-ink-3);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .portal-features {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .portal-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--a-ink-2);
+  }
+  .portal-feature::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--a-rule);
+    flex-shrink: 0;
+  }
+  .portal-card-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--a-rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--a-paper);
+  }
+  .portal-users {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-ink-4);
+    letter-spacing: 0.06em;
+  }
+  .portal-cta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--smg-emerald-deep);
+  }
+
+  /* ── Stats row ── */
+  .hub-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .hub-stat {
+    background: #fff;
+    border: 1px solid var(--a-rule);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .hub-stat-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--a-ink-4);
+    margin-bottom: 6px;
+  }
+  .hub-stat-value {
+    font-family: var(--font-serif-a);
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--a-ink);
+    line-height: 1;
+  }
+  .hub-stat-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-ink-4);
+    margin-top: 4px;
+  }
+  .hub-stat-sub.warn { color: #B8860B; }
+  .hub-stat-sub.ok   { color: var(--smg-emerald); }
+
+  /* ── Footer ── */
+  .hub-footer {
+    padding: 20px 40px;
+    border-top: 1px solid var(--a-rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .hub-footer-left {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-ink-4);
+    letter-spacing: 0.06em;
+  }
+  .hub-footer-links {
+    display: flex;
+    gap: 20px;
+  }
+  .hub-footer-link {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-ink-4);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+  }
+  .hub-footer-link:hover { color: var(--a-ink-2); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="hub-header">
+  <div class="hub-logo">
+    <div class="hub-logo-mark">S</div>
+    <div class="hub-logo-text">
+      <div class="hub-logo-name">SMG Bridge</div>
+      <div class="hub-logo-sub">Integrated Care Platform · LA · Koreatown</div>
+    </div>
+  </div>
+  <div class="hub-header-right">Fri · Apr 24 · 9:42 AM</div>
+</header>
+
+<!-- Hero -->
+<div class="hub-hero">
+  <div class="hub-hero-eyebrow">Platform Overview</div>
+  <h1 class="hub-hero-title">Bridge — Portal Hub</h1>
+  <p class="hub-hero-sub">All four portals in one place: admin operations, clinical workflows, patient-facing health summaries, and caregiver oversight. Choose a portal below to open it.</p>
+  <div class="hub-status-strip">
+    <div class="hub-status-dot"><span class="dot"></span> All systems operational</div>
+    <div class="hub-status-dot" style="color:rgba(255,255,255,0.35);">·</div>
+    <div class="hub-status-dot">Last data sync: 09:00 AM</div>
+    <div class="hub-status-dot" style="color:rgba(255,255,255,0.35);">·</div>
+    <div class="hub-status-dot">9,847 active patients</div>
+  </div>
+</div>
+
+<!-- Body -->
+<div class="hub-body">
+
+  <!-- Stats strip -->
+  <div class="hub-section-label">Organization snapshot</div>
+  <div class="hub-stats">
+    <div class="hub-stat">
+      <div class="hub-stat-label">Active patients</div>
+      <div class="hub-stat-value">9,847</div>
+      <div class="hub-stat-sub ok">+142 this month</div>
+    </div>
+    <div class="hub-stat">
+      <div class="hub-stat-label">Eligibility rate</div>
+      <div class="hub-stat-value">96.4%</div>
+      <div class="hub-stat-sub">3 termed</div>
+    </div>
+    <div class="hub-stat">
+      <div class="hub-stat-label">Open care gaps</div>
+      <div class="hub-stat-value">284</div>
+      <div class="hub-stat-sub warn">48 critical</div>
+    </div>
+    <div class="hub-stat">
+      <div class="hub-stat-label">Consent coverage</div>
+      <div class="hub-stat-value">78%</div>
+      <div class="hub-stat-sub warn">+6% vs last month</div>
+    </div>
+    <div class="hub-stat">
+      <div class="hub-stat-label">Pending auths</div>
+      <div class="hub-stat-value">47</div>
+      <div class="hub-stat-sub warn">9 need info</div>
+    </div>
+  </div>
+
+  <!-- Portal cards -->
+  <div class="hub-section-label">Portals</div>
+  <div class="portal-grid">
+
+    <!-- Admin -->
+    <a class="portal-card" href="/bridge-signin.html" onclick="return hubGo(event,'staff','/bridge-signin.html');">
+      <div class="portal-card-header">
+        <div class="portal-icon admin">A</div>
+        <div>
+          <div class="portal-title">Admin Portal</div>
+          <div class="portal-subtitle">Operations · Data · Compliance</div>
+        </div>
+      </div>
+      <div class="portal-card-body">
+        <div class="portal-desc">Org-wide patient registry, eligibility verification, bulk data uploads, claims tracking, and authorization management across all 9,847 patients.</div>
+        <div class="portal-features">
+          <div class="portal-feature">Patient registry · bulk upload</div>
+          <div class="portal-feature">Eligibility · claims · auths</div>
+          <div class="portal-feature">Consent management</div>
+          <div class="portal-feature">SSE upload log</div>
+        </div>
+      </div>
+      <div class="portal-card-footer">
+        <div class="portal-users">Admin · Operations staff</div>
+        <div class="portal-cta">Open portal →</div>
+      </div>
+    </a>
+
+    <!-- Clinical / Doctor -->
+    <a class="portal-card" href="/bridge-signin.html" onclick="return hubGo(event,'staff','/bridge-signin.html');">
+      <div class="portal-card-header">
+        <div class="portal-icon doctor">Dr</div>
+        <div>
+          <div class="portal-title">Clinical Portal</div>
+          <div class="portal-subtitle">My panel · Care gaps · Labs</div>
+        </div>
+      </div>
+      <div class="portal-card-body">
+        <div class="portal-desc">Daily schedule, patient panel management, care gap resolution, labs to sign off, secure messaging, referrals, and panel-scoped data operations.</div>
+        <div class="portal-features">
+          <div class="portal-feature">Today's schedule · KPI dashboard</div>
+          <div class="portal-feature">My panel · care gap queue</div>
+          <div class="portal-feature">Labs to review · sign-off</div>
+          <div class="portal-feature">Messages · referrals</div>
+        </div>
+      </div>
+      <div class="portal-card-footer">
+        <div class="portal-users">PCPs · Clinical staff</div>
+        <div class="portal-cta">Open portal →</div>
+      </div>
+    </a>
+
+    <!-- Patient (mobile) -->
+    <a class="portal-card" href="/bridge-patient.html" onclick="return hubGo(event,'patient','/bridge-patient.html');">
+      <div class="portal-card-header">
+        <div class="portal-icon patient">환</div>
+        <div>
+          <div class="portal-title">Patient App</div>
+          <div class="portal-subtitle">환자 포털 · KO / EN</div>
+        </div>
+      </div>
+      <div class="portal-card-body">
+        <div class="portal-desc">Korean-first mobile health companion. Medication tracking with reminders, visit summaries in plain language, lab trends, family sharing, and bilingual check-in flow.</div>
+        <div class="portal-features">
+          <div class="portal-feature">홈 · 약 · 진료 · 기록 · 가족</div>
+          <div class="portal-feature">Bilingual KO / EN throughout</div>
+          <div class="portal-feature">Medication confirm + celebrate</div>
+          <div class="portal-feature">Family consent + sharing</div>
+        </div>
+      </div>
+      <div class="portal-card-footer">
+        <div class="portal-users">Patients · Korean seniors</div>
+        <div class="portal-cta">Open app →</div>
+      </div>
+    </a>
+
+    <!-- Caregiver (mobile) -->
+    <a class="portal-card" href="/bridge-caregiver.html" onclick="return hubGo(event,'caregiver','/bridge-caregiver.html');">
+      <div class="portal-card-header">
+        <div class="portal-icon caregiver">♥</div>
+        <div>
+          <div class="portal-title">Caregiver App</div>
+          <div class="portal-subtitle">가족 보호자 포털 · KO / EN</div>
+        </div>
+      </div>
+      <div class="portal-card-body">
+        <div class="portal-desc">Warm, reassuring companion for family caregivers. Status chips (not a score) summarize mom's day, with tabs for meds, visits, labs, and a profile + messaging view.</div>
+        <div class="portal-features">
+          <div class="portal-feature">홈 · 약 · 진료 · 검사 · 어머니</div>
+          <div class="portal-feature">Status chips — no synthetic score</div>
+          <div class="portal-feature">Remind mom · refill on her behalf</div>
+          <div class="portal-feature">Persistent "Call mom" FAB</div>
+        </div>
+      </div>
+      <div class="portal-card-footer">
+        <div class="portal-users">Family caregivers · Daughters/sons</div>
+        <div class="portal-cta">Open app →</div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="hub-footer">
+  <div class="hub-footer-left">SMG Bridge · Integrated Care Platform · © 2026 SMG</div>
+  <div class="hub-footer-links">
+    <a class="hub-footer-link" href="/bridge-admin.html">Admin</a>
+    <a class="hub-footer-link" href="/bridge-doctor.html">Clinical</a>
+    <a class="hub-footer-link" href="/bridge-patient.html">Patient</a>
+    <a class="hub-footer-link" href="/bridge-caregiver.html">Caregiver</a>
+  </div>
+</footer>
+
+<script>
+// Clear any leftover session so the target portal always begins at its sign-in,
+// then fade the hub out before navigating so the transition feels intentional.
+function hubGo(event, kind, href) {
+  try {
+    var keys;
+    if (kind === 'staff') {
+      keys = ['smg-staff-authed','smg-staff-email','smg-staff-name','smg-staff-role',
+              'smg-staff-remembered-portal','smg-staff-remembered-email','smg-staff-remembered-name',
+              'smg-staff-shared-device'];
+    } else if (kind === 'patient') {
+      keys = ['smg-authed'];
+    } else if (kind === 'caregiver') {
+      keys = ['smg-cg-authed'];
+    } else {
+      keys = [];
+    }
+    keys.forEach(function (k) { localStorage.removeItem(k); });
+  } catch (e) { /* swallow */ }
+
+  if (event && event.preventDefault && href) {
+    event.preventDefault();
+    // Respect reduced motion: go immediately
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { window.location.href = href; return false; }
+    document.body.classList.add('leaving');
+    setTimeout(function () { window.location.href = href; }, 180);
+    return false;
+  }
+  return true; // fallback: let the href navigate
+}
+</script>
+
+</body>
+</html>
