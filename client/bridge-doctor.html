@@ -1783,6 +1783,67 @@ function showPage(navEl, name) {
   main.innerHTML = '';
   const page = PAGES[name] ? PAGES[name]() : el('div',{innerHTML:'<div class="page-body"><div class="page-title">Not found</div></div>'});
   main.appendChild(page);
+  wireFilterChips(page);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FILTER CHIP SYSTEM — auto-wires .filter-bar on rendered pages.
+   Each chip becomes clickable; one-active-per-group; "All …" chips
+   match everything; search inputs AND with chip filters.
+══════════════════════════════════════════════════════════════ */
+function wireFilterChips(root) {
+  (root || document).querySelectorAll('.filter-bar').forEach(bar => {
+    if (bar._wired) return;
+    bar._wired = true;
+    let groupIdx = -1;
+    let prevWasChip = false;
+    [...bar.children].forEach(node => {
+      const isChip = node.classList && node.classList.contains('chip');
+      if (isChip && !prevWasChip) groupIdx++;
+      if (isChip) {
+        node._group = groupIdx;
+        node._bar = bar;
+        node.style.cursor = 'pointer';
+        node.addEventListener('click', () => toggleChipFilter(node));
+      }
+      prevWasChip = isChip;
+    });
+    const searchInp = bar.querySelector('.search input');
+    if (searchInp) searchInp.addEventListener('input', () => applyFiltersForBar(bar));
+  });
+}
+
+function toggleChipFilter(chip) {
+  const bar = chip._bar;
+  const gi  = chip._group;
+  bar.querySelectorAll('.chip').forEach(c => {
+    if (c._group === gi) c.classList.remove('active');
+  });
+  chip.classList.add('active');
+  applyFiltersForBar(bar);
+}
+
+function applyFiltersForBar(bar) {
+  const card = bar.closest('.card');
+  const tbl  = card && card.querySelector('.tbl');
+  const queries = [...bar.querySelectorAll('.chip.active')]
+    .map(cleanChipText)
+    .filter(q => q && !/^all\b/i.test(q));
+  const searchInp = bar.querySelector('.search input');
+  const searchQ = (searchInp && searchInp.value || '').trim().toLowerCase();
+  if (tbl) {
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      const text = tr.textContent.toLowerCase();
+      const ok = queries.every(q => text.includes(q.toLowerCase())) &&
+                 (searchQ === '' || text.includes(searchQ));
+      tr.style.display = ok ? '' : 'none';
+    });
+  }
+}
+function cleanChipText(chip) {
+  let t = chip.textContent.replace(/\s*\([^)]*\)\s*/g, '').trim();
+  if (/^(plan|pcp|segment):/i.test(t)) t = t.split(':').slice(1).join(':').trim();
+  return t;
 }
 
 const PAGES = {};

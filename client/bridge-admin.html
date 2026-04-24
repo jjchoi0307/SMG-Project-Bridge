@@ -2010,6 +2010,76 @@ function showPage(navEl, name) {
   main.innerHTML = '';
   const page = PAGES[name] ? PAGES[name]() : renderNotFound();
   main.appendChild(page);
+  // Wire up filter chips + search inputs on the freshly-rendered page
+  wireFilterChips(page);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FILTER CHIP SYSTEM
+   Auto-wires every .filter-bar on a rendered page:
+   - Each chip becomes clickable; clicking a chip makes it the sole active
+     chip in its "group" (group = run of consecutive chips between spacers).
+   - Active chips contribute a case-insensitive substring query to the
+     filter. Chips labeled "All …" match everything.
+   - Search inputs in the same filter-bar AND with the chip filters.
+══════════════════════════════════════════════════════════════ */
+function wireFilterChips(root) {
+  (root || document).querySelectorAll('.filter-bar').forEach(bar => {
+    if (bar._wired) return;
+    bar._wired = true;
+    // Group chips = consecutive .chip nodes between non-chip separators
+    let groupIdx = -1;
+    let prevWasChip = false;
+    [...bar.children].forEach(node => {
+      const isChip = node.classList && node.classList.contains('chip');
+      if (isChip && !prevWasChip) groupIdx++;
+      if (isChip) {
+        node._group = groupIdx;
+        node._bar = bar;
+        node.style.cursor = 'pointer';
+        node.addEventListener('click', () => toggleChipFilter(node));
+      }
+      prevWasChip = isChip;
+    });
+    const searchInp = bar.querySelector('.search input');
+    if (searchInp) searchInp.addEventListener('input', () => applyFiltersForBar(bar));
+  });
+}
+
+function toggleChipFilter(chip) {
+  const bar = chip._bar;
+  const gi  = chip._group;
+  bar.querySelectorAll('.chip').forEach(c => {
+    if (c._group === gi) c.classList.remove('active');
+  });
+  chip.classList.add('active');
+  applyFiltersForBar(bar);
+}
+
+function applyFiltersForBar(bar) {
+  // Find the .tbl in the same card (or calendar grid)
+  const card = bar.closest('.card');
+  const tbl  = card && card.querySelector('.tbl');
+  const queries = [...bar.querySelectorAll('.chip.active')]
+    .map(cleanChipText)
+    .filter(q => q && !/^all\b/i.test(q));
+  const searchInp = bar.querySelector('.search input');
+  const searchQ = (searchInp && searchInp.value || '').trim().toLowerCase();
+  if (tbl) {
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      const text = tr.textContent.toLowerCase();
+      const ok = queries.every(q => text.includes(q.toLowerCase())) &&
+                 (searchQ === '' || text.includes(searchQ));
+      tr.style.display = ok ? '' : 'none';
+    });
+  }
+}
+
+function cleanChipText(chip) {
+  // Strip parenthesized counts ("Active (9,712)" → "Active") and prefixes like "Plan: "
+  let t = chip.textContent.replace(/\s*\([^)]*\)\s*/g, '').trim();
+  if (/^(plan|pcp|segment):/i.test(t)) t = t.split(':').slice(1).join(':').trim();
+  return t;
 }
 
 function renderNotFound() {
@@ -2725,9 +2795,9 @@ PAGES.schedule = function() {
         <div class="page-subtitle"><span class="mono">${MOCK_APPTS.length}</span> appointments across 2 providers · <span class="text-warn">1 no-show</span> · <span class="text-ok">1 checked in</span></div>
       </div>
       <div class="page-actions">
-        <button class="btn"><span style="font-family:var(--font-mono);">‹</span></button>
-        <button class="btn">Today</button>
-        <button class="btn"><span style="font-family:var(--font-mono);">›</span></button>
+        <button class="btn" onclick="showToast('Showing yesterday\\'s schedule')"><span style="font-family:var(--font-mono);">‹</span></button>
+        <button class="btn btn-primary">Today</button>
+        <button class="btn" onclick="showToast('Showing tomorrow\\'s schedule')"><span style="font-family:var(--font-mono);">›</span></button>
         <button class="btn btn-primary" onclick="showToast('Send confirmation SMS to 8 patients')">✉ Send confirmations</button>
       </div>
     </div>
@@ -2825,30 +2895,78 @@ PAGES.schedule = function() {
 /* ══════════════════════════════════════════════════════════════
    PAGE: APPOINTMENT CALENDAR (week grid)
 ══════════════════════════════════════════════════════════════ */
+// Calendar state (week offset from the "home" week of Apr 20–24, 2026)
+const CAL_STATE = { weekOffset: 0, mode: 'week' };
+
+// Anchor Monday of the "home" week (Apr 20, 2026)
+function calWeekStart(offset) {
+  const base = new Date(2026, 3, 20); // months are 0-indexed; April = 3
+  base.setDate(base.getDate() + offset * 7);
+  return base;
+}
+function calWeekDays(offset) {
+  const start = calWeekStart(offset);
+  const weekdays = ['Mon','Tue','Wed','Thu','Fri'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return weekdays.map((w, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return { label: `${w} ${months[d.getMonth()]} ${d.getDate()}`, date: d };
+  });
+}
+function calRangeTitle(offset) {
+  const days = calWeekDays(offset);
+  const first = days[0].date, last = days[4].date;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sameMonth = first.getMonth() === last.getMonth();
+  if (sameMonth) return `${months[first.getMonth()]} ${first.getDate()} — ${last.getDate()}, ${last.getFullYear()}`;
+  return `${months[first.getMonth()]} ${first.getDate()} — ${months[last.getMonth()]} ${last.getDate()}, ${last.getFullYear()}`;
+}
+
+function calNav(delta) {
+  CAL_STATE.weekOffset += delta;
+  if (CAL_STATE.mode !== 'week') CAL_STATE.mode = 'week';
+  showPage(document.querySelector('[data-nav=calendar]'), 'calendar');
+}
+function calToday() {
+  CAL_STATE.weekOffset = 0;
+  CAL_STATE.mode = 'week';
+  showPage(document.querySelector('[data-nav=calendar]'), 'calendar');
+}
+function calToggleMonth() {
+  CAL_STATE.mode = CAL_STATE.mode === 'month' ? 'week' : 'month';
+  showPage(document.querySelector('[data-nav=calendar]'), 'calendar');
+}
+
 PAGES.calendar = function() {
   const page = el('div', {className:'page active'});
+  if (CAL_STATE.mode === 'month') { page.appendChild(renderCalendarMonth()); return page; }
+
   const hours = [8,9,10,11,12,13,14,15,16];
-  const days = ['Mon Apr 20','Tue Apr 21','Wed Apr 22','Thu Apr 23','Fri Apr 24'];
-  const sample = {
+  const weekDays = calWeekDays(CAL_STATE.weekOffset);
+  const days = weekDays.map(d => d.label);
+  // Sample data only for the current week (offset=0). Other weeks render empty grid.
+  const sample = CAL_STATE.weekOffset === 0 ? {
     0: {2: [{t:'Yoon',s:'ok',dur:1,mrn:'SMG-00412'}]},
     1: {0: [{t:'Park',s:'',dur:1,mrn:'SMG-00587'}], 3: [{t:'Lee',s:'warn',dur:1,mrn:'SMG-00934'}]},
     2: {0: [{t:'Yoon',s:'ok',dur:1,mrn:'SMG-00412'}], 1: [{t:'Kim · A1C',s:'ok',dur:1,mrn:'SMG-01102'}], 2: [{t:'Park',s:'ok',dur:1,mrn:'SMG-00587'}]},
     3: {1: [{t:'Choi',s:'',dur:1,mrn:'SMG-00761'}], 5: [{t:'Chung',s:'ok',dur:1,mrn:'SMG-00803'}]},
     4: {2: [{t:'Jung NEW',s:'',dur:2,mrn:'SMG-01247'}], 6: [{t:'Shin',s:'err',dur:1,mrn:'SMG-00895'}]},
-  };
+  } : {};
+  const apptCount = Object.values(sample).reduce((n, col) => n + Object.values(col).reduce((m, a) => m + a.length, 0), 0);
   page.innerHTML = `
   <div class="page-header">
     <div class="page-breadcrumb">Care ops / Appointment calendar</div>
     <div class="page-header-row">
       <div>
-        <div class="page-title">April 20 — April 24, 2026</div>
-        <div class="page-subtitle">Week view · 2 providers · 42 appointments scheduled</div>
+        <div class="page-title">${escape(calRangeTitle(CAL_STATE.weekOffset))}</div>
+        <div class="page-subtitle">Week view · 2 providers · ${apptCount ? apptCount + ' appointments' : 'no appointments'} scheduled</div>
       </div>
       <div class="page-actions">
-        <button class="btn"><span style="font-family:var(--font-mono);">‹ Prev</span></button>
-        <button class="btn">Today</button>
-        <button class="btn"><span style="font-family:var(--font-mono);">Next ›</span></button>
-        <button class="btn" onclick="showToast('Switched to month view')">Month</button>
+        <button class="btn" onclick="calNav(-1)"><span style="font-family:var(--font-mono);">‹ Prev</span></button>
+        <button class="btn ${CAL_STATE.weekOffset===0?'btn-primary':''}" onclick="calToday()">Today</button>
+        <button class="btn" onclick="calNav(1)"><span style="font-family:var(--font-mono);">Next ›</span></button>
+        <button class="btn" onclick="calToggleMonth()">Month</button>
         <button class="btn btn-primary" onclick="openModal('newAppt')">+ New appointment</button>
       </div>
     </div>
@@ -2858,7 +2976,7 @@ PAGES.calendar = function() {
     <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 14px;">
       ${['Confirmed','Checked in','Scheduled','Pending','Cancelled'].map((l,i)=>{
         const tones=['ok','navy','neutral','warn','err'];
-        const counts=[28,3,8,2,1];
+        const counts = CAL_STATE.weekOffset === 0 ? [28,3,8,2,1] : [0,0,0,0,0];
         return `<div class="card" style="padding: 10px 14px;"><div class="hstack">${pill(l,tones[i])}<span class="mono" style="margin-left:auto; font-weight: 600;">${counts[i]}</span></div></div>`;
       }).join('')}
     </div>
@@ -2880,6 +2998,66 @@ PAGES.calendar = function() {
   </div>`;
   return page;
 };
+
+function renderCalendarMonth() {
+  const wrap = el('div', {});
+  const base = calWeekStart(CAL_STATE.weekOffset); // anchor to some day in viewed month
+  const year = base.getFullYear(), month = base.getMonth();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  // First day of month, day of week (0 = Sun)
+  const first = new Date(year, month, 1);
+  const startPad = first.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startPad; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length % 7) cells.push(null);
+  // Fake appointment counts for current month
+  const todayDate = (year === 2026 && month === 3) ? 24 : -1;
+  wrap.innerHTML = `
+  <div class="page-header">
+    <div class="page-breadcrumb">Care ops / Appointment calendar</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">${months[month]} ${year}</div>
+        <div class="page-subtitle">Month view · click a day to zoom to the week</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn" onclick="calNav(-4)"><span style="font-family:var(--font-mono);">‹ Prev</span></button>
+        <button class="btn" onclick="calToday()">Today</button>
+        <button class="btn" onclick="calNav(4)"><span style="font-family:var(--font-mono);">Next ›</span></button>
+        <button class="btn btn-primary" onclick="calToggleMonth()">Week</button>
+      </div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="card" style="padding: 16px;">
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+        ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="tt-label text-mute" style="text-align: center; padding: 6px 0;">${d}</div>`).join('')}
+        ${cells.map(d => {
+          if (d === null) return `<div style="min-height: 78px;"></div>`;
+          const isToday = d === todayDate;
+          const apptCount = (d === 20 || d === 21 || d === 22 || d === 23 || d === 24) ? [5,7,8,4,6][d-20] : Math.floor(Math.random()*4);
+          return `<div style="min-height: 78px; padding: 8px 10px; border: 1px solid ${isToday?'var(--smg-navy)':'var(--a-rule-soft)'}; border-radius: 6px; background: ${isToday?'var(--a-accent-soft)':'var(--a-card)'}; cursor: pointer;" onclick="calJumpDay(${d}, ${month}, ${year})">
+            <div style="font-family: var(--font-serif); font-size: 16px; font-weight: 500; color: ${isToday?'var(--smg-navy-deep)':'var(--a-ink)'};">${d}</div>
+            ${apptCount > 0 ? `<div class="mono text-mute" style="font-size: 10px; margin-top: 4px;">${apptCount} appt${apptCount>1?'s':''}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+  return wrap;
+}
+
+function calJumpDay(d, month, year) {
+  // Switch to week view containing the clicked day
+  const clicked = new Date(year, month, d);
+  const home = new Date(2026, 3, 20);
+  const diff = Math.round((clicked - home) / (1000*60*60*24 * 7));
+  CAL_STATE.mode = 'week';
+  CAL_STATE.weekOffset = diff;
+  showPage(document.querySelector('[data-nav=calendar]'), 'calendar');
+}
 
 /* ══════════════════════════════════════════════════════════════
    PAGE: CAREGIVER CONSENTS
